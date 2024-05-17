@@ -1,7 +1,7 @@
 ﻿{
-  "appName": "Sistema de Control Presupuestal - BANOBRAS - Web Api",
+  "appName": "BANOBRAS - Sistema PYC - Web Api",
   "description": "Parámetros de configuración de ambiente de los servicios web",
-  "version": "2.0",
+  "version": "1.0",
   "date": "2024-03-28",
   "settings": [
     {

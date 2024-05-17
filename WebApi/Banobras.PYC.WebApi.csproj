@@ -1,24 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Company>Ontica</Company>
-    <Product>Sistema de Control Presupuestal (PYC) - BANOBRAS - Integration Module</Product>
+    <Product>BANOBRAS - Sistema PYC</Product>
     <Description>
-      Este módulo contiene el código para los casos de uso específicos del
-      Sistema de Control Prespuestal de BANOBRAS, así como código para integrar
-      los casos de uso y componentes de Empiria Budgeting sobre los que se
-      basa este sistema del Banco.
+      El propósito de este módulo es servir como un integrador de diferentes
+      módulos con servicios web. A través de estos servicios es que se comunica
+      el backend del Sistema PYC de BANOBRAS con otros sistemas, incluyendo la
+      aplicación frontend del propio sistema.
+
+      Así mismo, mediante sus componentes es posible adaptar o modificar el
+      comportamiento predeterminado de los servicios web, mandando llamar casos
+      de uso y dominios específicos a las necesidades más cambiantes del Banco.
+
+      Este módulo es el que se instala en el servidor de aplicaciones IIS donde
+      se ejecuta el backend del Sistema PYC.
     </Description>
     <Copyright>(c) 2024-2025. La Vía Óntica SC, Ontica LLC y de los autores. Todos los derechos reservados.</Copyright>
-    <Version>2.0</Version>
-    <AssemblyVersion>2.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
+    <Version>1.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/web.api/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/WebApi/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/WebApi</PackageProjectUrl>
     <PackageIconUrl>http://www.ontica.org/logo.ontica.png</PackageIconUrl>
     <PackageTags>
-      Control presupuestal, flujo de efectivo, pago a proveedores, ingresos, egresos, proyectos, contratos, programas, gasto corriente, PYC, Banobras, Banca de desarrollo, México
+      Control presupuestal, flujo de efectivo, pago a proveedores, proyectos, contratos, programas,
+      gasto corriente, servicios web, PYC, Banca de desarrollo, BANOBRAS, México
     </PackageTags>
     <RepositoryUrl>https://github.com/Ontica/Banobras.PYC</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -27,8 +35,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <NeutralLanguage></NeutralLanguage>
     <Configurations>Debug;Release;Multisolutions</Configurations>
-    <AssemblyName>Empiria.Budgeting.BanobrasIntegration.WebApi</AssemblyName>
-    <RootNamespace>Empiria.Budgeting.BanobrasIntegration.WebApi</RootNamespace>
+    <AssemblyName>Banobras.PYC.WebApi</AssemblyName>
+    <RootNamespace>Banobras.PYC.WebApi</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Multisolutions|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -67,15 +75,19 @@
     <PackageReference Include="Empiria.Data.Oracle" Version="7.0.0" />
     <PackageReference Include="Empiria.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.OnePoint.Security.WebApi" Version="2.0.0" />
-    <PackageReference Include="Empiria.Budgeting.BanobrasIntegration" Version="2.0.0" />
-    <PackageReference Include="Empiria.Budgeting.WebApi" Version="2.0.0" />
+    <PackageReference Include="Banobras.PYC.Core" Version="1.0.0" />
+    <PackageReference Include="Empiria.Budgeting.WebApi" Version="1.0.0" />
+    <PackageReference Include="Empiria.Cashflow.WebApi" Version="1.0.0" />
+    <PackageReference Include="Empiria.Payments.WebApi" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
     <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
     <ProjectReference Include="..\..\extensions\WebApi\Empiria.WebApi.csproj" />
     <ProjectReference Include="..\..\onepoint\Security.WebApi\Empiria.OnePoint.Security.WebApi.csproj" />
-    <ProjectReference Include="..\Integration\PYC.Banobras.Integration.csproj" />
-    <ProjectReference Include="..\..\budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
+    <ProjectReference Include="..\Core\Banobras.PYC.Core.csproj" />
+    <ProjectReference Include="..\..\financial.budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
+    <ProjectReference Include="..\..\financial.cashflow\WebApi\Empiria.Cashflow.WebApi.csproj" />
+    <ProjectReference Include="..\..\financial.payments\WebApi\Empiria.Payments.WebApi.csproj" /> 
   </ItemGroup>
   <ItemGroup>
     <None Update="empiria.config.json">

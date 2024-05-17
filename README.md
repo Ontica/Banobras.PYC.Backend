@@ -25,7 +25,7 @@ una capa de servicios web.
 
 ## Contenido
 
-1.  **Core**
+1.  **Core**  
     Contiene el código con los casos de uso específicos del Sistema PYC de
     BANOBRAS, los cuales a su vez integran y utilizan los casos de uso y
     componentes de Empiria Budgeting, Empiria Cashflow y Empiria Payments.
@@ -35,13 +35,12 @@ una capa de servicios web.
     SICOFIN, SIC, SIMEFIN y CFDI.
 
 
-2.  **External Interfaces**
+2.  **External Interfaces**  
     Este módulo contiene las interfaces externas cuyo propósito es conectar el
     Sistema PYC de BANOBRAS con otros sistemas del Banco, como es el caso de los
     sistemas SICOFIN, SIC, SIMEFIN y CFDI.
 
-3.  **Web Api**
-
+3.  **Web Api**  
     A través de estos servicios es que se comunica el backend del Sistema PYC
     con otros sistemas, incluyendo la aplicación frontend del propio sistema.
 
