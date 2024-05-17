@@ -1,7 +1,8 @@
-﻿# Sistema de Control Presupuestal (PYC) - BANOBRAS - Integration Tests Module
+﻿# BANOBRAS - Sistema PYC - External Interfaces Module
 
-Suite de casos de prueba específica para los componentes de integración
-del Sistema de Control Presupuestal (PYC) de BANOBRAS.
+Este módulo contiene las interfaces externas cuyo propósito es conectar el
+Sistema PYC de BANOBRAS con otros sistemas del Banco, como es el caso de los
+sistemas SICOFIN, SIC, SIMEFIN y CFDI.
 
 ## Licencia
 
@@ -19,9 +20,9 @@ instalación, compilación o cualquier otro uso del producto o de sus partes,
 a terceros, empresas privadas o a su personal, sean o no proveedores de
 servicios de las entidades públicas mencionadas.
 
-El desarrollo de este producto fue pagado en su totalidad con recursos
-públicos, y está protegido por las leyes nacionales e internacionales
-de derechos de autor.
+El desarrollo, evolución y mantenimiento de este producto está siendo pagado
+en su totalidad con recursos públicos, y está protegido por las leyes nacionales
+e internacionales de derechos de autor.
 
 ## Copyright
 

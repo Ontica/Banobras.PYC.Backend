@@ -1,22 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Company>Ontica</Company>
-    <Product>Sistema de Control Presupuestal (PYC) - BANOBRAS - Tests Module</Product>
+    <Product>BANOBRAS - Sistema PYC</Product>
     <Description>
-      Suite de casos de prueba específica para los componentes de integración
-      del Sistema de Control Presupuestal (PYC) de BANOBRAS.
+      Suite de casos de prueba para los componentes del módulo de interfaces
+      externas del Sistema PYC de BANOBRAS (Banobras.PYC.ExternalInterfaces).
     </Description>
     <Copyright>(c) 2024-2025. La Vía Óntica SC, Ontica LLC y de los autores. Todos los derechos reservados.</Copyright>
-    <Version>2.0.0</Version>
-    <AssemblyVersion>2.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/Integration.Tests</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/ExternalInterfaces.Tests/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/ExternalInterfaces.Tests</PackageProjectUrl>
     <PackageIconUrl>http://www.ontica.org/logo.ontica.png</PackageIconUrl>
     <PackageTags>
-      Control presupuestal, flujo de efectivo, pago a proveedores, ingresos, egresos, proyectos, contratos, programas, gasto corriente, PYC, Banobras, Banca de desarrollo, México
+      Control presupuestal, flujo de efectivo, pago a proveedores, ingresos, egresos,
+      proyectos, contratos, programas, gasto corriente, interfaces externas, pruebas unitarias,
+      pruebas de integracion, SICOFIN, SIC, SIMEFIN, CFDI, PYC, Banca de desarrollo, BANOBRAS, México
     </PackageTags>
     <RepositoryUrl>https://github.com/Ontica/Banobras.PYC</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -25,8 +27,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <NeutralLanguage></NeutralLanguage>
     <Configurations>Debug;Release;Multisolutions</Configurations>
-    <AssemblyName>Empiria.Budgeting.BanobrasIntegration.Tests</AssemblyName>
-    <RootNamespace>Empiria.Budgeting.BanobrasIntegration.Tests</RootNamespace>
+    <AssemblyName>Banobras.PYC.ExternalInterfaces.Tests</AssemblyName>
+    <RootNamespace>Banobras.Tests.PYC.ExternalInterfaces</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Multisolutions|AnyCPU' ">
@@ -83,12 +85,12 @@
   <ItemGroup Condition=" '$(Configuration)' != 'Multisolutions' ">
     <PackageReference Include="Empiria.Data.Oracle" Version="7.0.0" />
     <PackageReference Include="Empiria.Tests" Version="1.0.0" />
-    <PackageReference Include="Empiria.Budgeting.BanobrasIntegration" Version="2.0.0" />
+    <PackageReference Include="Banobras.PYC.ExternalInterfaces" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
     <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
     <ProjectReference Include="..\..\extensions\Tests\Empiria.Tests.csproj" />
-    <ProjectReference Include="..\Integration\PYC.Banobras.Integration.csproj" />
+    <ProjectReference Include="..\ExternalInterfaces\Banobras.PYC.ExternalInterfaces.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="empiria.config.json">

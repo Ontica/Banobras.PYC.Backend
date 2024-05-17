@@ -1,22 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Company>Ontica</Company>
-    <Product>Empiria Financial Accounting BANOBRAS Integration Module</Product>
+    <Product>BANOBRAS - Sistema PYC</Product>
     <Description>
-      This module is part of the Financial Accounting System, and provides
-      services used to integrate SICOFIN with other BANOBRAS systems.
+      Este módulo contiene las interfaces externas cuyo propósito es conectar el Sistema PYC
+      de BANOBRAS con otros sistemas del Banco, como es el caso de los sistemas SICOFIN, SIC,
+      SIMEFIN y CFDI.
     </Description>
     <Copyright>(c) 2024-2025. La Vía Óntica SC, Ontica LLC y de los autores. Todos los derechos reservados.</Copyright>
-    <Version>2.0</Version>
-    <AssemblyVersion>2.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
+    <Version>1.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/web.api/LICENSE.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/Integration</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/ExternalInterfaces/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/ExternalInterfaces</PackageProjectUrl>
     <PackageIconUrl>http://www.ontica.org/logo.ontica.png</PackageIconUrl>
     <PackageTags>
-      Control presupuestal, flujo de efectivo, pago a proveedores, ingresos, egresos, proyectos, contratos, programas, gasto corriente, PYC, Banobras, Banca de desarrollo, México
+      Control presupuestal, flujo de efectivo, pago a proveedores, ingresos, egresos, proyectos, contratos, programas,
+      gasto corriente, interfaces externas, SICOFIN, SIC, SIMEFIN, CFDI, PYC, Banca de desarrollo, BANOBRAS, México
     </PackageTags>
     <RepositoryUrl>https://github.com/Ontica/Banobras.PYC</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -25,8 +27,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <NeutralLanguage></NeutralLanguage>
     <Configurations>Debug;Release;Multisolutions</Configurations>
-    <AssemblyName>Empiria.Budgeting.BanobrasIntegration</AssemblyName>
-    <RootNamespace>Empiria.Budgeting.BanobrasIntegration</RootNamespace>
+    <AssemblyName>Banobras.PYC.ExternalInterfaces</AssemblyName>
+    <RootNamespace>Banobras.PYC.ExternalInterfaces</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Multisolutions|AnyCPU' ">
@@ -60,13 +62,11 @@
     <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'Multisolutions' ">
-    <PackageReference Include="Empiria.Core" Version="7.0.0" />
     <PackageReference Include="Empiria.Services" Version="1.0.0" />
-    <PackageReference Include="Empiria.Budgeting.Core" Version="2.0.0" />
+    <PackageReference Include="Empiria.WebApi.Client" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
-    <ProjectReference Include="..\..\core\Core\Empiria.Core.csproj" />
     <ProjectReference Include="..\..\extensions\Services\Empiria.Services.csproj" />
-    <ProjectReference Include="..\..\budgeting\Core\Empiria.Budgeting.Core.csproj" />
+    <ProjectReference Include="..\..\extensions\WebApi.Client\Empiria.WebApi.Client.csproj" />
   </ItemGroup>
 </Project>

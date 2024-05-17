@@ -1,7 +1,7 @@
 ﻿{
-  "appName": "Sistema de Control Presupuestal - BANOBRAS - Suite de casos de prueba.",
+  "appName": "BANOBRAS - Sistema PYC - External Interfaces Module Tests",
   "description": "Parámetros de configuración de ambiente para los casos de prueba",
-  "version": "2.0",
+  "version": "1.0",
   "date": "2024-03-28",
   "settings": [
     {
