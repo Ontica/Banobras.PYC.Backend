@@ -1,10 +1,10 @@
-﻿# Sistema de Control Presupuestal (PYC). BANOBRAS.
+﻿# BANOBRAS - Sistema PYC
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8b7ef90cedbb4ec5b80e8758bbc99b6b)](https://app.codacy.com/gh/Ontica/Banobras.PYC/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 &nbsp; &nbsp;
 [![Maintainability](https://api.codeclimate.com/v1/badges/be691fba4b81410d4b98/maintainability)](https://codeclimate.com/github/Ontica/Banobras.PYC/maintainability)
 
-La actualización del Sistema de Control Presupuestal (PYC) está siendo desarrollada por
+La actualización del **Sistema PYC (Presupuesto y Control)** está siendo desarrollada por
 nuestra organización, a la medida de las necesidades del Banco Nacional de Obras y Servicios
 Públicos S.N.C (BANOBRAS).
 
@@ -12,28 +12,44 @@ Públicos S.N.C (BANOBRAS).
 es financiar obras para la creación de servicios públicos. Por el tamaño de su cartera de crédito directo,
 es el cuarto Banco más grande del sistema bancario mexicano y el primero de la Banca de Desarrollo.
 
-Este producto se está desarrollando utilizando C# 7.0, .NET Framework 4.8 y servicios web basados
-en ASP .NET, e incorpora diversos componentes de [Empiria Framework](https://github.com/Ontica/Empiria.Core),
-[Empiria Extensions](https://github.com/Ontica/Empiria.Extensions),
-[Empiria.OnePoint](https://github.com/Ontica/Empiria.OnePoint),
-y sobre todo, de [Empiria Budgeting](https://github.com/Ontica/Empiria.Budgeting).
+El Sistema PYC de BANOBRAS está conformado por tres sistemas integrados que conviven entre sí:
 
-Este repositorio agrupa los diferentes servicios web que sirven para comunicarse con el backend
-del sistema, y también contiene código específico que sirve para la individualización del sistema
-a las necesidades específicas de BANOBRAS.
+1.  Sistema de control presupuestal (basado en [Empiria Budgeting](https://github.com/Ontica/Empiria.Budgeting)).
+2.  Sistema de administración del flujo de efectivo (basado en [Empiria Cashflow](https://github.com/Ontica/Empiria.Cashflow))
+3.  Sistema de pago a proveedores (basado en [Empiria Payments](https://github.com/Ontica/Empiria.Payments)).
+
+Los tres sistemas operan sobre el presupuesto del gasto corriente y sobre el presupuesto del programa financiero del Banco.
+
+Todos los servicios, procesos y reglas del negocio que ofrece este sistema son proporcionados mediante
+una capa de servicios web.
 
 ## Contenido
 
-1.  **Integration**  
-    Casos de uso con las reglas de negocio específicas para BANOBRAS.
+1.  **Core**
+    Contiene el código con los casos de uso específicos del Sistema PYC de
+    BANOBRAS, los cuales a su vez integran y utilizan los casos de uso y
+    componentes de Empiria Budgeting, Empiria Cashflow y Empiria Payments.
 
-2.  **Tests**  
-    Suite de pruebas para los componentes de integración del Sistema de Control Prespuestal (PYC).
+    Así mismo, se enlaza con **External Interfaces** para obtener información
+    proveniente de otros sistemas del Banco, como es el caso de los sistemas
+    SICOFIN, SIC, SIMEFIN y CFDI.
 
-3.  **Web Api**  
-    Consolida todos los módulos con los servicios web que ofrece el sistema para conectarse con
-    el exterior, lo cual incluye entre otros, a la aplicación frontend del propio sistema.
 
+2.  **External Interfaces**
+    Este módulo contiene las interfaces externas cuyo propósito es conectar el
+    Sistema PYC de BANOBRAS con otros sistemas del Banco, como es el caso de los
+    sistemas SICOFIN, SIC, SIMEFIN y CFDI.
+
+3.  **Web Api**
+
+    A través de estos servicios es que se comunica el backend del Sistema PYC
+    con otros sistemas, incluyendo la aplicación frontend del propio sistema.
+
+    Además, sirve como integrador de otros módulos con servicios web
+    necesarios para el sistema.
+
+    Este módulo es el que se instala en el servidor de aplicaciones IIS donde
+    se ejecuta el backend del Sistema PYC.
 
 ## Documentación
 
@@ -56,9 +72,9 @@ instalación, compilación o cualquier otro uso del producto o de sus partes,
 a terceros, empresas privadas o a su personal, sean o no proveedores de
 servicios de las entidades públicas mencionadas.
 
-El desarrollo de este producto fue pagado en su totalidad con recursos
-públicos, y está protegido por las leyes nacionales e internacionales
-de derechos de autor.
+El desarrollo, evolución y mantenimiento de este producto está siendo pagado
+en su totalidad con recursos públicos, y está protegido por las leyes nacionales
+e internacionales de derechos de autor.
 
 ## Copyright
 

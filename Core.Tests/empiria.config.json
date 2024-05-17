@@ -1,0 +1,28 @@
+﻿{
+  "appName": "BANOBRAS - Sistema PYC - Core Tests Module",
+  "description": "Parámetros de configuración de ambiente para los casos de prueba",
+  "version": "1.0",
+  "date": "2024-03-28",
+  "settings": [
+    {
+      "type": "",
+      "key": "ApplicationKey",
+      "value": "{{APPLICATION-KEY}}"
+    },
+    {
+      "type": "",
+      "key": "GlobalConfigurationFile",
+      "value": "{{GLOBAL-CONFIGURATION-FILE}}"
+    },
+    {
+      "type": "Data",
+      "key": "IsObjectIdGeneratorServer",
+      "value": true
+    },
+    {
+      "type": "WebApi",
+      "key": "IsPassThroughServer",
+      "value": false
+    }
+  ]
+}
