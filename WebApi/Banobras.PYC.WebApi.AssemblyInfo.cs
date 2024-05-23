@@ -1,6 +1,6 @@
 ﻿/* BANOBRAS **************************************************************************************************
 *                                                                                                            *
-*  System   : Sistema PYC (Presupuesto y control)                Module  : BANOBRAS PYC Web Api              *
+*  System   : Sistema PYC (Planeación y control)                 Module  : BANOBRAS PYC Web Api              *
 *  Assembly : Banobras.PYC.WebApi.dll                            Pattern : Assembly Attributes File          *
 *                                                                License : Please read LICENSE.txt file      *
 *                                                                                                            *

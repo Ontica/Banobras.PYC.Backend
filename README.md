@@ -1,10 +1,10 @@
-﻿# BANOBRAS - Sistema PYC
+﻿# BANOBRAS - Backend del Sistema PYC
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8b7ef90cedbb4ec5b80e8758bbc99b6b)](https://app.codacy.com/gh/Ontica/Banobras.PYC/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8b7ef90cedbb4ec5b80e8758bbc99b6b)](https://app.codacy.com/gh/Ontica/Banobras.PYC.Backend/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 &nbsp; &nbsp;
-[![Maintainability](https://api.codeclimate.com/v1/badges/be691fba4b81410d4b98/maintainability)](https://codeclimate.com/github/Ontica/Banobras.PYC/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ba4ca770fc8b2d3ab335/maintainability)](https://codeclimate.com/github/Ontica/Banobras.PYC.Backend/maintainability)
 
-La actualización del **Sistema PYC (Presupuesto y Control)** está siendo desarrollada por
+La nueva versión del **Sistema PYC (Planeación y Control)** está siendo desarrollada por
 nuestra organización, a la medida de las necesidades del Banco Nacional de Obras y Servicios
 Públicos S.N.C (BANOBRAS).
 
@@ -12,7 +12,7 @@ Públicos S.N.C (BANOBRAS).
 es financiar obras para la creación de servicios públicos. Por el tamaño de su cartera de crédito directo,
 es el cuarto Banco más grande del sistema bancario mexicano y el primero de la Banca de Desarrollo.
 
-El Sistema PYC de BANOBRAS está conformado por tres sistemas integrados que conviven entre sí:
+El Sistema PYC está conformado por tres sistemas integrados que conviven entre sí:
 
 1.  Sistema de control presupuestal (basado en [Empiria Budgeting](https://github.com/Ontica/Empiria.Budgeting)).
 2.  Sistema de administración del flujo de efectivo (basado en [Empiria Cashflow](https://github.com/Ontica/Empiria.Cashflow))
@@ -23,44 +23,49 @@ Los tres sistemas operan sobre el presupuesto del gasto corriente y sobre el pre
 Todos los servicios, procesos y reglas del negocio que ofrece este sistema son proporcionados mediante
 una capa de servicios web.
 
+Este repositorio aglutina todos los componentes que conforman el *backend* del Sistema PYC,
+y contiene código específico que permite su individualización a las necesidades actuales
+de BANOBRAS.
+
 ## Contenido
 
-1.  **Core**  
-    Contiene el código con los casos de uso específicos del Sistema PYC de
-    BANOBRAS, los cuales a su vez integran y utilizan los casos de uso y
+1.  **Core**
+    Contiene el código con los casos de uso específicos del Sistema PYC,
+    los cuales a su vez integran y utilizan los casos de uso y
     componentes de Empiria Budgeting, Empiria Cashflow y Empiria Payments.
 
     Así mismo, se enlaza con **External Interfaces** para obtener información
     proveniente de otros sistemas del Banco, como es el caso de los sistemas
     SICOFIN, SIC, SIMEFIN y CFDI.
 
-
-2.  **External Interfaces**  
+2.  **External Interfaces**
     Este módulo contiene las interfaces externas cuyo propósito es conectar el
-    Sistema PYC de BANOBRAS con otros sistemas del Banco, como es el caso de los
-    sistemas SICOFIN, SIC, SIMEFIN y CFDI.
+    Sistema PYC con otros sistemas del Banco, como es el caso de los sistemas
+    SICOFIN (contabilidad), SIC (créditos), SIMEFIN (pagos SPEI) y CFDI.
 
-3.  **Web Api**  
-    A través de estos servicios es que se comunica el backend del Sistema PYC
-    con otros sistemas, incluyendo la aplicación frontend del propio sistema.
+3.  **Web Api**
+    A través de estos servicios es que se comunica el *backend* del Sistema PYC
+    con otros sistemas, incluyendo la aplicación *frontend* del propio sistema.
 
-    Además, sirve como integrador de otros módulos con servicios web
-    necesarios para el sistema.
+    Además, sirve como integrador de todos los módulos con servicios web
+    necesarios para la ejecución del *backend* del sistema.
+
+    Puede contener sus propias web apis y permite sobreescribir el funcionamiento
+    de otras web apis, mandando ejecutar casos de uso o servicios distintos a los
+    predeterminados.
 
     Este módulo es el que se instala en el servidor de aplicaciones IIS donde
-    se ejecuta el backend del Sistema PYC.
+    se ejecuta el *backend* del Sistema PYC.
 
 ## Documentación
 
-De acuerdo a las prácticas de desarrollo ágil, se escribirá e incluirá en este
-repositorio en las últimas semanas del proyecto.
+De acuerdo a las prácticas de desarrollo ágil, la documentación se escribirá e
+incluirá en este repositorio en las últimas semanas del proyecto.
 
 ## Licencia
 
 Este producto y sus partes se distribuyen mediante una licencia GNU AFFERO
-GENERAL PUBLIC LICENSE, para uso exclusivo de BANOBRAS y de su personal, y
-también para su uso por cualquier otro organismo en México perteneciente a
-la Administración Pública Federal.
+GENERAL PUBLIC LICENSE, para uso exclusivo de BANOBRAS y de su personal.
 
 Para cualquier otro uso (con excepción a lo estipulado en los Términos de
 Servicio de GitHub), es indispensable obtener con nuestra organización una

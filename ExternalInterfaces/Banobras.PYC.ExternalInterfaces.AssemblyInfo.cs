@@ -1,6 +1,6 @@
 ﻿/* BANOBRAS **************************************************************************************************
 *                                                                                                            *
-*  System   : Sistema PYC (Presupuesto y control)                Module  : PYC External Interfaces           *
+*  System   : Sistema PYC (Planeación y control)                 Module  : PYC External Interfaces           *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll                Pattern : Assembly Attributes File          *
 *                                                                License : Please read LICENSE.txt file      *
 *                                                                                                            *

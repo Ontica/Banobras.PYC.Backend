@@ -15,9 +15,7 @@ se ejecuta el backend del Sistema PYC.
 ## Licencia
 
 Este producto y sus partes se distribuyen mediante una licencia GNU AFFERO
-GENERAL PUBLIC LICENSE, para uso exclusivo de BANOBRAS y de su personal, y
-también para su uso por cualquier otro organismo en México perteneciente a
-la Administración Pública Federal.
+GENERAL PUBLIC LICENSE, para uso exclusivo de BANOBRAS y de su personal.
 
 Para cualquier otro uso (con excepción a lo estipulado en los Términos de
 Servicio de GitHub), es indispensable obtener con nuestra organización una

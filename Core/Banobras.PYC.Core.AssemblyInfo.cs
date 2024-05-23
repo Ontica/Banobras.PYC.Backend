@@ -1,6 +1,6 @@
 ﻿/* BANOBRAS **************************************************************************************************
 *                                                                                                            *
-*  System   : Sistema PYC (Presupuesto y control)                Module  : BANOBRAS PYC Core                 *
+*  System   : Sistema PYC (Planeación y control)                 Module  : BANOBRAS PYC Core                 *
 *  Assembly : Banobras.PYC.Core.dll                              Pattern : Assembly Attributes File          *
 *                                                                License : Please read LICENSE.txt file      *
 *                                                                                                            *

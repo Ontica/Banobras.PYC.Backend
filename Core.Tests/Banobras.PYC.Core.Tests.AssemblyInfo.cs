@@ -1,6 +1,6 @@
 ﻿/* BANOBRAS **************************************************************************************************
 *                                                                                                            *
-*  System   : Sistema PYC (Presupuesto y control)                Module  : PYC Core Module Tests             *
+*  System   : Sistema PYC (Planeación y control)                 Module  : PYC Core Module Tests             *
 *  Assembly : Banobras.PYC.Core.Tests.dll                        Pattern : Assembly Attributes File          *
 *                                                                License : Please read LICENSE.txt file      *
 *                                                                                                            *

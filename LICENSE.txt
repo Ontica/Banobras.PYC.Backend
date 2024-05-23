@@ -1,5 +1,5 @@
-﻿BANOBRAS - Sistema PYC. Licencia
-================================
+﻿BANOBRAS - Backend del Sistema PYC. Licencia
+============================================
 
 Copyright (c) 2024-2025. La Vía Óntica SC, Ontica LLC y autores.
                          Todos los derechos reservados.
@@ -7,10 +7,9 @@ Copyright (c) 2024-2025. La Vía Óntica SC, Ontica LLC y autores.
 
 I M P O R T A N T E:
 --------------------
+
 Este producto y sus partes se distribuyen mediante una licencia GNU AFFERO
-GENERAL PUBLIC LICENSE, para uso exclusivo de BANOBRAS y de su personal, y
-también para su uso por cualquier otro organismo en México perteneciente a
-la Administración Pública Federal.
+GENERAL PUBLIC LICENSE, para uso exclusivo de BANOBRAS y de su personal.
 
 Para cualquier otro uso (con excepción a lo estipulado en los Términos de
 Servicio de GitHub), es indispensable obtener con nuestra organización una
@@ -27,8 +26,7 @@ e internacionales de derechos de autor.
 
 -----------------------------------------------------------------------
 
-Licencia GNU AFFERO GENERAL PUBLIC LICENSE para uso exclusivo de
-BANOBRAS y otros organismos públicos en México y de su personal.
+Licencia GNU AFFERO GENERAL PUBLIC LICENSE para uso exclusivo de BANOBRAS.
 
 These software components are free software: you can redistribute them
 and/or modify them under the terms of the GNU Affero General Public License
@@ -51,9 +49,9 @@ AGPL fixes this “loophole” in GPL by saying that if you use the software
 over a network, you are also bound by the copyleft. Other than that, the
 license is virtually the same as GPL v3.
 
-To say this another way: if you modify BANOBRAS - Sistema PYC source code,
-or any other Empiria-based product, the goal is that you have to contribute
-those modifications back to the community.
+To say this another way: if you modify BANOBRAS - Backend del Sistema PYC
+source code, or any other Empiria-based product, the goal is that you have
+to contribute those modifications back to the community.
 
 La Vía Óntica SC and Ontica LLC also offer the same software components
 under other licensing terms, for such cases where the GNU Affero General
