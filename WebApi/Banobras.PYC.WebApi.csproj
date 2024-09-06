@@ -76,20 +76,22 @@
     <PackageReference Include="Empiria.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.OnePoint.Security.WebApi" Version="4.0.0" />
     <PackageReference Include="Empiria.OnePoint.Workflow.WebApi" Version="4.0.0" />
-    <PackageReference Include="Banobras.PYC.Core" Version="1.0.0" />
+    <PackageReference Include="Empiria.OnePoint.Reporting.WebApi" Version="4.0.0" />
     <PackageReference Include="Empiria.Budgeting.WebApi" Version="1.0.0" />
     <PackageReference Include="Empiria.Cashflow.WebApi" Version="1.0.0" />
     <PackageReference Include="Empiria.Payments.WebApi" Version="1.0.0" />
+    <PackageReference Include="Banobras.PYC.Core" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
     <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
     <ProjectReference Include="..\..\extensions\WebApi\Empiria.WebApi.csproj" />
     <ProjectReference Include="..\..\onepoint\Security.WebApi\Empiria.OnePoint.Security.WebApi.csproj" />
     <ProjectReference Include="..\..\onepoint\Workflow.WebApi\Empiria.OnePoint.Workflow.WebApi.csproj" />
-    <ProjectReference Include="..\Core\Banobras.PYC.Core.csproj" />
+    <ProjectReference Include="..\..\onepoint\Reporting.WebApi\Empiria.OnePoint.Reporting.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.cashflow\WebApi\Empiria.Cashflow.WebApi.csproj" />
-    <ProjectReference Include="..\..\financial.payments\WebApi\Empiria.Payments.WebApi.csproj" /> 
+    <ProjectReference Include="..\..\financial.payments\WebApi\Empiria.Payments.WebApi.csproj" />
+    <ProjectReference Include="..\Core\Banobras.PYC.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="empiria.config.json">
