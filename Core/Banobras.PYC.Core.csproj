@@ -66,18 +66,11 @@
     <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'Multisolutions' ">
-    <PackageReference Include="Empiria.Core" Version="7.0.0" />
+    <PackageReference Include="Empiria.Core" Version="8.0.0" />
     <PackageReference Include="Empiria.Services" Version="1.0.0" />
-    <PackageReference Include="Empiria.Budgeting.Core" Version="1.0.0" />
-    <PackageReference Include="Empiria.Cashflow.Core" Version="1.0.0" />
-    <PackageReference Include="Empiria.Payments.Core" Version="1.0.0" />
-    <PackageReference Include="Banobras.PYC.Integration" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
     <ProjectReference Include="..\..\core\Core\Empiria.Core.csproj" />
     <ProjectReference Include="..\..\extensions\Services\Empiria.Services.csproj" />
-    <ProjectReference Include="..\..\financial.budgeting\Core\Empiria.Budgeting.Core.csproj" />
-    <ProjectReference Include="..\..\financial.cashflow\Core\Empiria.Cashflow.Core.csproj" />
-    <ProjectReference Include="..\..\financial.payments\Core\Empiria.Payments.Core.csproj" />
   </ItemGroup>
 </Project>

@@ -82,12 +82,10 @@
     <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'Multisolutions' ">
-    <PackageReference Include="Empiria.Data.Oracle" Version="7.0.0" />
     <PackageReference Include="Empiria.Tests" Version="1.0.0" />
     <PackageReference Include="Banobras.PYC.Core" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
-    <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
     <ProjectReference Include="..\..\extensions\Tests\Empiria.Tests.csproj" />
     <ProjectReference Include="..\Core\Banobras.PYC.Core.csproj" />
   </ItemGroup>

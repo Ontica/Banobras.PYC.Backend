@@ -77,11 +77,14 @@
     <PackageReference Include="Empiria.Security.Reporting.WebApi" Version="5.0.0" />
     <PackageReference Include="Empiria.Workflow.WebApi" Version="4.0.0" />
     <PackageReference Include="Empiria.Data.Oracle" Version="7.0.0" />
+    <PackageReference Include="Empiria.Central.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Billing.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.Budgeting.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.Cashflow.WebApi" Version="1.0.0" />
+    <PackageReference Include="Empiria.Contracts.WebApi" Version="1.0.0" />
     <PackageReference Include="Empiria.Payments.WebApi" Version="1.0.0" />
     <PackageReference Include="Banobras.PYC.Core" Version="1.0.0" />
+    <PackageReference Include="Banobras.PYC.ExternalInterfaces" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
     <ProjectReference Include="..\..\extensions\WebApi\Empiria.WebApi.csproj" />
@@ -89,11 +92,14 @@
     <ProjectReference Include="..\..\security\Security.Reporting.WebApi\Empiria.Security.Reporting.WebApi.csproj" />
     <ProjectReference Include="..\..\workflow\Workflow.WebApi\Empiria.Workflow.WebApi.csproj" />
     <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
-    <ProjectReference Include="..\..\financial.billing\WebApi\Empiria.Billing.WebApi.csproj" />
-    <ProjectReference Include="..\..\financial.budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
-    <ProjectReference Include="..\..\financial.cashflow\WebApi\Empiria.Cashflow.WebApi.csproj" />
-    <ProjectReference Include="..\..\financial.payments\WebApi\Empiria.Payments.WebApi.csproj" />
+    <ProjectReference Include="..\..\central\Central.WebApi\Empiria.Central.WebApi.csproj" />
+    <ProjectReference Include="..\..\financial.management\Billing\WebApi\Empiria.Billing.WebApi.csproj" />
+    <ProjectReference Include="..\..\financial.management\Budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
+    <ProjectReference Include="..\..\financial.management\Cashflow\WebApi\Empiria.Cashflow.WebApi.csproj" />
+    <ProjectReference Include="..\..\financial.management\Contracts\WebApi\Empiria.Contracts.WebApi.csproj" />
+    <ProjectReference Include="..\..\financial.management\Payments\WebApi\Empiria.Payments.WebApi.csproj" />
     <ProjectReference Include="..\Core\Banobras.PYC.Core.csproj" />
+    <ProjectReference Include="..\ExternalInterfaces\Banobras.PYC.ExternalInterfaces.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="empiria.config.json">
