@@ -72,11 +72,11 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'Multisolutions' ">
-    <PackageReference Include="Empiria.Data.Oracle" Version="7.0.0" />
     <PackageReference Include="Empiria.WebApi" Version="2.0.0" />
-    <PackageReference Include="Empiria.OnePoint.Security.WebApi" Version="4.0.0" />
-    <PackageReference Include="Empiria.OnePoint.Workflow.WebApi" Version="4.0.0" />
-    <PackageReference Include="Empiria.OnePoint.Reporting.WebApi" Version="4.0.0" />
+    <PackageReference Include="Empiria.Security.Management.WebApi" Version="5.0.0" />
+    <PackageReference Include="Empiria.Security.Reporting.WebApi" Version="5.0.0" />
+    <PackageReference Include="Empiria.Workflow.WebApi" Version="4.0.0" />
+    <PackageReference Include="Empiria.Data.Oracle" Version="7.0.0" />
     <PackageReference Include="Empiria.Billing.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.Budgeting.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.Cashflow.WebApi" Version="1.0.0" />
@@ -84,11 +84,11 @@
     <PackageReference Include="Banobras.PYC.Core" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
-    <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
     <ProjectReference Include="..\..\extensions\WebApi\Empiria.WebApi.csproj" />
-    <ProjectReference Include="..\..\onepoint\Security.WebApi\Empiria.OnePoint.Security.WebApi.csproj" />
-    <ProjectReference Include="..\..\onepoint\Workflow.WebApi\Empiria.OnePoint.Workflow.WebApi.csproj" />
-    <ProjectReference Include="..\..\onepoint\Reporting.WebApi\Empiria.OnePoint.Reporting.WebApi.csproj" />
+    <ProjectReference Include="..\..\security\Security.Management.WebApi\Empiria.Security.Management.WebApi.csproj" />
+    <ProjectReference Include="..\..\security\Security.Reporting.WebApi\Empiria.Security.Reporting.WebApi.csproj" />
+    <ProjectReference Include="..\..\workflow\Workflow.WebApi\Empiria.Workflow.WebApi.csproj" />
+    <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
     <ProjectReference Include="..\..\financial.billing\WebApi\Empiria.Billing.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.cashflow\WebApi\Empiria.Cashflow.WebApi.csproj" />
