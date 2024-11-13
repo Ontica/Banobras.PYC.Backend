@@ -78,6 +78,7 @@
     <PackageReference Include="Empiria.Workflow.WebApi" Version="4.0.0" />
     <PackageReference Include="Empiria.Data.Oracle" Version="7.0.0" />
     <PackageReference Include="Empiria.Central.WebApi" Version="8.0.0" />
+    <PackageReference Include="Empiria.Assets.WebApi" Version="1.0.0" />
     <PackageReference Include="Empiria.Billing.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.Budgeting.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.Cashflow.WebApi" Version="1.0.0" />
@@ -93,6 +94,7 @@
     <ProjectReference Include="..\..\workflow\Workflow.WebApi\Empiria.Workflow.WebApi.csproj" />
     <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
     <ProjectReference Include="..\..\central\Central.WebApi\Empiria.Central.WebApi.csproj" />
+    <ProjectReference Include="..\..\financial.management\Assets\WebApi\Empiria.Assets.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Billing\WebApi\Empiria.Billing.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Cashflow\WebApi\Empiria.Cashflow.WebApi.csproj" />
