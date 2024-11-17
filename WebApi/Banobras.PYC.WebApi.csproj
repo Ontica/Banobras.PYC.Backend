@@ -84,6 +84,7 @@
     <PackageReference Include="Empiria.Cashflow.WebApi" Version="1.0.0" />
     <PackageReference Include="Empiria.Contracts.WebApi" Version="1.0.0" />
     <PackageReference Include="Empiria.Payments.WebApi" Version="1.0.0" />
+    <PackageReference Include="Empiria.Inventory.WebApi" Version="8.0.0" />
     <PackageReference Include="Banobras.PYC.Core" Version="1.0.0" />
     <PackageReference Include="Banobras.PYC.ExternalInterfaces" Version="1.0.0" />
   </ItemGroup>
@@ -94,12 +95,12 @@
     <ProjectReference Include="..\..\workflow\Workflow.WebApi\Empiria.Workflow.WebApi.csproj" />
     <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
     <ProjectReference Include="..\..\central\Central.WebApi\Empiria.Central.WebApi.csproj" />
-    <ProjectReference Include="..\..\financial.management\Assets\WebApi\Empiria.Assets.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Billing\WebApi\Empiria.Billing.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Cashflow\WebApi\Empiria.Cashflow.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Contracts\WebApi\Empiria.Contracts.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Payments\WebApi\Empiria.Payments.WebApi.csproj" />
+    <ProjectReference Include="..\..\operations.management\Inventory\WebApi\Empiria.Inventory.WebApi.csproj" />
     <ProjectReference Include="..\Core\Banobras.PYC.Core.csproj" />
     <ProjectReference Include="..\ExternalInterfaces\Banobras.PYC.ExternalInterfaces.csproj" />
   </ItemGroup>
