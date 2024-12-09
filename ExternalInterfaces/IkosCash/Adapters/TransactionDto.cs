@@ -13,7 +13,7 @@ using System;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
-  public class TransaccionDto {
+  public class ResultadoTransaccionDto {
 
     public string IdSistemaExterno {
       get; set;

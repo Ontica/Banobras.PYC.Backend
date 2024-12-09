@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using Banobras.PYC.ExternalInterfaces.IkosCash;
+using Empiria.Payments.Processor.Adapters;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
   public class Mapper {
@@ -62,39 +63,14 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
 
-    static internal List<PaymentDto> MapIcosCashTransactionToPaymentDTO(List<TransaccionDto> pagos) {
-      List<PaymentDto> payments = new List<PaymentDto>();
-
-      foreach (var pago in pagos) {
-        payments.Add(MapIcosCashTransactionToPaymentDTO(pago));
-      }
-
-      return payments;
-    }
-
-
-    static internal PaymentDto MapIcosCashTransactionToPaymentDTO(TransaccionDto pago) {
-      return new PaymentDto {
-        SystemCode = pago.IdSistemaExterno,
-        PaymentUID = pago.IdSolicitud,
-        ErrorMesage = pago.ErrorMesage,
-        ErrorCode = pago.Code
+    static internal PaymentResultDto MapIcosCashTransactionToPaymentResulDTO(List<ResultadoTransaccionDto> resultados) {
+      return new PaymentResultDto { 
+          Failed = true 
       };
 
     }
 
-
-    static internal List<TransaccionFields> MapPaymentRequestToIcosCashTransactions(List<PaymentRequestDto> paymentRequests) {
-      List<TransaccionFields> transacciones = new List<TransaccionFields>();
-
-      foreach (var paymentRequest in paymentRequests) {
-        transacciones.Add(MapPaymentRequestToIcosCashTransaction(paymentRequest));
-      }
-
-      return transacciones;
-    }
-
-    static internal TransaccionFields MapPaymentRequestToIcosCashTransaction(PaymentRequestDto paymentRequest) {
+    static internal TransaccionFields MapPaymentInstructionToIcosCashTransaction(IPaymentInstruction paymentRequest) {
       TransaccionFields transaccion = new TransaccionFields();
       transaccion.Header.IdSistemaExterno = "";
       transaccion.Header.IdUsuario = 0;
@@ -117,7 +93,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       transaccion.Payload.Iva = 0;
 
       transaccion.Header.Firma = GetFirma(transaccion);
-      transaccion.Header.SerieFirma = Signer.GetSerialNumber();
+      transaccion.Header.SerieFirma = Signer.GetSerialNumberBase64();
 
       return transaccion;
     }
@@ -128,7 +104,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
       Byte[] signedData = Signer.Sign(dataToSign);
 
-      return System.Text.Encoding.UTF8.GetString(signedData);
+      return Convert.ToBase64String(signedData);
     }
 
     static public string GetCadenaFirma(TransaccionFields transaccion) {
@@ -144,22 +120,11 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       return signatureString;
     }
 
-    static internal List<PaymentStatusDto> MapToPaymentStatusListDTO(List<IkosStatusDto> statusList) {
-      List<PaymentStatusDto> paymentStatusList = new List<PaymentStatusDto>();
-
-      foreach (var status in statusList) {
-        paymentStatusList.Add(MapToPaymentStatusDTO(status));
-      }
-
-      return paymentStatusList;
-    }
-
-
-    static internal PaymentStatusDto MapToPaymentStatusDTO(IkosStatusDto status) {
+    static internal PaymentStatusDto MapToPaymentStatusDTO(List<IkosStatusDto> statusList) {
 
       return new PaymentStatusDto {
-        PaymentUID = status.IdSolicitud,
-        Status = GetStatusName(status)
+        PaymentUID = statusList[0].IdSolicitud,
+        Status = GetStatusName(statusList[0])
       };
 
     }

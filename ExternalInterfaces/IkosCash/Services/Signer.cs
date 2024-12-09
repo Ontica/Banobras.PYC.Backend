@@ -33,6 +33,15 @@ namespace Banobras.PYC.ExternalInterfaces.IkosCash {
       return x509.SerialNumber;
     }
 
+     static public string GetSerialNumberBase64() {
+      X509Certificate2 x509 = LoadCertificate();
+      var serial = x509.SerialNumber;
+      
+      byte[] dataBytes = Encoding.UTF8.GetBytes(serial);
+
+     return Convert.ToBase64String(dataBytes);
+    }
+
 
     static internal byte[] Sign(string data) {
 

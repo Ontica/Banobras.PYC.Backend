@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
+using Empiria.Payments.Processor.Adapters;
 
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash {
@@ -27,21 +28,21 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    public async Task<List<PaymentDto>> AddTransactions(List<PaymentRequestDto> paymentRequests) {
-      List<TransaccionFields> transacciones = Mapper.MapPaymentRequestToIcosCashTransactions(paymentRequests);
+    public async Task<IPaymentResult> AddPaymentTransaction(IPaymentInstruction paymentInstruction) {
+      TransaccionFields transaccion = Mapper.MapPaymentInstructionToIcosCashTransaction(paymentInstruction);
 
-      List<TransaccionDto> pagos = await _apiClient.CratePaymentTransactions(transacciones);
+      List<ResultadoTransaccionDto> pagos = await _apiClient.CratePaymentTransactions(transaccion);
 
-      var payments = Mapper.MapIcosCashTransactionToPaymentDTO(pagos);
+      var paymentResult = Mapper.MapIcosCashTransactionToPaymentResulDTO(pagos);
 
-      return payments;
+      return paymentResult;
     }
 
 
-    public async Task<List<PaymentStatusDto>> GetPaymentsStatus(List<MinimalPaymentDto> payments) {
-      var ikosStatus = await _apiClient.GetIkosCashTransactionStatus(payments);
+    public async Task<PaymentStatusDto> GetPaymentsStatus(MinimalPaymentDto paymentTransaction) {
+      var ikosStatus = await _apiClient.GetIkosCashTransactionStatus(paymentTransaction);
 
-      return Mapper.MapToPaymentStatusListDTO(ikosStatus);
+      return Mapper.MapToPaymentStatusDTO(ikosStatus);
     }
 
 

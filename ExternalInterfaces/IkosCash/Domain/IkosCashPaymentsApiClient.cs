@@ -33,12 +33,14 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     #region Internal Methods
 
-    internal async Task<List<TransaccionDto>> CratePaymentTransactions(List<TransaccionFields> transactions) {
-      HttpResponseMessage response = await client.PostAsJsonAsync("recepción/message", transactions);
+    internal async Task<List<ResultadoTransaccionDto>> CratePaymentTransactions(TransaccionFields transaction) {
+      List<TransaccionFields> transaccionFields = new List<TransaccionFields>();
+
+      HttpResponseMessage response = await client.PostAsJsonAsync("recepción/message", transaccionFields);
 
       response.EnsureSuccessStatusCode();
 
-      return await response.Content.ReadAsAsync<List<TransaccionDto>>();
+      return await response.Content.ReadAsAsync<List<ResultadoTransaccionDto>>();
     }
 
 
@@ -64,7 +66,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    internal async Task<List<IkosStatusDto>> GetIkosCashTransactionStatus(List<MinimalPaymentDto> payments) {
+    internal async Task<List<IkosStatusDto>> GetIkosCashTransactionStatus(MinimalPaymentDto payment) {
+      List<MinimalPaymentDto> payments = new List<MinimalPaymentDto>();
 
       HttpResponseMessage response = await client.PostAsJsonAsync("operacion/status", payments);
 
