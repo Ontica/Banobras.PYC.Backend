@@ -17,6 +17,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
+using Newtonsoft.Json;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash {
   /// <summary>Client to get token from Ikos cash web services.</summary>
@@ -38,8 +39,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     internal async Task<string> GetToken() {
 
       AuthenticateFields fields = new AuthenticateFields {
-        Clave = "",
-        Llave = "",
+        Clave = "BUSSIMEFIN(PYC)",
+        Llave = ConfigurationData.Get<string>("PYC.KEY")
       };
 
       fields.Llave = GetSha256Hash(fields.Llave);
@@ -48,8 +49,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       response.EnsureSuccessStatusCode();
 
-      var authenticate = await response.Content.ReadAsAsync<AuthenticateDto>();
-
+      var jsonString = await response.Content.ReadAsStringAsync();
+      var authenticate = JsonConvert.DeserializeObject<AuthenticateDto>(jsonString);
+      
       return authenticate.Token;
     }
 
@@ -61,10 +63,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     private string GetSha256Hash(string rawData) {
       using (SHA256 sha256Hash = SHA256.Create()) {
         byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-        string s = Convert.ToBase64String(bytes);
-
-        return s;
+        return  Convert.ToBase64String(bytes);
       }
+
     }
 
 

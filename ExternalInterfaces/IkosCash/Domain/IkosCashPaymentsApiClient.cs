@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 
 using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
+using Newtonsoft.Json;
 
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash {
@@ -40,7 +41,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       response.EnsureSuccessStatusCode();
 
-      return await response.Content.ReadAsAsync<List<ResultadoTransaccionDto>>();
+      var jsonString = await response.Content.ReadAsStringAsync();
+
+      return JsonConvert.DeserializeObject<List<ResultadoTransaccionDto>>(jsonString);
     }
 
 
@@ -66,14 +69,16 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    internal async Task<List<IkosStatusDto>> GetIkosCashTransactionStatus(MinimalPaymentDto payment) {
-      List<MinimalPaymentDto> payments = new List<MinimalPaymentDto>();
+    internal async Task<List<IkosStatusDto>> GetIkosCashTransactionStatus(MinimalPaymentRequestDto payment) {
+      List<MinimalPaymentRequestDto> payments = new List<MinimalPaymentRequestDto>();
 
       HttpResponseMessage response = await client.PostAsJsonAsync("operacion/status", payments);
 
-      response.EnsureSuccessStatusCode();
+      response.EnsureSuccessStatusCode();     
 
-      return await response.Content.ReadAsAsync<List<IkosStatusDto>>();
+      var jsonString = await response.Content.ReadAsStringAsync();
+
+      return JsonConvert.DeserializeObject<List<IkosStatusDto>>(jsonString);
     }
 
 

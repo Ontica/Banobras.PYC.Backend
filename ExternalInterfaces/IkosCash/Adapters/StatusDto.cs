@@ -17,7 +17,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       get; set;
     }
 
-    public string Status {
+    public char Status {
       get; set;
     }
 

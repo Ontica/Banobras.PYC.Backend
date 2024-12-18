@@ -64,11 +64,19 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
 
     static internal PaymentResultDto MapIcosCashTransactionToPaymentResulDTO(List<ResultadoTransaccionDto> resultados) {
-      return new PaymentResultDto { 
-          Failed = true 
+      return new PaymentResultDto {
+        Failed = true
       };
 
     }
+
+    static internal MinimalPaymentRequestDto MapToIkosMinimalDto(string paymentTransactionCode) {
+      return new MinimalPaymentRequestDto {
+        IdSolicitud = paymentTransactionCode
+      };
+
+    }
+
 
     static internal TransaccionFields MapPaymentInstructionToIcosCashTransaction(IPaymentInstruction paymentRequest) {
       TransaccionFields transaccion = new TransaccionFields();
@@ -102,9 +110,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     static public string GetFirma(TransaccionFields transaccion) {
       string dataToSign = GetCadenaFirma(transaccion);
 
-      Byte[] signedData = Signer.Sign(dataToSign);
-
-      return Convert.ToBase64String(signedData);
+      return Signer.Sign(dataToSign);
     }
 
     static public string GetCadenaFirma(TransaccionFields transaccion) {
@@ -120,11 +126,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       return signatureString;
     }
 
-    static internal PaymentStatusDto MapToPaymentStatusDTO(List<IkosStatusDto> statusList) {
+    static internal PaymentStatusResultDto MapToPaymentStatusDTO(List<IkosStatusDto> statusList) {
 
-      return new PaymentStatusDto {
-        PaymentUID = statusList[0].IdSolicitud,
-        Status = GetStatusName(statusList[0])
+      return new PaymentStatusResultDto {
+        PaymentInstructionCode = statusList[0].IdSolicitud,
+        Status = statusList[0].Status,
+        StatusName = GetStatusName(statusList[0].Status)
       };
 
     }
@@ -133,22 +140,22 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
     #region Helpers
 
-    static private string GetStatusName(IkosStatusDto status) {
-      switch (status.Status) {
-        case "O":
-          return "Autorizada";
-        case "P":
+    static private string GetStatusName(char status) {
+      switch (status) {
+        case 'O':
+          return "Authorized";
+        case 'P':
           return "Requiere autorización por rompimiento de límites";
-        case "K":
-          return "Cancelada";
-        case "L":
-          return "Liquidada";
-        case "C":
-          return "Captura Manual";
-        case "V":
-          return "Validada";
+        case 'K':
+          return "Canceled";
+        case 'L':
+          return "Liquidated";
+        case 'C':
+          return "Manual Capture";
+        case 'V':
+          return "Validated";
         default:
-          return "No definada";
+          return "Undefined";
       }
 
     }

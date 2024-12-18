@@ -14,6 +14,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Empiria;
 
 namespace Banobras.PYC.ExternalInterfaces.IkosCash {
 
@@ -21,7 +22,7 @@ namespace Banobras.PYC.ExternalInterfaces.IkosCash {
 
     #region Properties
 
-    static private readonly string certPath = "d:\\mi_certificado.pfx";
+    static private readonly string certPath = "d:\\1729198545.p12";
 
     #endregion Properties
 
@@ -33,7 +34,8 @@ namespace Banobras.PYC.ExternalInterfaces.IkosCash {
       return x509.SerialNumber;
     }
 
-     static public string GetSerialNumberBase64() {
+
+    static public string GetSerialNumberBase64() {
       X509Certificate2 x509 = LoadCertificate();
       var serial = x509.SerialNumber;
       
@@ -43,15 +45,22 @@ namespace Banobras.PYC.ExternalInterfaces.IkosCash {
     }
 
 
-    static internal byte[] Sign(string data) {
-
+    static internal string Sign(string data) {
       X509Certificate2 cert = LoadCertificate();
 
-      byte[] dataToSign = Encoding.UTF8.GetBytes(data);
+      byte[] dataBytes = Encoding.UTF8.GetBytes(data);
 
-      byte[] signedData = SignData(dataToSign, cert);
+      using (SHA256 sha256 = SHA256.Create()) {
+        byte[] hash = sha256.ComputeHash(dataBytes);
 
-      return signedData;
+
+        using (RSA rsa = cert.GetRSAPrivateKey()) {
+          var hashSigned = rsa.SignHash(hash, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+          return Convert.ToBase64String(hashSigned);
+        }
+      }
+
     }
 
     #endregion Public methods
@@ -59,19 +68,10 @@ namespace Banobras.PYC.ExternalInterfaces.IkosCash {
     #region Helpers
 
     static private X509Certificate2 LoadCertificate() {
-      return new X509Certificate2(certPath, "Abcd234");
+      string pwd = ConfigurationData.Get<string>("PYC.CertificatePwd");
+      return new X509Certificate2(certPath, pwd);
     }
-
-
-    static private byte[] SignData(byte[] data, X509Certificate2 cert) {
-      using (RSA rsa = cert.GetRSAPrivateKey()) {
-        if (rsa == null) {
-          throw new InvalidOperationException("El certificado no contiene una clave privada RSA.");
-        }
-        return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-      }
-
-    }
+        
 
     #endregion Helpers
 

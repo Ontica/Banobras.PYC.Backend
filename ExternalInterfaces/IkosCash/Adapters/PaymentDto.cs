@@ -33,9 +33,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
   }  // class PaymentDto
 
   /// <summary>DTO used to get payment status.</summary>
-  public class MinimalPaymentDto {
+  public class MinimalPaymentRequestDto {
 
-    public string paymentUID {
+    public string IdSolicitud {
       get; set;
     }
 

@@ -39,8 +39,10 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    public async Task<PaymentStatusDto> GetPaymentsStatus(MinimalPaymentDto paymentTransaction) {
-      var ikosStatus = await _apiClient.GetIkosCashTransactionStatus(paymentTransaction);
+    public async Task<PaymentStatusResultDto> GetPaymentsStatus(string paymentTransactionCode) {
+      var paymentRequest = Mapper.MapToIkosMinimalDto(paymentTransactionCode);
+
+      var ikosStatus = await _apiClient.GetIkosCashTransactionStatus(paymentRequest);
 
       return Mapper.MapToPaymentStatusDTO(ikosStatus);
     }
