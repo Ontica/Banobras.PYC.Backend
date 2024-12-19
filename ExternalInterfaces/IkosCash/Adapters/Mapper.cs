@@ -9,8 +9,7 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 using System;
 using System.Collections.Generic;
-using Banobras.PYC.ExternalInterfaces.IkosCash;
-using Empiria.Payments.Processor.Adapters;
+//using Empiria.Payments.Processor.Adapters;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
   public class Mapper {
@@ -63,12 +62,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
 
-    static internal PaymentResultDto MapIcosCashTransactionToPaymentResulDTO(List<ResultadoTransaccionDto> resultados) {
-      return new PaymentResultDto {
-        Failed = true
-      };
+    //static internal PaymentResultDto MapIcosCashTransactionToPaymentResulDTO(List<ResultadoTransaccionDto> resultados) {
+    //  return new PaymentResultDto {
+    //    Failed = true
+    //  };
 
-    }
+    //}
 
     static internal MinimalPaymentRequestDto MapToIkosMinimalDto(string paymentTransactionCode) {
       return new MinimalPaymentRequestDto {
@@ -78,33 +77,33 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
 
-    static internal TransaccionFields MapPaymentInstructionToIcosCashTransaction(IPaymentInstruction paymentRequest) {
-      TransaccionFields transaccion = new TransaccionFields();
-      transaccion.Header.IdSistemaExterno = "";
-      transaccion.Header.IdUsuario = 0;
-      transaccion.Header.IdDepartamento = 0;
-      transaccion.Header.IdConcepto = 0;
-      transaccion.Header.ClaveCliente = "";
-      transaccion.Header.Cuenta = paymentRequest.Account;
-      transaccion.Header.FechaOperacion = paymentRequest.RequestedDate;
-      transaccion.Header.FechaValor = paymentRequest.DueDate;
-      transaccion.Header.Monto = paymentRequest.Total;
-      transaccion.Header.Referencia = paymentRequest.Reference;
-      transaccion.Header.ConceptoPago = paymentRequest.Description;
-      transaccion.Header.Origen = "O";
-      transaccion.Payload.InstitucionBen = "";
-      transaccion.Payload.ClaveRastreo = "";
-      transaccion.Payload.NomBen = "";
-      transaccion.Payload.RfcBen = "";
-      transaccion.Payload.TipoCtaBen = 0;
-      transaccion.Payload.CtaBen = "";
-      transaccion.Payload.Iva = 0;
+    //static internal TransaccionFields MapPaymentInstructionToIcosCashTransaction(IPaymentInstruction paymentRequest) {
+    //  TransaccionFields transaccion = new TransaccionFields();
+    //  transaccion.Header.IdSistemaExterno = "";
+    //  transaccion.Header.IdUsuario = 0;
+    //  transaccion.Header.IdDepartamento = 0;
+    //  transaccion.Header.IdConcepto = 0;
+    //  transaccion.Header.ClaveCliente = "";
+    //  transaccion.Header.Cuenta = paymentRequest.Account;
+    //  transaccion.Header.FechaOperacion = paymentRequest.RequestedDate;
+    //  transaccion.Header.FechaValor = paymentRequest.DueDate;
+    //  transaccion.Header.Monto = paymentRequest.Total;
+    //  transaccion.Header.Referencia = paymentRequest.Reference;
+    //  transaccion.Header.ConceptoPago = paymentRequest.Description;
+    //  transaccion.Header.Origen = "O";
+    //  transaccion.Payload.InstitucionBen = "";
+    //  transaccion.Payload.ClaveRastreo = "";
+    //  transaccion.Payload.NomBen = "";
+    //  transaccion.Payload.RfcBen = "";
+    //  transaccion.Payload.TipoCtaBen = 0;
+    //  transaccion.Payload.CtaBen = "";
+    //  transaccion.Payload.Iva = 0;
 
-      transaccion.Header.Firma = GetFirma(transaccion);
-      transaccion.Header.SerieFirma = Signer.GetSerialNumberBase64();
+    //  transaccion.Header.Firma = GetFirma(transaccion);
+    //  transaccion.Header.SerieFirma = Signer.GetSerialNumberBase64();
 
-      return transaccion;
-    }
+    //  return transaccion;
+    //}
 
 
     static public string GetFirma(TransaccionFields transaccion) {
@@ -114,14 +113,22 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
     static public string GetCadenaFirma(TransaccionFields transaccion) {
-      string signatureString = transaccion.Header.Referencia + ";" + transaccion.Header.IdUsuario.ToString() + ";" +
-                               transaccion.Header.Cuenta + ";" + transaccion.Header.FechaValor.ToString("yyyyMMdd") + ";" +
-                               transaccion.Header.Monto.ToString() + ";" + transaccion.Header.IdSistemaExterno + ";" +
-                               transaccion.Header.ClaveCliente + ";" + transaccion.Header.FechaOperacion.ToString("yyyyMMdd") +
-                               transaccion.Header.IdDepartamento + ";" + transaccion.Header.IdConcepto + ";" +
-                               transaccion.Payload.InstitucionBen + ";" + transaccion.Payload.NomBen + ";" +
-                               transaccion.Payload.RfcBen + ";" + transaccion.Payload.TipoCtaBen + ";" +
-                               transaccion.Payload.CtaBen + ";" + transaccion.Payload.Iva;
+      string signatureString = transaccion.Header.Referencia + ";" +
+                               transaccion.Header.IdUsuario.ToString() + ";" +
+                               transaccion.Header.Cuenta + ";" +
+                               transaccion.Header.FechaValor.ToString("yyyyMMdd") + ";" +
+                               transaccion.Header.Monto.ToString("0.00") + ";" +
+                               transaccion.Header.IdSistemaExterno + ";" +
+                               transaccion.Header.ClaveCliente + ";" +
+                               transaccion.Header.FechaOperacion.ToString("yyyyMMdd") + ";" +
+                               transaccion.Header.IdDepartamento + ";" +
+                               transaccion.Header.IdConcepto + ";";
+                              //transaccion.Payload.InstitucionBen + ";" +
+                              //transaccion.Payload.NomBen + ";" +
+                              //transaccion.Payload.RfcBen + ";" +
+                              //transaccion.Payload.TipoCtaBen + ";" +
+                              //transaccion.Payload.CtaBen + ";" +
+                              //transaccion.Payload.Iva.ToString("0.00");
 
       return signatureString;
     }

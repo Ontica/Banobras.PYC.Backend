@@ -10,7 +10,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using Empiria.Payments.Processor.Adapters;
+//using Empiria.Payments.Processor.Adapters;
 
 using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
 
@@ -19,7 +19,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     /// <summary>Defines the services that must be implemented by a payment service provider.</summary>
     public interface IPaymentService {
 
-    Task<IPaymentResult> AddPaymentTransaction(IPaymentInstruction paymentInstruction);
+    Task<ResultadoTransaccionDto> AddPaymentTransaction(TransaccionFields paymentTransaction);
 
     Task<PaymentStatusResultDto> GetPaymentsStatus(string paymentInstructionCode);
 

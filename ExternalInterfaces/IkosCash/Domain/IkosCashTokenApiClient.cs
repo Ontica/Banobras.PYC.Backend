@@ -26,7 +26,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     #region Global Variables
 
     private readonly HttpClient client = new HttpClient();
-    private readonly string baseAddress = "http://localhost:4111/api/";
+    private readonly string baseAddress = "https://BNOTCASHNET-B.banobras.gob.mx:7111/api/";
 
     #endregion Global Variables
 
@@ -40,7 +40,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       AuthenticateFields fields = new AuthenticateFields {
         Clave = "BUSSIMEFIN(PYC)",
-        Llave = ConfigurationData.Get<string>("PYC.KEY")
+        Llave = "bussimefin20230613#"//ConfigurationData.Get<string>("PYC.KEY")
       };
 
       fields.Llave = GetSha256Hash(fields.Llave);

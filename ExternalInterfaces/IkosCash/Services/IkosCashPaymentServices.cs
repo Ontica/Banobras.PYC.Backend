@@ -12,30 +12,36 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
-using Empiria.Payments.Processor.Adapters;
+
 
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     /// <summary>Implements IPaymentService interface using Ikos Cash messages services.</summary>
-    public class PaymentService : IPaymentService {
+    public class IkosCashPaymentService : IPaymentService {
 
     private readonly IkosCashPaymentsApiClient _apiClient;
 
     #region Public methods
 
-    public PaymentService() {
+    public IkosCashPaymentService() {
       _apiClient = new IkosCashPaymentsApiClient();
     }
 
+    public async Task<string> GetToken() {
+      return await _apiClient.GetClientToken();
+    }
 
-    public async Task<IPaymentResult> AddPaymentTransaction(IPaymentInstruction paymentInstruction) {
-      TransaccionFields transaccion = Mapper.MapPaymentInstructionToIcosCashTransaction(paymentInstruction);
 
-      List<ResultadoTransaccionDto> pagos = await _apiClient.CratePaymentTransactions(transaccion);
+    public async Task<ResultadoTransaccionDto> AddPaymentTransaction(TransaccionFields paymentTransaction) {
+      var firma = Mapper.GetFirma(paymentTransaction);
+      paymentTransaction.Header.Firma = firma;
 
-      var paymentResult = Mapper.MapIcosCashTransactionToPaymentResulDTO(pagos);
-
-      return paymentResult;
+      List<TransaccionFields> paymentTransactions = new List<TransaccionFields>();
+      paymentTransactions.Add(paymentTransaction);
+     
+      List<ResultadoTransaccionDto> pagos = await _apiClient.CratePaymentTransactions(paymentTransactions);
+           
+      return pagos[0];
     }
 
 

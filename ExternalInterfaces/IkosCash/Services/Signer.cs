@@ -9,20 +9,17 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using Empiria;
 
-namespace Banobras.PYC.ExternalInterfaces.IkosCash {
+namespace Empiria.Payments.BanobrasIntegration.IkosCash { 
 
   static public class Signer {
 
     #region Properties
-
-    static private readonly string certPath = "d:\\1729198545.p12";
+                                               
+    static private readonly string certPath = "e:\\empiria.files\\config.data\\1729198545.p12";
 
     #endregion Properties
 
@@ -68,7 +65,7 @@ namespace Banobras.PYC.ExternalInterfaces.IkosCash {
     #region Helpers
 
     static private X509Certificate2 LoadCertificate() {
-      string pwd = ConfigurationData.Get<string>("PYC.CertificatePwd");
+      string pwd = "B@n0bras2024";
       return new X509Certificate2(certPath, pwd);
     }
         
