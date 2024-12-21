@@ -93,7 +93,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
       client.DefaultRequestHeaders.Accept.Add(
         new MediaTypeWithQualityHeaderValue("application/json"));
 
-      client.DefaultRequestHeaders.Add("TOKEN", "nfBdotLXlojYaQ4Darfn03uRw1Wf6Lbk72MJBk8FVUwp/ASjtMuf14PlQwTISfisAIEgRUMIf1KsA1Sis19VAy7K0uAnCg9qZLktOQRnO7GVgwQJY/nZfGA2FQR0Hja4YaGvouV5p/G5fk/pk3f6kvaaQ6MJqZ8o+RpWwrqrSSojAnWLdf7jkD1qv1elwYjtCuOzjdXfuuFw+WQCDGMlwHXsgcaP0YEsrRcZD0bJcgXr/alp+pzZXfoAj+/jUMDJwBO2rc92RYE7Vo2clnC7fXiM46WWcYqdcnd+/LuVLR0="); 
+      client.DefaultRequestHeaders.Add("TOKEN", "nfBdotLXlojYaQ4Darfn03uRw1Wf6Lbk72MJBk8FVUwp/ASjtMuf14PlQwTISfisAIEgRUMIf1KsA1Sis19VAy7K0uAnCg9qZLktOQRnO7GVgwQJY/nZfGA2FQR0Hja4iMaYGETAFWmj5X6uwBBzz1AofBB4Awk7Pny/vNYO9h/T9MO10PEjt15OH/WXUncAB64f2v/Mfz3mt/Q/gelKctNW34hkoqAUAsUmFGro9LHg0xvjMy2zzddjf9NlCskFcYdN1zQdTjIzmHyWMp6+Wy05JJd7K8g4W90cm7ujJcQ="); 
 
     }
 

@@ -66,8 +66,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     static private X509Certificate2 LoadCertificate() {
       string pwd = "B@n0bras2024";
-      return new X509Certificate2(certPath, pwd);
-    }
+      return new X509Certificate2(certPath, pwd, X509KeyStorageFlags.MachineKeySet | 
+                                  X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+   }
         
 
     #endregion Helpers
