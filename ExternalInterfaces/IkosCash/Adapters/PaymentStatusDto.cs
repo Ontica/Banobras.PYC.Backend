@@ -13,7 +13,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
   /// <summary>Dto to read payment status.</summary>
   public class PaymentStatusResultDto {
 
-    public string PaymentInstructionCode {
+    public string IdSolicitud {
       get; set;
     } = string.Empty;
 

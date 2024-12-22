@@ -7,14 +7,10 @@
 *  Summary  : Implements IPaymentService interface using Ikos Cash messages services.                        *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
-using Microsoft.SqlServer.Server;
-
-
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     /// <summary>Implements IPaymentService interface using Ikos Cash messages services.</summary>
@@ -43,16 +39,28 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
       List<TransaccionFields> paymentTransactions = new List<TransaccionFields>();
       paymentTransactions.Add(paymentTransaction);
      
-      List<ResultadoTransaccionDto> pagos = await _apiClient.CratePaymentTransactions(paymentTransactions);
+      List<ResultadoTransaccionDto> pagos = await _apiClient.CreateTransactions(paymentTransactions);
            
       return pagos[0];
     }
 
 
-    public async Task<PaymentStatusResultDto> GetPaymentsStatus(string paymentTransactionCode) {
-      var paymentRequest = Mapper.MapToIkosMinimalDto(paymentTransactionCode);
+    public async Task<EliminarTransaccionDto> DeletePaymentTransaction(EliminarTransaccionFields paymentTransaction) {
+      List<EliminarTransaccionFields> paymentTransactions = new List<EliminarTransaccionFields>();
+      paymentTransactions.Add(paymentTransaction);
 
-      var ikosStatus = await _apiClient.GetIkosCashTransactionStatus(paymentRequest);
+      List<EliminarTransaccionDto> pagos = await _apiClient.DeleteTransaction(paymentTransactions);
+
+      return pagos[0];
+    }
+
+
+    public async Task<PaymentStatusResultDto> GetPaymentsStatus(string Idsolicitud) {
+      var paymentRequest = Mapper.MapToIkosMinimalDto(Idsolicitud);
+      List<SolicitudField> solicitudes = new List<SolicitudField>();
+      solicitudes.Add(paymentRequest);
+ 
+      var ikosStatus = await _apiClient.GetTransactionStatus(solicitudes);
 
       return Mapper.MapToPaymentStatusDTO(ikosStatus);
     }

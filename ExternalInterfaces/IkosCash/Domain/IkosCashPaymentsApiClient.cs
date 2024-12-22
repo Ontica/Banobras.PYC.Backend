@@ -24,7 +24,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     #region Global Variables
 
     private readonly HttpClient client = new HttpClient();
-    private readonly string baseAddress = "https://bnotcashnet-b.banobras.gob.mx:7110/api/";
+    private readonly string baseAddress = ConstantValues.API_BASE_ADDRESS;
 
     #endregion Global Variables
 
@@ -33,10 +33,10 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
     #region Internal Methods
-        
 
-    internal async Task<List<ResultadoTransaccionDto>> CratePaymentTransactions(List<TransaccionFields> paymentTransactions) {
-     
+
+    internal async Task<List<ResultadoTransaccionDto>> CreateTransactions(List<TransaccionFields> paymentTransactions) {
+
       HttpResponseMessage response = await client.PostAsJsonAsync("recepcion/message", paymentTransactions);
 
       response.EnsureSuccessStatusCode();
@@ -46,16 +46,14 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    internal async Task<EliminarTransaccionDto> DeleteTransaction(EliminarTransaccionFields fields) {
+    internal async Task<List<EliminarTransaccionDto>> DeleteTransaction(List<EliminarTransaccionFields> fields) {
 
       HttpResponseMessage response = await client.PostAsJsonAsync("delete/message", fields);
 
-      if (response.IsSuccessStatusCode) {
-        return await response.Content.ReadAsAsync<EliminarTransaccionDto>();
-      } else {
-        throw new Exception($"Can not find transaction with id={fields.IdSolicitud}");
-      }
+      response.EnsureSuccessStatusCode();
 
+      var jsonString = await response.Content.ReadAsStringAsync();
+      return JsonConvert.DeserializeObject<List<EliminarTransaccionDto>>(jsonString);
     }
 
 
@@ -64,16 +62,15 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       response.EnsureSuccessStatusCode();
 
-      return await response.Content.ReadAsAsync<List<DepartamentoDto>>();
+      var jsonString = await response.Content.ReadAsStringAsync();
+      return JsonConvert.DeserializeObject<List<DepartamentoDto>>(jsonString);
     }
 
 
-    internal async Task<List<IkosStatusDto>> GetIkosCashTransactionStatus(MinimalPaymentRequestDto payment) {
-      List<MinimalPaymentRequestDto> payments = new List<MinimalPaymentRequestDto>();
+    internal async Task<List<IkosStatusDto>> GetTransactionStatus(List<SolicitudField> solicitudes) {
+      HttpResponseMessage response = await client.PostAsJsonAsync("operacion/status", solicitudes);
 
-      HttpResponseMessage response = await client.PostAsJsonAsync("operacion/status", payments);
-
-      response.EnsureSuccessStatusCode();     
+      response.EnsureSuccessStatusCode();
 
       var jsonString = await response.Content.ReadAsStringAsync();
 
@@ -85,7 +82,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     #region Private Methods
 
-    private  void SetHttpClientProperties() {
+    private void SetHttpClientProperties() {
       //string token = await GetClientToken();
       client.BaseAddress = new Uri(baseAddress);
       client.DefaultRequestHeaders.Accept.Clear();
@@ -93,8 +90,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
       client.DefaultRequestHeaders.Accept.Add(
         new MediaTypeWithQualityHeaderValue("application/json"));
 
-      client.DefaultRequestHeaders.Add("TOKEN", "nfBdotLXlojYaQ4Darfn03uRw1Wf6Lbk72MJBk8FVUwp/ASjtMuf14PlQwTISfisAIEgRUMIf1KsA1Sis19VAy7K0uAnCg9qZLktOQRnO7GVgwQJY/nZfGA2FQR0Hja4iMaYGETAFWmj5X6uwBBzz1AofBB4Awk7Pny/vNYO9h/T9MO10PEjt15OH/WXUncAB64f2v/Mfz3mt/Q/gelKctNW34hkoqAUAsUmFGro9LHg0xvjMy2zzddjf9NlCskFcYdN1zQdTjIzmHyWMp6+Wy05JJd7K8g4W90cm7ujJcQ="); 
-
+      client.DefaultRequestHeaders.Add("TOKEN", ConstantValues.TOKEN);
+     
     }
 
     internal async Task<string> GetClientToken() {

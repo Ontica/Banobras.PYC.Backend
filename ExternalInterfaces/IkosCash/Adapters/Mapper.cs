@@ -7,9 +7,8 @@
 *  Summary  : Data Transfer Objects mapper.                                                                  *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
-using System;
 using System.Collections.Generic;
-//using Empiria.Payments.Processor.Adapters;
+
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
   public class Mapper {
@@ -61,49 +60,13 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       };
     }
 
-
-    //static internal PaymentResultDto MapIcosCashTransactionToPaymentResulDTO(List<ResultadoTransaccionDto> resultados) {
-    //  return new PaymentResultDto {
-    //    Failed = true
-    //  };
-
-    //}
-
-    static internal MinimalPaymentRequestDto MapToIkosMinimalDto(string paymentTransactionCode) {
-      return new MinimalPaymentRequestDto {
-        IdSolicitud = paymentTransactionCode
+    
+    static internal SolicitudField MapToIkosMinimalDto(string Idsolicitud) {
+      return new SolicitudField {
+        IdSolicitud = Idsolicitud
       };
 
     }
-
-
-    //static internal TransaccionFields MapPaymentInstructionToIcosCashTransaction(IPaymentInstruction paymentRequest) {
-    //  TransaccionFields transaccion = new TransaccionFields();
-    //  transaccion.Header.IdSistemaExterno = "";
-    //  transaccion.Header.IdUsuario = 0;
-    //  transaccion.Header.IdDepartamento = 0;
-    //  transaccion.Header.IdConcepto = 0;
-    //  transaccion.Header.ClaveCliente = "";
-    //  transaccion.Header.Cuenta = paymentRequest.Account;
-    //  transaccion.Header.FechaOperacion = paymentRequest.RequestedDate;
-    //  transaccion.Header.FechaValor = paymentRequest.DueDate;
-    //  transaccion.Header.Monto = paymentRequest.Total;
-    //  transaccion.Header.Referencia = paymentRequest.Reference;
-    //  transaccion.Header.ConceptoPago = paymentRequest.Description;
-    //  transaccion.Header.Origen = "O";
-    //  transaccion.Payload.InstitucionBen = "";
-    //  transaccion.Payload.ClaveRastreo = "";
-    //  transaccion.Payload.NomBen = "";
-    //  transaccion.Payload.RfcBen = "";
-    //  transaccion.Payload.TipoCtaBen = 0;
-    //  transaccion.Payload.CtaBen = "";
-    //  transaccion.Payload.Iva = 0;
-
-    //  transaccion.Header.Firma = GetFirma(transaccion);
-    //  transaccion.Header.SerieFirma = Signer.GetSerialNumberBase64();
-
-    //  return transaccion;
-    //}
 
 
     static public string GetFirma(TransaccionFields transaccion) {
@@ -111,6 +74,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
       return Signer.Sign(dataToSign);
     }
+
 
     static public string GetCadenaFirma(TransaccionFields transaccion) {
       string signatureString = transaccion.Header.Referencia + ";" +
@@ -136,7 +100,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     static internal PaymentStatusResultDto MapToPaymentStatusDTO(List<IkosStatusDto> statusList) {
 
       return new PaymentStatusResultDto {
-        PaymentInstructionCode = statusList[0].IdSolicitud,
+        IdSolicitud = statusList[0].IdSolicitud,
         Status = statusList[0].Status,
         StatusName = GetStatusName(statusList[0].Status)
       };

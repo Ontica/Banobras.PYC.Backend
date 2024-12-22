@@ -21,8 +21,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       get; set;
     }
 
-   
-  } // class DepartamentoDto
+
+  } // class IkosStatusDto
 
 
 } // namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters

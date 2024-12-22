@@ -19,7 +19,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     #region Properties
                                                
-    static private readonly string certPath = "e:\\empiria.files\\config.data\\1729198545.p12";
+    //static private readonly string certPath = "e:\\empiria.files\\config.data\\1729198545.p12";
 
     #endregion Properties
 
@@ -64,9 +64,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     #region Helpers
 
-    static private X509Certificate2 LoadCertificate() {
-      string pwd = "B@n0bras2024";
-      return new X509Certificate2(certPath, pwd, X509KeyStorageFlags.MachineKeySet | 
+    static private X509Certificate2 LoadCertificate() {    
+      return new X509Certificate2(ConstantValues.CERT_PATH, ConstantValues.CERT_PWD, X509KeyStorageFlags.MachineKeySet | 
                                   X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
    }
         
