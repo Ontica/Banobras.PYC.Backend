@@ -7,73 +7,76 @@
 *  Summary  : Client to get token from Ikos cash web services.                                               *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
+
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using System.Net.Http;
 using System.Net.Http.Headers;
 
 using System.Security.Cryptography;
 using System.Text;
 
-using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
 using Newtonsoft.Json;
 
+using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
+
 namespace Empiria.Payments.BanobrasIntegration.IkosCash {
+
   /// <summary>Client to get token from Ikos cash web services.</summary>
   internal class IkosCashTokenApiClient {
 
-    #region Global Variables
+    #region Fields
 
-    private readonly HttpClient client = new HttpClient();
-    private readonly string baseAddress = ConstantValues.TOKEN_BASE_ADDRESS;
+    private readonly HttpClient _httpClient = new HttpClient();
 
-    #endregion Global Variables
+    #endregion Fields
 
     internal IkosCashTokenApiClient() {
       SetHttpClientProperties();
     }
 
-    #region Internal Methods
+    #region Methods
 
     internal async Task<string> GetToken() {
 
-      AuthenticateFields fields = new AuthenticateFields {
-        Clave = ConstantValues.SIMEFIN_USER, 
-        Llave = ConstantValues.SIMEFIN_PWD
+      var fields = new AuthenticateFields {
+        Clave = IkosCashConstantValues.PYC_ASSIGNED_USER,
+        Llave = GetSha256Hash(IkosCashConstantValues.PYC_ASSIGNED_PASSWORD)
       };
 
-      fields.Llave = GetSha256Hash(fields.Llave);
-
-      HttpResponseMessage response = await client.PostAsJsonAsync("autenticar", fields);
+      HttpResponseMessage response = await _httpClient.PostAsJsonAsync("autenticar", fields);
 
       response.EnsureSuccessStatusCode();
 
       var jsonString = await response.Content.ReadAsStringAsync();
       var authenticate = JsonConvert.DeserializeObject<AuthenticateDto>(jsonString);
-      
+
       return authenticate.Token;
     }
 
 
-    #endregion Internal Methods
+    #endregion Methods
 
     #region Helpers
 
     private string GetSha256Hash(string rawData) {
+
       using (SHA256 sha256Hash = SHA256.Create()) {
         byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-        return  Convert.ToBase64String(bytes);
-      }
 
+        return Convert.ToBase64String(bytes);
+      }
     }
 
 
     private void SetHttpClientProperties() {
-      client.BaseAddress = new Uri(baseAddress);
-      client.DefaultRequestHeaders.Accept.Clear();
-      client.DefaultRequestHeaders.Accept.Add(
-        new MediaTypeWithQualityHeaderValue("application/json"));
+      _httpClient.BaseAddress = new Uri(IkosCashConstantValues.TOKEN_API_BASE_ADDRESS);
+
+      var headers = _httpClient.DefaultRequestHeaders;
+
+      headers.Accept.Clear();
+      headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
     #endregion Helpers

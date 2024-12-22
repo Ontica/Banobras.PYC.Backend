@@ -10,27 +10,28 @@
 
 using System;
 
-
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
-    
+
   public class ResultadoTransaccionDto {
 
     public string IdSistemaExterno {
       get; set;
-    }
+    } = string.Empty;
+
 
     public string IdSolicitud {
       get; set;
-    }
+    } = string.Empty;
+
 
     public string ErrorMesage {
       get; set;
-    }
+    } = string.Empty;
+
 
     public int Code {
       get; set;
-    }
-
+    } = -1;
 
   } // class TransaccionDto
 
@@ -39,13 +40,19 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
     public Header Header {
       get; set;
-    }
+    } = new Header();
+
 
     public Payload Payload {
       get; set;
-    }
+    } = new Payload();
 
-   
+
+    internal void SetFirma(string firma) {
+      Assertion.Require(firma, nameof(firma));
+
+      Header.Firma = firma;
+    }
 
   } // class TransaccionFields
 
@@ -53,59 +60,60 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
   public class Header {
 
     public string IdSistemaExterno {
-      get; set;
-    }
+      get; internal set;
+    } = string.Empty;
+
 
     public int IdUsuario {
-      get; set;
+      get; internal set;
     }
 
     public int IdDepartamento {
-      get; set;
+      get; internal set;
     }
 
     public int IdConcepto {
-      get; set;
+      get; internal set;
     }
 
     public string ClaveCliente {
-      get; set;
+      get; internal set;
     }
 
     public string Cuenta {
-      get; set;
+      get; internal set;
     }
 
     public DateTime FechaOperacion {
-      get; set;
+      get; internal set;
     }
 
     public DateTime FechaValor {
-      get; set;
+      get; internal set;
     }
 
     public decimal Monto {
-      get; set;
+      get; internal set;
     }
 
     public string Referencia {
-      get; set;
+      get; internal set;
     }
 
     public string ConceptoPago {
-      get; set;
+      get; internal set;
     }
 
     public string Origen {
-      get; set;
+      get; internal set;
     } = "O";
 
     public string Firma {
-      get; set;
+      get; internal set;
     }
 
     public string SerieFirma {
-      get; set;
+      get; internal set;
     }
 
   } // class Header
@@ -114,33 +122,33 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
   public class Payload {
 
     public string InstitucionBen {
-      get; set;
+      get; internal set;
     }
 
     public string ClaveRastreo {
-      get; set;
+      get; internal set;
     }
 
     public string NomBen {
-      get; set;
+      get; internal set;
     }
 
     public string RfcBen {
-      get; set;
+      get; internal set;
     }
 
     public int TipoCtaBen {
-      get; set;
+      get; internal set;
     }
 
     public string CtaBen {
-      get; set;
+      get; internal set;
     }
 
     public decimal Iva {
-      get; set;
+      get; internal set;
     }
-      
+
   } // class Payload
 
 } // namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters

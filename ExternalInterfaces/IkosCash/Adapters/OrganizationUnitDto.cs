@@ -7,11 +7,11 @@
 *  Summary  : Data Transfer Objects mapper.                                                                  *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
-using System;
+
 using System.Collections.Generic;
 
-
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
+
   /// <summary>Data structure.</summary>
   public class OrganizationUnitDto {
 
@@ -33,11 +33,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       get; set;
     }
 
-
     public IEnumerable<OrganizationUnitConceptDto> Concepts {
       get; set;
     }
-
 
   }  // class PaymentSystemDto
 

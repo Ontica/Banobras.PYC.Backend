@@ -9,13 +9,9 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 using System.Collections.Generic;
 
-
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
+
   public class Mapper {
-
-    #region Global Variables
-
-    #endregion
 
     #region Internal Methods
 
@@ -60,7 +56,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       };
     }
 
-    
+
     static internal SolicitudField MapToIkosMinimalDto(string Idsolicitud) {
       return new SolicitudField {
         IdSolicitud = Idsolicitud
@@ -69,14 +65,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
 
-    static public string GetFirma(TransaccionFields transaccion) {
-      string dataToSign = GetCadenaFirma(transaccion);
+    static public string GetCadenaOriginalFirma(TransaccionFields transaccion) {
 
-      return Signer.Sign(dataToSign);
-    }
-
-
-    static public string GetCadenaFirma(TransaccionFields transaccion) {
       string signatureString = transaccion.Header.Referencia + ";" +
                                transaccion.Header.IdUsuario.ToString() + ";" +
                                transaccion.Header.Cuenta + ";" +
@@ -97,12 +87,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       return signatureString;
     }
 
-    static internal PaymentStatusResultDto MapToPaymentStatusDTO(List<IkosStatusDto> statusList) {
+    static internal PaymentStatusResultDto MapToPaymentStatusDTO(IkosStatusDto ikosStatus) {
 
       return new PaymentStatusResultDto {
-        IdSolicitud = statusList[0].IdSolicitud,
-        Status = statusList[0].Status,
-        StatusName = GetStatusName(statusList[0].Status)
+        IdSolicitud = ikosStatus.IdSolicitud,
+        Status = ikosStatus.Status,
+        StatusName = GetStatusName(ikosStatus.Status)
       };
 
     }
@@ -128,7 +118,6 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
         default:
           return "Undefined";
       }
-
     }
 
     #endregion Helpers
