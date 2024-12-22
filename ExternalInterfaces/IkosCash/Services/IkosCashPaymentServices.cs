@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
+using Microsoft.SqlServer.Server;
 
 
 
@@ -31,6 +32,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
       return await _apiClient.GetClientToken();
     }
 
+    public string GetFirma(TransaccionFields paymentTransaction) {
+      return  Mapper.GetFirma(paymentTransaction); 
+    }
 
     public async Task<ResultadoTransaccionDto> AddPaymentTransaction(TransaccionFields paymentTransaction) {
       var firma = Mapper.GetFirma(paymentTransaction);
