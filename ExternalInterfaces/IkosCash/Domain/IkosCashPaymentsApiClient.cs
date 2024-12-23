@@ -35,17 +35,17 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     #region Methods
 
-    internal async Task<EliminarTransaccionDto> CancelPaymentTransaction(EliminarTransaccionFields fields) {
+    internal async Task<IkosCashCancelTransactionResult> CancelPaymentTransaction(IkosCashCancelTransactionPayload fields) {
       Assertion.Require(fields, nameof(fields));
 
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("delete/message",
-                                                                       new EliminarTransaccionFields[1] { fields });
+                                                                       new IkosCashCancelTransactionPayload[1] { fields });
 
       response.EnsureSuccessStatusCode();
 
       var jsonString = await response.Content.ReadAsStringAsync();
 
-      EliminarTransaccionDto[] resultArray = JsonConvert.DeserializeObject<EliminarTransaccionDto[]>(jsonString);
+      IkosCashCancelTransactionResult[] resultArray = JsonConvert.DeserializeObject<IkosCashCancelTransactionResult[]>(jsonString);
 
       Assertion.Require(resultArray != null && resultArray.Length > 0,
                   "Ocurrió un problema al leer el regreso de la llamada a IKosCash. La respuesta regresó vacía.");
@@ -70,7 +70,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
       Assertion.Require(solicitud, nameof(solicitud));
 
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("operacion/status",
-                                                                  new SolicitudField[1] { solicitud });
+                                                                        new SolicitudField[1] { solicitud });
 
       response.EnsureSuccessStatusCode();
 
@@ -85,17 +85,17 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    internal async Task<ResultadoTransaccionDto> SendPaymentTransaction(TransaccionFields paymentTransaction) {
+    internal async Task<IkosCashTransactionResult> SendPaymentTransaction(IkosCashTransactionPayload paymentTransaction) {
       Assertion.Require(paymentTransaction, nameof(paymentTransaction));
 
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("recepcion/message",
-                                                                  new TransaccionFields[1] { paymentTransaction });
+                                                                  new IkosCashTransactionPayload[1] { paymentTransaction });
 
       response.EnsureSuccessStatusCode();
 
       var jsonString = await response.Content.ReadAsStringAsync();
 
-      ResultadoTransaccionDto[] resultArray = JsonConvert.DeserializeObject<ResultadoTransaccionDto[]>(jsonString);
+      IkosCashTransactionResult[] resultArray = JsonConvert.DeserializeObject<IkosCashTransactionResult[]>(jsonString);
 
       Assertion.Require(resultArray != null && resultArray.Length > 0,
                         "Ocurrió un problema al leer el regreso de la llamada a IKosCash. La respuesta regresó vacía.");
