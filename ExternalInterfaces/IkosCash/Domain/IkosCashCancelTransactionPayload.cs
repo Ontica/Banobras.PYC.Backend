@@ -2,37 +2,17 @@
 *                                                                                                            *
 *  Module   : Transaction Management                     Component : Interface adapters                      *
 *  Assembly : Ikos.Cash.Connector.dll                    Pattern   : Data Transfer Object                    *
-*  Type     : DeleteTransactionDto                       License   : Please read LICENSE.txt file            *
+*  Type     : IkosCashCancelTransactionPayload           License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : DTO used to delete ikos cash tranaction.                                                          *
+*  Summary  : DTO used to cancel IkosCash payment instructions.                                              *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 
-namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
+namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
-  public class EliminarTransaccionDto {
-
-    public string IdSistemaExterno {
-      get; set;
-    }
-
-    public string IdSolicitud {
-      get; set;
-    }
-
-    public string ErrorMesage {
-      get; set;
-    }
-        
-    public int Code {
-      get; set;
-    }
-
-  } // class EliminarTransaccionDto
-
-
-  public class EliminarTransaccionFields {
+  /// <summary>DTO used to cancel IkosCash payment instructions.</summary>
+  public class IkosCashCancelTransactionPayload {
 
     public string IdSolicitud {
       get; set;
@@ -58,6 +38,6 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       get; set;
     }
 
-  } // class EliminarTransaccionDto
+  } // class IkosCashCancelTransactionPayload
 
 } // namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters

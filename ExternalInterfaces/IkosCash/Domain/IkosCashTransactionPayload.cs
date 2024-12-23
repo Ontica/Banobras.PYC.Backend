@@ -1,63 +1,35 @@
 ﻿/* Empiria Connector *****************************************************************************************
 *                                                                                                            *
 *  Module   : Transaction Management                     Component : Interface adapters                      *
-*  Assembly : Ikos.Cash.Connector.dll                    Pattern   : Data Transfer Object                    *
-*  Type     : DepartamentoDto                            License   : Please read LICENSE.txt file            *
+*  Assembly : Ikos.Cash.Connector.dll                    Pattern   : Fields DTO                              *
+*  Type     : IkosCashTransactionPayload                 License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : DTO used to get concepts list from system Id                                                   *
+*  Summary  : Payload structure used to request IkosCash payments through web services.                      *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
+using System.Runtime.Remoting.Messaging;
 
-namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
+namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
-  public class ResultadoTransaccionDto {
+  /// <summary>Payload structure used to request IkosCash payments through web services.</summary>
+  internal class IkosCashTransactionPayload {
 
-    public string IdSistemaExterno {
-      get; set;
-    } = string.Empty;
-
-
-    public string IdSolicitud {
-      get; set;
-    } = string.Empty;
-
-
-    public string ErrorMesage {
-      get; set;
-    } = string.Empty;
-
-
-    public int Code {
-      get; set;
-    } = -1;
-
-  } // class TransaccionDto
-
-
-  public class TransaccionFields {
-
-    public Header Header {
-      get; set;
-    } = new Header();
-
-
-    public Payload Payload {
-      get; set;
-    } = new Payload();
-
-
-    internal void SetFirma(string firma) {
-      Assertion.Require(firma, nameof(firma));
-
-      Header.Firma = firma;
+    public IkosCashTransactionHeader Header {
+      get; internal set;
     }
 
-  } // class TransaccionFields
+
+    public IkosCashTransactionInnerPayload Payload {
+      get; internal set;
+    }
 
 
-  public class Header {
+  } // class IkosCashTransactionPayload
+
+
+  internal class IkosCashTransactionHeader {
 
     public string IdSistemaExterno {
       get; internal set;
@@ -109,17 +81,23 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     } = "O";
 
     public string Firma {
-      get; internal set;
+      get; private set;
     }
 
     public string SerieFirma {
       get; internal set;
     }
 
-  } // class Header
+    internal void SetFirma(string firma) {
+      Assertion.Require(firma, nameof(firma));
+
+      Firma = firma;
+    }
+
+  } // class IkosCashTransactionHeader
 
 
-  public class Payload {
+  internal class IkosCashTransactionInnerPayload {
 
     public string InstitucionBen {
       get; internal set;
@@ -149,6 +127,6 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       get; internal set;
     }
 
-  } // class Payload
+  } // class IkosCashTransactionInnerPayload
 
-} // namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters
+} // namespace Empiria.Payments.BanobrasIntegration.IkosCash

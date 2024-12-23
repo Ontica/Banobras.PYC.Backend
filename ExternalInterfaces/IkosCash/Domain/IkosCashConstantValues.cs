@@ -33,6 +33,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash  {
     static internal string PYC_ASSIGNED_USER =
                                   ConfigurationData.GetString("IkosCash.PYC_ASSIGNED_USER");
 
+    static internal int TRANSACTION_ID_USUARIO = 45;
+
+    public static string TRANSACTION_ORIGEN = "O";
+
+    public static string SERIE_FIRMA = "NjcxMTc5ZDE=";
+
     static internal X509Certificate2 GET_PYC_CERTIFICATE() {
       return new X509Certificate2(PYC_ASSIGNED_CERTIFICATE_PATH,
                                   PYC_ASSIGNED_CERTIFICATE_PASSWORD,
