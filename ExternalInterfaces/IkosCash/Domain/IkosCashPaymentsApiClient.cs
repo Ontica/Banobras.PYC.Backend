@@ -66,11 +66,11 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    internal async Task<IkosStatusDto> GetPaymentTransactionStatus(SolicitudField solicitud) {
+    internal async Task<IkosStatusDto> GetPaymentTransactionStatus(SolicitudStatus solicitud) {
       Assertion.Require(solicitud, nameof(solicitud));
 
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("operacion/status",
-                                                                        new SolicitudField[1] { solicitud });
+                                                                        new SolicitudStatus[1] { solicitud });
 
       response.EnsureSuccessStatusCode();
 

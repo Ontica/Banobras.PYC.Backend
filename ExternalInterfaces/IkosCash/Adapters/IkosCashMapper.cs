@@ -7,9 +7,12 @@
 *  Summary  : Mapper service for IkosCash payment services.                                                  *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
+
 using System;
 using System.Collections.Generic;
+
 using Empiria.Parties;
+using Empiria.Payments.Processor;
 using Empiria.Payments.Processor.Adapters;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
@@ -61,9 +64,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
 
-    static internal SolicitudField MapToIkosMinimalDto(string Idsolicitud) {
-      return new SolicitudField {
-        IdSolicitud = Idsolicitud
+    static internal SolicitudStatus MapToIkosSolicitudStatus(string idSolicitud) {
+      return new SolicitudStatus {
+        IdSolicitud = idSolicitud
       };
     }
 
@@ -93,31 +96,28 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
 
-    static internal PaymentResultDto MapToPaymentResultDto(IkosCashTransactionResult result) {
+    static internal PaymentInstructionResultDto MapToPaymentResultDto(IkosCashTransactionResult result) {
       if (result.Code == 0) {
-        return new PaymentResultDto {
+        return new PaymentInstructionResultDto {
           PaymentNo = result.IdSistemaExterno,
-          RequestID = result.IdSolicitud,
-          Status = 'O',
-          StatusName = GetStatusName('0'),
-          Text = result.ErrorMesage,
-          Failed = false,
+          ExternalRequestID = result.IdSolicitud,
+          Status = PaymentInstructionStatus.Pending,
+          ExternalStatusName = GetStatusName('O'),
+          ExternalResultText = result.ErrorMesage
         };
-        } else {
-          return new PaymentResultDto {
-            PaymentNo = result.IdSistemaExterno,
-            RequestID = result.IdSolicitud,
-            Status = 'K',
-            StatusName = GetStatusName('K'),
-            Text = result.ErrorMesage,
-            Failed = false,
-          };
       }
 
+      return new PaymentInstructionResultDto {
+        PaymentNo = result.IdSistemaExterno,
+        ExternalRequestID = "La solicitud a IkosCash falló",
+        Status = PaymentInstructionStatus.Failed,
+        ExternalStatusName = GetStatusName('K'),
+        ExternalResultText = result.ErrorMesage
+      };
     }
-    
 
-    static internal PaymentResultDto MapToPaymentResultDto(IkosCashCancelTransactionResult result) {
+
+    static internal PaymentInstructionResultDto MapToPaymentResultDto(IkosCashCancelTransactionResult result) {
       throw new NotImplementedException();
     }
 
@@ -129,11 +129,11 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       };
     }
 
-    static internal PaymentResultDto MapToPaymentResultDto(IkosStatusDto ikosStatus) {
-      return new PaymentResultDto {
-        RequestID = ikosStatus.IdSolicitud,
-        Status = ikosStatus.Status,
-        StatusName = GetStatusName(ikosStatus.Status)
+    static internal PaymentInstructionStatusDto MapToPaymentInstructionStatus(IkosStatusDto ikosStatus) {
+      return new PaymentInstructionStatusDto {
+        ExternalRequestID = ikosStatus.IdSolicitud,
+        ExternalStatusName = GetStatusName(ikosStatus.Status),
+        Status = MapStatus(ikosStatus.Status)
       };
     }
 
@@ -168,6 +168,25 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       }
     }
 
+
+    static private PaymentInstructionStatus MapStatus(char status) {
+      switch (status) {
+        case 'O':
+        case 'P':
+        case 'C':
+        case 'V':
+          return PaymentInstructionStatus.InProcess;
+
+        case 'K':
+          return PaymentInstructionStatus.Failed;
+
+        case 'L':
+          return PaymentInstructionStatus.Payed;
+
+        default:
+          throw Assertion.EnsureNoReachThisCode($"Status desconocido de IkosCash: '{status}'");
+      }
+    }
 
     static private IkosCashTransactionHeader MapTransactionHeader(PaymentInstructionDto instruction) {
       return new IkosCashTransactionHeader {

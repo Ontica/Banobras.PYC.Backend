@@ -17,7 +17,7 @@ using Empiria.Payments.Processor.Adapters;
 namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     /// <summary>Implements IPaymentService interface using IkosCash messages services.</summary>
-    public class IkosCashPaymentService : IPaymentsBroker {
+    public class IkosCashPaymentService : IPaymentsBrokerService {
 
     private readonly IkosCashPaymentsApiClient _apiClient;
 
@@ -36,7 +36,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    PaymentResultDto IPaymentsBroker.CancelPaymentInstruction(PaymentInstructionDto instruction) {
+    PaymentInstructionResultDto IPaymentsBrokerService.CancelPaymentInstruction(PaymentInstructionDto instruction) {
       Assertion.Require(instruction, nameof(instruction));
 
       IkosCashCancelTransactionPayload cancelPayload = IkosCashMapper.MapToCancelTransactionPayload(instruction);
@@ -47,16 +47,16 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    PaymentResultDto IPaymentsBroker.GetPaymentInstructionStatus(string instructionUID) {
-      var paymentRequest = IkosCashMapper.MapToIkosMinimalDto(instructionUID);
+    PaymentInstructionStatusDto IPaymentsBrokerService.GetPaymentInstructionStatus(string instructionUID) {
+      SolicitudStatus statusRequest = IkosCashMapper.MapToIkosSolicitudStatus(instructionUID);
 
-      var ikosStatus = _apiClient.GetPaymentTransactionStatus(paymentRequest).Result;
+      var ikosStatus = _apiClient.GetPaymentTransactionStatus(statusRequest).Result;
 
-      return IkosCashMapper.MapToPaymentResultDto(ikosStatus);
+      return IkosCashMapper.MapToPaymentInstructionStatus(ikosStatus);
     }
 
 
-    PaymentResultDto IPaymentsBroker.SendPaymentInstruction(PaymentInstructionDto instruction) {
+    PaymentInstructionResultDto IPaymentsBrokerService.SendPaymentInstruction(PaymentInstructionDto instruction) {
       Assertion.Require(instruction, nameof(instruction));
 
       IkosCashTransactionPayload transactionPayload = IkosCashMapper.MapToTransactionPayload(instruction);

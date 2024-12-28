@@ -8,8 +8,6 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System.Collections.Generic;
-
 using System.Security.Cryptography.X509Certificates;
 
 using Empiria.Json;
