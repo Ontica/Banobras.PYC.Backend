@@ -94,9 +94,28 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
 
     static internal PaymentResultDto MapToPaymentResultDto(IkosCashTransactionResult result) {
-      throw new NotImplementedException();
-    }
+      if (result.Code == 0) {
+        return new PaymentResultDto {
+          PaymentNo = result.IdSistemaExterno,
+          RequestID = result.IdSolicitud,
+          Status = 'O',
+          StatusName = GetStatusName('0'),
+          Text = result.ErrorMesage,
+          Failed = false,
+        };
+        } else {
+          return new PaymentResultDto {
+            PaymentNo = result.IdSistemaExterno,
+            RequestID = result.IdSolicitud,
+            Status = 'K',
+            StatusName = GetStatusName('K'),
+            Text = result.ErrorMesage,
+            Failed = false,
+          };
+      }
 
+    }
+    
 
     static internal PaymentResultDto MapToPaymentResultDto(IkosCashCancelTransactionResult result) {
       throw new NotImplementedException();
@@ -113,7 +132,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     static internal PaymentResultDto MapToPaymentResultDto(IkosStatusDto ikosStatus) {
       return new PaymentResultDto {
         RequestID = ikosStatus.IdSolicitud,
-        Status = ikosStatus.Status.ToString(),
+        Status = ikosStatus.Status,
         StatusName = GetStatusName(ikosStatus.Status)
       };
     }
@@ -194,6 +213,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
         TipoCtaBen = 40,
       };
     }
+
 
     #endregion Helpers
 
