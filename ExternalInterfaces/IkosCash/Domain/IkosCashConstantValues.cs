@@ -24,25 +24,25 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash  {
     }
 
 
-    static internal string TOKEN_API_BASE_ADDRESS = _config.Get<string>("TOKEN_API_BASE_ADDRESS");
+    static internal string TOKEN_API_BASE_ADDRESS => _config.Get<string>("TOKEN_API_BASE_ADDRESS");
 
-    static internal string PAYMENTS_API_BASE_ADDRESS = _config.Get<string>("PAYMENTS_API_BASE_ADDRESS");
+    static internal string PAYMENTS_API_BASE_ADDRESS => _config.Get<string>("PAYMENTS_API_BASE_ADDRESS");
 
-    static private string PYC_ASSIGNED_CERTIFICATE_PATH =
+    static private string PYC_ASSIGNED_CERTIFICATE_PATH =>
                                               _config.Get<string>("PYC_ASSIGNED_CERTIFICATE_PATH");
 
-    static private string PYC_ASSIGNED_CERTIFICATE_PASSWORD =
+    static private string PYC_ASSIGNED_CERTIFICATE_PASSWORD =>
                                               _config.Get<string>("PYC_ASSIGNED_CERTIFICATE_PASSWORD");
 
-    static internal string PYC_ASSIGNED_PASSWORD = _config.Get<string>("PYC_ASSIGNED_PASSWORD");
+    static internal string PYC_ASSIGNED_PASSWORD => _config.Get<string>("PYC_ASSIGNED_PASSWORD");
 
-    static internal string PYC_ASSIGNED_USER = _config.Get<string>("PYC_ASSIGNED_USER");
+    static internal string PYC_ASSIGNED_USER => _config.Get<string>("PYC_ASSIGNED_USER");
 
-    static internal int TRANSACTION_ID_USUARIO = _config.Get<int>("TRANSACTION_ID_USUARIO");
+    static internal int TRANSACTION_ID_USUARIO => _config.Get<int>("TRANSACTION_ID_USUARIO");
 
-    public static string TRANSACTION_ORIGEN = _config.Get<string>("TRANSACTION_ORIGEN");
+    public static string TRANSACTION_ORIGEN => _config.Get<string>("TRANSACTION_ORIGEN");
 
-    public static string SERIE_FIRMA = _config.Get<string>("SERIE_FIRMA");
+    public static string SERIE_FIRMA => _config.Get<string>("SERIE_FIRMA");
 
     static internal X509Certificate2 GET_PYC_CERTIFICATE() {
       return new X509Certificate2(PYC_ASSIGNED_CERTIFICATE_PATH,
