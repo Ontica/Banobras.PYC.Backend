@@ -101,7 +101,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
         return new PaymentInstructionResultDto {
           PaymentNo = result.IdSistemaExterno,
           ExternalRequestID = result.IdSolicitud,
-          Status = PaymentInstructionStatus.Pending,
+          Status = PaymentInstructionStatus.InProcess,
           ExternalStatusName = GetStatusName('O'),
           ExternalResultText = result.ErrorMesage
         };
@@ -188,23 +188,23 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       }
     }
 
-    static private IkosCashTransactionHeader MapTransactionHeader(PaymentInstructionDto instruction) {
+    static private IkosCashTransactionHeader MapTransactionHeader(PaymentInstructionDto instruction) {    
       return new IkosCashTransactionHeader {
-        Referencia = instruction.ReferenceNo,
         IdSistemaExterno = instruction.RequestUniqueNo,
         IdUsuario = IkosCashConstantValues.TRANSACTION_ID_USUARIO,
+        IdDepartamento = 40,
+        IdConcepto = 372,
+        ClaveCliente = "VON990614PG4",
+        Cuenta = "012180001556696260", //instruction.PaymentOrder.PaymentAccount.CLABE,
         FechaOperacion = instruction.RequestedTime,
         FechaValor = instruction.RequestedTime,
         Monto = instruction.PaymentOrder.Total,
-        Cuenta = instruction.PaymentOrder.PaymentAccount.CLABE,
+        Referencia = instruction.ReferenceNo,
+        ConceptoPago = "Pago Banobras, S.N.C.",
         Origen = IkosCashConstantValues.TRANSACTION_ORIGEN,
         SerieFirma = IkosCashConstantValues.SERIE_FIRMA,
-
-        ClaveCliente = "",
-        ConceptoPago = "",
-        IdConcepto = 1,
-        IdDepartamento = 2
       };
+
     }
 
 
@@ -222,13 +222,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       }
 
       return new IkosCashTransactionInnerPayload {
-        NomBen = instruction.PaymentOrder.PaymentAccount.HolderName,
+        NomBen = "LA VIA ONTICA, S.C.",//instruction.PaymentOrder.PaymentAccount.HolderName,
         RfcBen = rfc,
         ClaveRastreo = "",
         CtaBen = "",
         Iva = 0,
-
-        InstitucionBen = "",
+        InstitucionBen = "40012",
         TipoCtaBen = 40,
       };
     }

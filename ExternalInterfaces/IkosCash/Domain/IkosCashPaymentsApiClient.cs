@@ -97,6 +97,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       IkosCashTransactionResult[] resultArray = JsonConvert.DeserializeObject<IkosCashTransactionResult[]>(jsonString);
 
+      
       Assertion.Require(resultArray != null && resultArray.Length > 0,
                         "Ocurrió un problema al leer el regreso de la llamada a IKosCash. La respuesta regresó vacía.");
 
