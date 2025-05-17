@@ -69,6 +69,9 @@
     <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\financial.management\Core\WebApi\Empiria.Financial.Core.WebApi.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'Multisolutions' ">
