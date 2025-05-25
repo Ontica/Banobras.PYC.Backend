@@ -14,9 +14,9 @@ es el cuarto Banco más grande del sistema bancario mexicano y el primero de la 
 
 El Sistema PYC está conformado por tres sistemas integrados que conviven entre sí:
 
-1.  Sistema de control presupuestal (basado en [Empiria Budgeting](https://github.com/Ontica/Empiria.Budgeting)).
-2.  Sistema de administración del flujo de efectivo (basado en [Empiria Cashflow](https://github.com/Ontica/Empiria.Cashflow))
-3.  Sistema de pago a proveedores (basado en [Empiria Payments](https://github.com/Ontica/Empiria.Payments)).
+1.  Sistema de control presupuestal (basado en [Empiria Budgeting](https://github.com/Ontica/Empiria.Financial.Management/tree/master/Budgeting)).
+2.  Sistema de administración del flujo de efectivo (basado en [Empiria CashFlow](https://github.com/Ontica/Empiria.Financial.Management/tree/master/CashFlow))
+3.  Sistema de pago a proveedores (basado en [Empiria Payments](https://github.com/Ontica/Empiria.Financial.Management/tree/master/Payments)).
 
 Los tres sistemas operan sobre el presupuesto del gasto corriente y sobre el presupuesto del programa financiero del Banco.
 
@@ -32,7 +32,7 @@ de BANOBRAS.
 1.  **Core**
     Contiene el código con los casos de uso específicos del Sistema PYC,
     los cuales a su vez integran y utilizan los casos de uso y
-    componentes de Empiria Budgeting, Empiria Cashflow y Empiria Payments.
+    componentes de Empiria Budgeting, Empiria CashFlow y Empiria Payments.
 
     Así mismo, se enlaza con **External Interfaces** para obtener información
     proveniente de otros sistemas del Banco, como es el caso de los sistemas

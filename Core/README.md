@@ -2,7 +2,7 @@
 
 Este módulo contiene el código con los casos de uso específicos del
 Sistema PYC de BANOBRAS, así como código para integrar los casos de uso
-y componentes de Empiria Budgeting, Empiria Cashflow y Empiria Payments.
+y componentes de Empiria Budgeting, Empiria CashFlow y Empiria Payments.
 
 Así mismo, se enlaza con Banobras.PYC.ExternalInterfaces para obtener
 información proveniente de otros sistemas del Banco, como es el caso
