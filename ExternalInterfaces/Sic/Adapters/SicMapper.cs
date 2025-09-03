@@ -8,13 +8,6 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
-using System.Collections.Generic;
-
-using Empiria.Parties;
-using Empiria.Payments.Processor;
-using Empiria.Payments.Processor.Adapters;
-
 namespace Empiria.BanobrasIntegration.Sic.Adapters {
 
   /// <summary>Mapper service for SIC credits.</summary>
@@ -22,17 +15,18 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
 
     #region Internal Methods
 
-    static public FixedList<CreditResultDto> MapToCredits(FixedList<SicCreditResult> credits) {
-      return credits.Select(x => MapToCredit (x))
+    static public FixedList<SitCreditDto> MapToCredits(FixedList<SicCredit> credits) {
+      return credits.Select(x => MapToCredit(x))
                       .ToFixedList();
     }
 
-    static internal CreditResultDto MapToCredit (SicCreditResult credit) {
-      return new CreditResultDto {
+
+    static internal SitCreditDto MapToCredit(SicCredit credit) {
+      return new SitCreditDto {
         CreditNo = credit.CreditoNo,
         ClientNo = credit.ClienteNo,
         ClientName = credit.NombreCliente,
-        Auxiliar = credit.Auxiliar,        
+        Auxiliar = credit.Auxiliar.Trim(),
       };
     }
 

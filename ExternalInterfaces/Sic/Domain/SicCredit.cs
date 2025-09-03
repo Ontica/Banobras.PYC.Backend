@@ -2,7 +2,7 @@
 *                                                                                                            *
 *  Module   : Transaction Management                     Component : Interface adapters                      *
 *  Assembly : Sic.Connector.dll                          Pattern   : Data Transfer Object                    *
-*  Type     : SicPayload                                 License   : Please read LICENSE.txt file            *
+*  Type     : SicCredit                                  License   : Please read LICENSE.txt file            *
 *                                                                                                            *
 *  Summary  : DTO used to get credits for SIC.                                                               *
 *                                                                                                            *
@@ -12,17 +12,19 @@
 namespace Empiria.BanobrasIntegration.Sic {
 
   /// <summary>DTO used to get credits for SIC.</summary>
-  public class SicCreditResult {
+  public class SicCredit {
 
     [DataField("NUMERO")]
     public int CreditoNo {
       get; set;
     }
 
+
     [DataField("AUXILIAR")]
     public string Auxiliar {
       get; set;
     }
+
 
     [DataField("NUM_CLIENTE")]
     public int ClienteNo {
@@ -41,31 +43,36 @@ namespace Empiria.BanobrasIntegration.Sic {
       get; set;
     }
 
+
     [DataField("NUMANT")]
     public string CreditoAnterior {
       get; set;
     }
+
 
     [DataField("MONEDA")]
     public int Moneda {
       get; set;
     }
 
+
     [DataField("RFC")]
     public string Rfc {
       get; set;
     }
+
 
     [DataField("TIPO_CLIENTE")]
     public string TipoCliente {
       get; set;
     }
 
+
     [DataField("CLIENTE")]
     public string NombreCliente {
       get; set;
     }
 
-  } // class SicCreditReasult
+  } // class SicCredit
 
 } // namespace Empiria.BanobrasIntegration.Sic.Adapters

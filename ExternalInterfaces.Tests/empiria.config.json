@@ -1,6 +1,6 @@
 ﻿{
-  "appName": "BANOBRAS - Sistema PYC - External Interfaces Module Tests",
-  "description": "Parámetros de configuración de ambiente para los casos de prueba",
+  "appName": "Empiria Financial Management System Core Tests",
+  "description": "Domain types, classes and services tests environment settings",
   "version": "1.0",
   "date": "2025-06-25",
   "settings": [

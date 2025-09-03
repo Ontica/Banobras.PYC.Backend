@@ -15,14 +15,25 @@ namespace Empiria.BanobrasIntegration.Sic.Data {
   /// <summary>Provides data access for SIC credits.</summary>
   static internal class SicCreditDataService {
 
-    static internal FixedList<SicCreditResult> SearchAuxiliar (string auxiliar) {
+    static internal FixedList<SicCredit> SearchAuxiliar(string auxiliar) {
 
       var sql = "SELECT * FROM vw_creditos_sic " +
                 $"WHERE auxiliar = '{auxiliar}'";
 
       var op = DataOperation.Parse(sql);
 
-      return DataReader.GetPlainObjectFixedList<SicCreditResult>(op);
+      return DataReader.GetPlainObjectFixedList<SicCredit>(op);
+    }
+
+
+    static internal SicCredit TryGetCredit(string creditNo) {
+
+      var sql = "SELECT * FROM vw_creditos_sic " +
+                $"WHERE Numero = {creditNo}";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObject<SicCredit>(op, null);
     }
 
   }  // class SicCreditDataService

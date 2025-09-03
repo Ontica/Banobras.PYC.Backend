@@ -8,25 +8,38 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using Empiria.Services;
+
 using Empiria.BanobrasIntegration.Sic.Adapters;
 using Empiria.BanobrasIntegration.Sic.Data;
 
 namespace Empiria.BanobrasIntegration.Sic {
 
   /// <summary>Implements interface using SIC services.</summary>
-  public class SicServices {
+  public class SicServices : Service {
 
-   
-    #region Methods
+    #region Constructors and parsers
 
-    FixedList<CreditResultDto> GetCreditResult (string  auxiliar) {
-      Assertion.Require(auxiliar, nameof(auxiliar));
-
-      FixedList<SicCreditResult> creditResult = SicCreditDataService.SearchAuxiliar(auxiliar);
-
-      return SicMapper.MapToCredits (creditResult);
+    public SicServices() {
+      // no-op
     }
 
+    #endregion Constructors and parsers
+
+    #region Methods
+
+    public SitCreditDto TryGetCredit(string creditNo) {
+      Assertion.Require(creditNo, nameof(creditNo));
+
+      SicCredit credit = SicCreditDataService.TryGetCredit(creditNo);
+
+      if (credit == null) {
+        return null;
+      } else {
+        return SicMapper.MapToCredit(credit);
+      }
+
+    }
 
     #endregion Methods
 
