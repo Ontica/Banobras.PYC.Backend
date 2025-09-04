@@ -8,7 +8,6 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-
 namespace Empiria.BanobrasIntegration.Sic {
 
   /// <summary>DTO used to get credits for SIC.</summary>

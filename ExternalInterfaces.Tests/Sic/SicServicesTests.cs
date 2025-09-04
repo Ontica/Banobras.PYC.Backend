@@ -2,34 +2,36 @@
 *                                                                                                            *
 *  Module   : PYC SIC Integration                              Component : Test cases                        *
 *  Assembly : Banobras.PYC.ExternalInterfaces.Tests.dll        Pattern   : Unit tests                        *
-*  Type     : SicTests                                         License   : Please read LICENSE.txt file      *
+*  Type     : SicServicesTests                                 License   : Please read LICENSE.txt file      *
 *                                                                                                            *
-*  Summary  : PYC - Sic Credit services Test.                                                                *
+*  Summary  : Unit tests for SicServices type.                                                               *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using Xunit;
 
+using Empiria.Financial.Adapters;
+
 using Empiria.BanobrasIntegration.Sic;
 
 namespace Empiria.Sic.Tests.BanobrasIntegration {
 
-  /// <summary>PYC - Sic Credit services Test.</summary>
-  public class SicTests {
+  /// <summary>Unit tests for SicServices type.</summary>
+  public class SicServicesTests {
 
     #region Facts
 
     [Fact]
-    public void Should_Get_CreditInfo_By_CreditNo() {
+    public void Should_Get_CreditAccountData_By_CreditNo() {
       var services = new SicServices();
 
-      var credit = services.TryGetCredit("15634");
+      ICreditAccountData sut = services.TryGetCredit("15634");
 
-      Assert.NotNull(credit);
+      Assert.NotNull(sut);
     }
 
     #endregion Facts
 
-  }  // class SicTests
+  }  // class SicServicesTests
 
 }  // namespace Empiria.Sic.Tests.BanobrasIntegration

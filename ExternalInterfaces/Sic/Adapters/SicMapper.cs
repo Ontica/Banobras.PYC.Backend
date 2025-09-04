@@ -15,18 +15,18 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
 
     #region Internal Methods
 
-    static public FixedList<SitCreditDto> MapToCredits(FixedList<SicCredit> credits) {
+    static public FixedList<SicCreditDto> MapToCredits(FixedList<SicCredit> credits) {
       return credits.Select(x => MapToCredit(x))
                       .ToFixedList();
     }
 
 
-    static internal SitCreditDto MapToCredit(SicCredit credit) {
-      return new SitCreditDto {
-        CreditNo = credit.CreditoNo,
-        ClientNo = credit.ClienteNo,
-        ClientName = credit.NombreCliente,
-        Auxiliar = credit.Auxiliar.Trim(),
+    static internal SicCreditDto MapToCredit(SicCredit credit) {
+      return new SicCreditDto {
+        AccountNo = credit.CreditoNo.ToString(),
+        CustomerNo = credit.ClienteNo.ToString(),
+        CustomerName = EmpiriaString.Clean(credit.NombreCliente),
+        SubledgerAccountNo = EmpiriaString.Clean(credit.Auxiliar),
       };
     }
 
