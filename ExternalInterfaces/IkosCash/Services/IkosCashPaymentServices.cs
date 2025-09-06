@@ -16,8 +16,8 @@ using Empiria.Payments.Processor.Adapters;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
-    /// <summary>Implements IPaymentService interface using IkosCash messages services.</summary>
-    public class IkosCashPaymentService : IPaymentsBrokerService {
+  /// <summary>Implements IPaymentService interface using IkosCash messages services.</summary>
+  public class IkosCashPaymentService : IPaymentsBrokerService {
 
     private readonly IkosCashPaymentsApiClient _apiClient;
 
@@ -41,7 +41,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       IkosCashCancelTransactionPayload cancelPayload = IkosCashMapper.MapToCancelTransactionPayload(instruction);
 
-      IkosCashCancelTransactionResult result = _apiClient.CancelPaymentTransaction(cancelPayload).Result;
+      IkosCashCancelTransactionResult result = _apiClient.CancelPaymentTransaction(cancelPayload)
+                                                         .GetAwaiter()
+                                                         .GetResult();
 
       return IkosCashMapper.MapToPaymentResultDto(result);
     }
@@ -50,7 +52,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     PaymentInstructionStatusDto IPaymentsBrokerService.GetPaymentInstructionStatus(string instructionUID) {
       SolicitudStatus statusRequest = IkosCashMapper.MapToIkosSolicitudStatus(instructionUID);
 
-      var ikosStatus = _apiClient.GetPaymentTransactionStatus(statusRequest).Result;
+      var ikosStatus = _apiClient.GetPaymentTransactionStatus(statusRequest)
+                                 .GetAwaiter()
+                                 .GetResult();
 
       return IkosCashMapper.MapToPaymentInstructionStatus(ikosStatus);
     }
@@ -69,7 +73,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       transactionPayload.Header.SetFirma(firma);
 
-      IkosCashTransactionResult result = _apiClient.SendPaymentTransaction(transactionPayload).Result;
+      IkosCashTransactionResult result = _apiClient.SendPaymentTransaction(transactionPayload)
+                                                   .GetAwaiter()
+                                                   .GetResult();
 
       return IkosCashMapper.MapToPaymentResultDto(result);
     }

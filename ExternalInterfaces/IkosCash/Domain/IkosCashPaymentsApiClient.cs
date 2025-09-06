@@ -88,8 +88,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     internal async Task<IkosCashTransactionResult> SendPaymentTransaction(IkosCashTransactionPayload paymentTransaction) {
       Assertion.Require(paymentTransaction, nameof(paymentTransaction));
 
+      EmpiriaLog.Debug("Before api call PaymentTransaction");
+
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("recepcion/message",
                                                                   new IkosCashTransactionPayload[1] { paymentTransaction });
+
+      EmpiriaLog.Debug("After api call PaymentTransaction");
 
       response.EnsureSuccessStatusCode();
 
@@ -97,7 +101,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       IkosCashTransactionResult[] resultArray = JsonConvert.DeserializeObject<IkosCashTransactionResult[]>(jsonString);
 
-      
+
       Assertion.Require(resultArray != null && resultArray.Length > 0,
                         "Ocurrió un problema al leer el regreso de la llamada a IKosCash. La respuesta regresó vacía.");
 
@@ -116,17 +120,16 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
 
     private void SetHttpClientProperties() {
-      string token = GetClientToken().Result;
 
       _httpClient.BaseAddress = new Uri(IkosCashConstantValues.PAYMENTS_API_BASE_ADDRESS);
+
+      _httpClient.Timeout = TimeSpan.FromSeconds(10);
 
       var headers = _httpClient.DefaultRequestHeaders;
 
       headers.Accept.Clear();
 
       headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-      headers.Add("TOKEN", token);
     }
 
     #endregion Helpers
