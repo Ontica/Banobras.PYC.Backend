@@ -8,6 +8,8 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
+
 namespace Empiria.BanobrasIntegration.Sic {
 
   /// <summary>DTO used to get credits for SIC.</summary>
@@ -21,12 +23,6 @@ namespace Empiria.BanobrasIntegration.Sic {
 
     [DataField("AUXILIAR")]
     public string Auxiliar {
-      get; set;
-    }
-
-
-    [DataField("NUM_CLIENTE")]
-    public int ClienteNo {
       get; set;
     }
 
@@ -69,6 +65,84 @@ namespace Empiria.BanobrasIntegration.Sic {
 
     [DataField("CLIENTE")]
     public string NombreCliente {
+      get; set;
+    }
+
+
+    [DataField("PFI_AREA")]
+    public string Area {
+      get; set;
+    }
+
+
+    [DataField("CLAS_TIPO_CRED")]
+    public string ClaveTipoCredito {
+      get; set;
+    }
+
+
+    [DataField("ETAPA")]
+    public int EtapaCredito {
+      get; set;
+    }
+
+
+    [DataField("CTA_REGIS")]
+    public string CtaRegistro {
+      get; set;
+    }
+
+
+    [DataField("PFI_SALDO", ConvertFrom = typeof(decimal))]
+    public decimal Saldo {
+      get; set;
+    } = 0m;
+
+
+    [DataField("PFI_PLAZO_INVERSION")]
+    public int PlazoInversion {
+      get; set;
+    }
+
+
+    [DataField("PFI_PLAZO_GRACIA_INT")]
+    public int PlazoGracia {
+      get; set;
+    }
+
+
+    [DataField("PFI_PLAZO_AMORTIZACION")]
+    public int PlazoAmortiazacion {
+      get; set;
+    }
+
+
+    [DataField("PFI_FECHA_DESEMBOLSO")]
+    public DateTime FechaDesembolso {
+      get; set;
+    }
+
+
+    [DataField("PFI_TASA", ConvertFrom = typeof(short))]
+    public int Tasa {
+      get; set;
+    }
+
+
+    [DataField("PFI_FACTOR_TASA")]
+    public int FactorTasa {
+      get; set;
+    }
+
+
+    [DataField("PFI_TASA_PISO")]
+    public int TasaPiso {
+      get; set;
+    }
+
+
+    [DataField("PFI_TASA_TECHO")]
+    public int TasaTecho {
       get; set;
     }
 

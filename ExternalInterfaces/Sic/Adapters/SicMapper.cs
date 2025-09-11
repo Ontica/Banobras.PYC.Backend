@@ -8,6 +8,9 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using Empiria.Financial;
+using Empiria.Parties;
+
 namespace Empiria.BanobrasIntegration.Sic.Adapters {
 
   /// <summary>Mapper service for SIC credits.</summary>
@@ -24,14 +27,53 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
     static internal SicCreditDto MapToCredit(SicCredit credit) {
       return new SicCreditDto {
         AccountNo = credit.CreditoNo.ToString(),
-        CustomerNo = credit.ClienteNo.ToString(),
-        CustomerName = EmpiriaString.Clean(credit.NombreCliente),
+        Borrower = EmpiriaString.Clean(credit.NombreCliente),
         SubledgerAccountNo = EmpiriaString.Clean(credit.Auxiliar),
+        CreditStage = credit.EtapaCredito.ToString(),
+        CreditType = credit.ClaveTipoCredito,
+        ExternalCreditNo = credit.CreditoNo.ToString(),
+        Currency = MapCurrency(credit.Moneda),
+        Area = MapArea(credit.Area),
+        StandardAccount = credit.CtaRegistro,
+        CurrentBalance = credit.Saldo,
+        InvestmentTerm = credit.PlazoInversion,
+        GracePeriod = credit.PlazoGracia,
+        RepaymentTerm = credit.PlazoAmortiazacion,
+        RepaymentDate = credit.FechaDesembolso,
+        InterestRate = credit.Tasa,
+        InterestRateFactor = credit.FactorTasa,
+        InterestRateFloor = credit.TasaPiso,
+        InterestRateCeiling = credit.TasaTecho
       };
     }
 
     #endregion Internal Methods
 
+    #region Helpers
+
+    static private Currency MapCurrency(int moneda) {
+      var currencies = Currency.GetList();
+      string currencyCode = moneda.ToString("D2");
+      var currency = currencies.Find(x => x.Code == currencyCode);
+
+      if (currency == null) {
+        return Currency.Default;
+      }
+
+      return currency;
+    }
+
+    static private OrganizationalUnit MapArea(string area) {
+      var units = OrganizationalUnit.GetList<OrganizationalUnit>();
+      var unit = units.Find(x => x.Code == area);
+
+      if (unit == null) {
+        return OrganizationalUnit.Empty;
+      }
+
+      return unit;
+    }
+    #endregion Helpers
   } // class SicMapper
 
 }  //namespace Empiria.BanobrasIntegration.Sic.Adapters
