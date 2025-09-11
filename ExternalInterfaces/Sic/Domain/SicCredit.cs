@@ -146,6 +146,13 @@ namespace Empiria.BanobrasIntegration.Sic {
       get; set;
     }
 
+
+    [DataField("CON_FTE_STD")]
+    public string CuentaStandard {
+      get; set;
+    }
+
+
   } // class SicCredit
 
 } // namespace Empiria.BanobrasIntegration.Sic.Adapters
