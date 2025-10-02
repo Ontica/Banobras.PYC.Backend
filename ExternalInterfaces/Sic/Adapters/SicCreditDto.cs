@@ -1,6 +1,6 @@
-﻿/* Empiria Land **********************************************************************************************
+﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Sic Services                               Component : Adapters Layer                          *
+*  Module   : Banobras SIC Services                      Component : Adapters Layer                          *
 *  Assembly : Sic.Connector.dll                          Pattern   : Output DTO                              *
 *  Type     : SicCreditDto                               License   : Please read LICENSE.txt file            *
 *                                                                                                            *

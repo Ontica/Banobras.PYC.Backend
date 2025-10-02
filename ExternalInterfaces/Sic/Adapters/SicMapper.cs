@@ -1,6 +1,6 @@
-﻿/* Empiria Land **********************************************************************************************
+﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Transaction Management                     Component : Interface adapters                      *
+*  Module   : Banobras SIC Services                      Component : Adapters Layer                          *
 *  Assembly : Sic.Connector.dll                          Pattern   : Mapper class                            *
 *  Type     : SicMapper                                  License   : Please read LICENSE.txt file            *
 *                                                                                                            *
@@ -17,6 +17,17 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
   static internal class SicMapper {
 
     #region Internal Methods
+
+    static internal FixedList<SicCreditEntryDto> MapToCreditEntries(FixedList<SicCreditEntry> entries) {
+      return entries.Select(x => new SicCreditEntryDto {
+        AccountNo = x.NoCredito.ToString(),
+        SubledgerAccountNo = EmpiriaString.Clean(x.Auxiliar),
+        ApplicationDate = x.FechaProceso,
+        OperationTypeNo = x.NumConcepto.ToString(),
+        OperationName = EmpiriaString.Clean(x.NombreConcepto),
+        Amount = x.Importe
+      }).ToFixedList();
+    }
 
     static public FixedList<SicCreditDto> MapToCredits(FixedList<SicCredit> credits) {
       return credits.Select(x => MapToCredit(x))
@@ -73,7 +84,9 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
 
       return unit;
     }
+
     #endregion Helpers
+
   } // class SicMapper
 
 }  //namespace Empiria.BanobrasIntegration.Sic.Adapters

@@ -1,10 +1,10 @@
-﻿/* Empiria Connector *****************************************************************************************
+﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Transaction Management                     Component : Interface adapters                      *
-*  Assembly : Sic.Connector.dll                          Pattern   : Data Transfer Object                    *
+*  Module   : Banobras SIC Services                      Component : Domain Layer                            *
+*  Assembly : Sic.Connector.dll                          Pattern   : Information Holder                      *
 *  Type     : SicCredit                                  License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : DTO used to get credits for SIC.                                                               *
+*  Summary  : Holds credit account information from Banobras SIC System.                                     *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
@@ -12,7 +12,7 @@ using System;
 
 namespace Empiria.BanobrasIntegration.Sic {
 
-  /// <summary>DTO used to get credits for SIC.</summary>
+  /// <summary>Holds credit account information from Banobras SIC System.</summary>
   public class SicCredit {
 
     [DataField("NUMERO")]
@@ -96,7 +96,7 @@ namespace Empiria.BanobrasIntegration.Sic {
     [DataField("PFI_SALDO", ConvertFrom = typeof(decimal))]
     public decimal Saldo {
       get; set;
-    } = 0m;
+    }
 
 
     [DataField("PFI_PLAZO_INVERSION")]
@@ -152,7 +152,6 @@ namespace Empiria.BanobrasIntegration.Sic {
       get; set;
     }
 
-
   } // class SicCredit
 
-} // namespace Empiria.BanobrasIntegration.Sic.Adapters
+} // namespace Empiria.BanobrasIntegration.Sic

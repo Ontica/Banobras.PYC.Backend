@@ -1,6 +1,6 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Sic Connector                              Component : Data Layer                              *
+*  Module   : Banobras SIC Services                      Component : Data Layer                              *
 *  Assembly : Sic.Connector.dll                          Pattern   : Data Service                            *
 *  Type     : SicServices                                License   : Please read LICENSE.txt file            *
 *                                                                                                            *
@@ -8,12 +8,35 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
+
 using Empiria.Data;
 
 namespace Empiria.BanobrasIntegration.Sic.Data {
 
   /// <summary>Provides data access for SIC credits.</summary>
   static internal class SicCreditDataService {
+
+
+    static internal FixedList<SicCreditEntry> GetCreditEntries(FixedList<string> creditIDs,
+                                                               DateTime fromDate, DateTime toDate) {
+      Assertion.Require(creditIDs, nameof(creditIDs));
+
+      if (creditIDs.Count == 0) {
+        return new FixedList<SicCreditEntry>();
+      }
+
+      var sql = "SELECT * FROM vw_aplica_pagos " +
+                $"WHERE FEC_PROCESO <= {DataCommonMethods.FormatSqlDbDate(fromDate)} " +
+                $"AND {DataCommonMethods.FormatSqlDbDate(toDate)} <= FEC_PROCESO AND " +
+                $"Numero IN ({string.Join(", ", creditIDs)}) " +
+                $"ORDER BY Numero, FEC_PROCESO, NUM_CONCEPTO, IMPORTE";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObjectFixedList<SicCreditEntry>(op);
+    }
+
 
     static internal FixedList<SicCredit> SearchAuxiliar(string auxiliar) {
 

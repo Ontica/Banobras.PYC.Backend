@@ -8,6 +8,8 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
+
 using Empiria.Financial.Adapters;
 
 using Empiria.BanobrasIntegration.Sic.Adapters;
@@ -27,6 +29,23 @@ namespace Empiria.BanobrasIntegration.Sic {
     #endregion Constructors and parsers
 
     #region Methods
+
+    public FixedList<ICreditEntryData> GetCreditsEntries(FixedList<string> creditIDs,
+                                                         DateTime fromDate, DateTime toDate) {
+      Assertion.Require(creditIDs, nameof(creditIDs));
+
+      creditIDs = creditIDs.Select(x => EmpiriaString.Clean(x))
+                           .ToFixedList()
+                           .FindAll(x => EmpiriaString.IsInteger(x));
+
+      FixedList<SicCreditEntry> entries = SicCreditDataService.GetCreditEntries(creditIDs,
+                                                                                fromDate, toDate);
+
+      return SicMapper.MapToCreditEntries(entries)
+                      .Select(x => (ICreditEntryData) x)
+                      .ToFixedList();
+    }
+
 
     public ICreditAccountData TryGetCredit(string creditNo) {
       Assertion.Require(creditNo, nameof(creditNo));
