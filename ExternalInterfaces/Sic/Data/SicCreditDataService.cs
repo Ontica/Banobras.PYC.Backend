@@ -27,8 +27,8 @@ namespace Empiria.BanobrasIntegration.Sic.Data {
       }
 
       var sql = "SELECT * FROM vw_aplica_pagos " +
-                $"WHERE FEC_PROCESO <= {DataCommonMethods.FormatSqlDbDate(fromDate)} " +
-                $"AND {DataCommonMethods.FormatSqlDbDate(toDate)} <= FEC_PROCESO AND " +
+                $"WHERE {DataCommonMethods.FormatSqlDbDate(fromDate)} <= FEC_PROCESO AND " +
+                $"FEC_PROCESO < {DataCommonMethods.FormatSqlDbDate(toDate.AddDays(1))} AND " +
                 $"Numero IN ({string.Join(", ", creditIDs)}) " +
                 $"ORDER BY Numero, FEC_PROCESO, NUM_CONCEPTO, IMPORTE";
 

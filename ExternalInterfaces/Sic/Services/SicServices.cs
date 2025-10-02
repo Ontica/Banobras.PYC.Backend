@@ -34,6 +34,9 @@ namespace Empiria.BanobrasIntegration.Sic {
                                                          DateTime fromDate, DateTime toDate) {
       Assertion.Require(creditIDs, nameof(creditIDs));
 
+      fromDate = ExecutionServer.DateMinValue;
+      toDate = ExecutionServer.DateMaxValue;
+
       creditIDs = creditIDs.Select(x => EmpiriaString.Clean(x))
                            .ToFixedList()
                            .FindAll(x => EmpiriaString.IsInteger(x));
