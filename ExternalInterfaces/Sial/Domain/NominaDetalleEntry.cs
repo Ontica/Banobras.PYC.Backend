@@ -2,9 +2,9 @@
 *                                                                                                            *
 *  Module   : Banobras SIAL Services                     Component : Domain Layer                            *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll        Pattern   : Information Holder                      *
-*  Type     : NominaEncabezado                           License   : Please read LICENSE.txt file            *
+*  Type     : NominaDetalleEntry                         License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : Holds payroll data.                                                                            *
+*  Summary  : Holds information about a Banobras SIAL payroll movements entry.                               *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
@@ -12,26 +12,50 @@ using System;
 
 namespace Empiria.BanobrasIntegration.Sial {
 
-  /// <summary>Holds payroll data.</summary>
-  public class NominaEncabezado {
+  /// <summary>Holds information about a Banobras SIAL payroll movemenst entry.</summary>
+  public class NominaDetalleEntry {
 
-    [DataField("BGME_NUM_VOL")]
+    [DataField("BGM_NUM_VOL")]
     public int NoNomina {
       get; set;
     }
 
 
-    [DataField("BGME_FECHA_VOL")]
+    [DataField("BGM_FECHA_VOL")]
     public DateTime Fecha {
       get; set;
     }
 
-
-    [DataField("BGME_DESCRIP")]
-    public string Descripcion {
+    [DataField("BGM_REG_CONTABLE")]
+    public string Cuenta {
       get; set;
     }
 
-  } // class NominaEncabezado
+
+    [DataField("BGM_AREA")]
+    public string Area {
+      get; set;
+    }
+
+
+    [DataField("BGM_CONCEPTO")]
+    public int Concepto {
+      get; set;
+    }
+
+    
+    [DataField("BGM_CVE_MOV", ConvertFrom = typeof(int))]
+    public int TipoMovimiento {
+      get; set;
+    }
+
+
+    [DataField("BGM_IMPORTE", ConvertFrom = typeof(decimal))]
+    public decimal Importe {
+      get; set;
+    }
+
+
+  } // class NominaDetalleEntry
 
 } // namespace Empiria.BanobrasIntegration.Sial

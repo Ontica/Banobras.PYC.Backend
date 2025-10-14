@@ -2,9 +2,9 @@
 *                                                                                                            *
 *  Module   : Banobras SIAL Services                     Component : Domain Layer                            *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll        Pattern   : Information Holder                      *
-*  Type     : NominaEncabezado                           License   : Please read LICENSE.txt file            *
+*  Type     : NominaEncabezadoEntry                      License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : Holds payroll data.                                                                            *
+*  Summary  : Holds information about a Banobras SIAL payroll entry.                                         *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
@@ -12,11 +12,11 @@ using System;
 
 namespace Empiria.BanobrasIntegration.Sial {
 
-  /// <summary>Holds payroll data.</summary>
-  public class NominaEncabezado {
+  /// <summary>Holds information about a Banobras SIAL payroll entry.</summary>
+  public class NominaEncabezadoEntry {
 
     [DataField("BGME_NUM_VOL")]
-    public int NoNomina {
+    public string NoNomina {
       get; set;
     }
 
@@ -32,6 +32,6 @@ namespace Empiria.BanobrasIntegration.Sial {
       get; set;
     }
 
-  } // class NominaEncabezado
+  } // class NominaEncabezadoEntry
 
 } // namespace Empiria.BanobrasIntegration.Sial
