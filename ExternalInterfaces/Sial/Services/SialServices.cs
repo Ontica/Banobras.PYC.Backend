@@ -14,6 +14,7 @@ using Empiria.Financial.Adapters;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Data;
+using Empiria.StateEnums;
 
 namespace Empiria.BanobrasIntegration.Sial {
 
@@ -30,7 +31,7 @@ namespace Empiria.BanobrasIntegration.Sial {
 
     #region Methods
 
-    public FixedList<SialHeaderDto> GetPayrollsEntries(char status, DateTime fromDate, DateTime toDate) {
+    public FixedList<SialHeaderDto> GetPayrollsEntries(EntityStatus status, DateTime fromDate, DateTime toDate) {
 
       Assertion.Require(status, nameof(status));
       Assertion.Require(fromDate, nameof(fromDate));
@@ -54,6 +55,13 @@ namespace Empiria.BanobrasIntegration.Sial {
                       .ToFixedList();
     }
 
+    public void UpdateProcessStatus(EntityStatus status, int payrollNumber) {
+      Assertion.Require(status, nameof(status));
+      Assertion.Require(payrollNumber, nameof(payrollNumber));
+
+      SialDataService.UpdateProcessStatus(status, payrollNumber);
+
+    }
 
     #endregion Methods
 

@@ -11,8 +11,7 @@ using System;
 using System.Web.Http;
 using Empiria.BanobrasIntegration.Sial;
 using Empiria.BanobrasIntegration.Sial.Adapters;
-using Empiria.Financial.Adapters;
-using Empiria.Storage;
+using Empiria.StateEnums;
 using Empiria.WebApi;
 
 namespace Empiria.PYC.WebApi.BanobrasIntegration {
@@ -33,6 +32,20 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
       return new SingleObjectModel(base.Request, result);
 
     }
+
+    [HttpPut, HttpPatch]
+    [Route("v2/external-interfaces/sial/{status}/{payrollNo}")]
+
+    public SingleObjectModel UpdateProcessPayroll(EntityStatus status, int payrollNo,
+                                                  [FromBody] SialHeaderQuery query) {
+
+      query.Status = status;
+
+      _service.UpdateProcessStatus(status, payrollNo);  
+
+      return new SingleObjectModel(this.Request, query.Status.GetName());
+    }
+    
 
     #endregion Sial importers
 

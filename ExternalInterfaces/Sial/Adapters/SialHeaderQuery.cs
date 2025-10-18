@@ -9,15 +9,20 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
+using Empiria.StateEnums;
 
 namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
   /// <summary>Input query used to return SIAL payroll data.</summary>
   public class SialHeaderQuery {
 
-    public char Status {
+    public int PayrollNo {
       get; set;
     }
+
+    public EntityStatus Status {
+      get; set;
+    } = EntityStatus.All;
 
     public DateTime FromDate {
       get; set;

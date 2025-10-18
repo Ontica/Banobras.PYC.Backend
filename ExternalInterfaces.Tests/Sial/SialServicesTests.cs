@@ -15,6 +15,8 @@ using Empiria.Financial.Adapters;
 using Empiria.BanobrasIntegration.Sial;
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using System;
+using Empiria.StateEnums;
+using Empiria.BanobrasIntegration.Sial.Data;
 
 namespace Empiria.Sial.Tests.BanobrasIntegration {
 
@@ -27,7 +29,7 @@ namespace Empiria.Sial.Tests.BanobrasIntegration {
     public void Should_Get_PayrollData() {
       var services = new SialServices();
 
-      FixedList<SialHeaderDto> sut = services.GetPayrollsEntries('P', DateTime.Parse("01-09-2025"), DateTime.Parse("30-09-2025"));
+      FixedList<SialHeaderDto> sut = services.GetPayrollsEntries(EntityStatus.Pending, DateTime.Parse("01-09-2025"), DateTime.Parse("30-09-2025"));
 
       Assert.NotNull(sut);
     }
@@ -40,6 +42,14 @@ namespace Empiria.Sial.Tests.BanobrasIntegration {
       FixedList<SialDetailEntryDto> sut = services.GetPayrollsDetailEntries(DateTime.Parse("30/09/2025"));
 
       Assert.NotNull(sut);
+    }
+
+    [Fact]
+    public void Should_Update_ProcessStatus() {
+      var services = new SialServices();
+
+      services.UpdateProcessStatus(EntityStatus.Deleted, 9903739);
+      
     }
 
     #endregion Facts
