@@ -1,35 +1,40 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : PYC SIAL Integration                             Component : Test cases                        *
+*  Module   : Banobras SIAL Integration                        Component : Test cases                        *
 *  Assembly : Banobras.PYC.ExternalInterfaces.Tests.dll        Pattern   : Unit tests                        *
-*  Type     : SicServicesTests                                 License   : Please read LICENSE.txt file      *
+*  Type     : SialServicesTests                                License   : Please read LICENSE.txt file      *
 *                                                                                                            *
-*  Summary  : Unit tests for SialServices type.                                                               *
+*  Summary  : Unit tests for SialServices.                                                                   *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using Xunit;
 
-using Empiria.Financial.Adapters;
+using System;
+
+using Empiria.StateEnums;
 
 using Empiria.BanobrasIntegration.Sial;
 using Empiria.BanobrasIntegration.Sial.Adapters;
-using System;
-using Empiria.StateEnums;
-using Empiria.BanobrasIntegration.Sial.Data;
 
-namespace Empiria.Sial.Tests.BanobrasIntegration {
+namespace Empiria.Tests.BanobrasIntegration.Sial {
 
-  /// <summary>Unit tests for SialServices type.</summary>
+  /// <summary>Unit tests for SialServices.</summary>
   public class SialServicesTests {
 
     #region Facts
 
     [Fact]
-    public void Should_Get_PayrollData() {
-      var services = new SialServices();
+    public void Should_Search_Payrolls() {
+      var services = SialServices.ServiceInteractor();
 
-      FixedList<SialHeaderDto> sut = services.GetPayrollsEntries(EntityStatus.Pending, DateTime.Parse("01-09-2025"), DateTime.Parse("30-09-2025"));
+      var query = new SialPayrollsQuery {
+        Status = EntityStatus.Pending,
+        FromDate = DateTime.Parse("01-09-2025"),
+        ToDate = DateTime.Parse("30-09-2025")
+      };
+
+      FixedList<SialPayrollDto> sut = services.SearchPayrolls(query);
 
       Assert.NotNull(sut);
     }
@@ -37,23 +42,24 @@ namespace Empiria.Sial.Tests.BanobrasIntegration {
 
     [Fact]
     public void Should_Get_PayrollDataDetail() {
-      var services = new SialServices();
+      var services = SialServices.ServiceInteractor();
 
       FixedList<SialDetailEntryDto> sut = services.GetPayrollsDetailEntries(DateTime.Parse("30/09/2025"));
 
       Assert.NotNull(sut);
     }
 
+
     [Fact]
     public void Should_Update_ProcessStatus() {
-      var services = new SialServices();
+      var services = SialServices.ServiceInteractor();
 
       services.UpdateProcessStatus(EntityStatus.Deleted, 9903739);
-      
+
     }
 
     #endregion Facts
 
   }  // class SialServicesTests
 
-}  // namespace Empiria.Sial.Tests.BanobrasIntegration
+}  // namespace Empiria.Tests.BanobrasIntegration.Sial

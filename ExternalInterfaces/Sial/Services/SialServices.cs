@@ -1,6 +1,6 @@
 ﻿/* Empiria Connector******************************************************************************************
 *                                                                                                            *
-*  Module   : Transaction Management                     Component : Integration Layer                       *
+*  Module   : Banobras SIAL Integration                  Component : Integration Layer                       *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll        Pattern   : Service provider                        *
 *  Type     : SialService                                License   : Please read LICENSE.txt file            *
 *                                                                                                            *
@@ -10,39 +10,41 @@
 
 using System;
 
-using Empiria.Financial.Adapters;
+using Empiria.Services;
+using Empiria.StateEnums;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Data;
-using Empiria.StateEnums;
 
 namespace Empiria.BanobrasIntegration.Sial {
 
   /// <summary>Implements Banobras SIAL System services.</summary>
-  public class SialServices {
+  public class SialServices : Service {
 
     #region Constructors and parsers
 
-    public SialServices() {
+    protected SialServices() {
       // no-op
+    }
+
+    static public SialServices ServiceInteractor() {
+      return Service.CreateInstance<SialServices>();
     }
 
     #endregion Constructors and parsers
 
     #region Methods
 
-    public FixedList<SialHeaderDto> GetPayrollsEntries(EntityStatus status, DateTime fromDate, DateTime toDate) {
+    public FixedList<SialPayrollDto> SearchPayrolls(SialPayrollsQuery query) {
+      Assertion.Require(query, nameof(query));
 
-      Assertion.Require(status, nameof(status));
-      Assertion.Require(fromDate, nameof(fromDate));
-      Assertion.Require(toDate, nameof(toDate));
+      FixedList<NominaEncabezado> entries = SialDataService.GetEncabezados(query.Status,
+                                                                           query.FromDate, query.ToDate);
 
-      FixedList<NominaEncabezado> entries = SialDataService.GetEncabezados(status, fromDate, toDate);
-
-      return SialMapper.MapToPayrollEntries(entries)
-                      .Select(x => (SialHeaderDto) x)
-                      .ToFixedList();
+      return SialMapper.Map(entries)
+                       .ToFixedList();
     }
+
 
     public FixedList<SialDetailEntryDto> GetPayrollsDetailEntries(DateTime payrollDate) {
 
@@ -54,6 +56,7 @@ namespace Empiria.BanobrasIntegration.Sial {
                       .Select(x => (SialDetailEntryDto) x)
                       .ToFixedList();
     }
+
 
     public void UpdateProcessStatus(EntityStatus status, int payrollNumber) {
       Assertion.Require(status, nameof(status));

@@ -1,46 +1,32 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras SIAL Services                     Component : Adapters Layer                          *
+*  Module   : Banobras SIAL Integration                  Component : Adapters Layer                          *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll        Pattern   : Mapper class                            *
-*  Type     : SicMapper                                  License   : Please read LICENSE.txt file            *
+*  Type     : SialMapper                                 License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : Mapper service for SIAL payrolls.                                                              *
+*  Summary  : Mapping services for SIAL payrolls.                                                            *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using Empiria.BanobrasIntegration.Sial;
-using Empiria.BanobrasIntegration.Sial.Adapters;
-using Empiria.BanobrasIntegration.Sic.Adapters;
-using Empiria.Financial;
-using Empiria.Parties;
+using Empiria.StateEnums;
 
 namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
-  /// <summary>Mapper service for SIAL payrolls.</summary>
+  /// <summary>Mapping services for SIAL payrolls.</summary>
   static internal class SialMapper {
 
-    #region Internal Methods
+    #region Mappers
 
-    static internal FixedList<SialHeaderDto> MapToPayrollEntries(FixedList<NominaEncabezado> entries) {
-      return entries.Select(x => new SialHeaderDto {
-        PayrollNo = x.NoNomina,
+    static internal FixedList<SialPayrollDto> Map(FixedList<NominaEncabezado> payrolls) {
+      return payrolls.Select(x => new SialPayrollDto {
+        UID = x.NoNomina.ToString(),
+        PayrollNo = x.NoNomina.ToString(),
         PayrollDate = x.Fecha,
         Description = x.Descripcion,
+        StatusName = EntityStatus.Pending.GetName()
       }).ToFixedList();
     }
 
-    static public FixedList<SialHeaderDto> MapToPayrolls(FixedList<NominaEncabezado> payrolls) {
-      return payrolls.Select(x => MapToPayroll(x))
-                      .ToFixedList();
-    }
-
-    static internal SialHeaderDto MapToPayroll(NominaEncabezado payroll) {
-      return new SialHeaderDto {
-        PayrollNo = payroll.NoNomina,
-        PayrollDate = payroll.Fecha,
-        Description = payroll.Descripcion
-      };
-    }
 
     static internal SialDetailDto MapToPayrollDetail(NominaDetalle payroll) {
       return new SialDetailDto {
@@ -67,8 +53,7 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
       }).ToFixedList();
     }
 
-
-    #endregion Internal Methods
+    #endregion Mappers
 
   } // class SialMapper
 
