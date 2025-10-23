@@ -36,16 +36,14 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
 
 
     [HttpPut, HttpPatch]
-    [Route("v2/external-interfaces/sial/{status}/{payrollNo}")]
-    public SingleObjectModel UpdateProcessPayroll(EntityStatus status, int payrollNo,
-                                                  [FromBody] SialPayrollsQuery query) {
-
-      query.Status = status;
+    [Route("v2/pyc/integration/sial/{payrollUID:int}/update-status/{newStatus}")]
+    public SingleObjectModel UpdatePayrollStatus([FromUri] int payrollUID,
+                                                 [FromUri] EntityStatus newStatus) {
 
       using (var services = SialServices.ServiceInteractor()) {
-        services.UpdateProcessStatus(query.Status, payrollNo);
+        SialPayrollDto payroll = services.UpdatePayrollStatus(payrollUID, newStatus);
 
-        return new SingleObjectModel(this.Request, query.Status.GetName());
+        return new SingleObjectModel(base.Request, payroll);
       }
     }
 

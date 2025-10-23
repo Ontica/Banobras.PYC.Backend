@@ -1,4 +1,4 @@
-﻿/* Empiria Connector******************************************************************************************
+﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
 *  Module   : Banobras SIAL Integration                  Component : Integration Layer                       *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll        Pattern   : Service provider                        *
@@ -35,35 +35,35 @@ namespace Empiria.BanobrasIntegration.Sial {
 
     #region Methods
 
-    public FixedList<SialPayrollDto> SearchPayrolls(SialPayrollsQuery query) {
-      Assertion.Require(query, nameof(query));
-
-      FixedList<NominaEncabezado> entries = SialDataService.GetEncabezados(query.Status,
-                                                                           query.FromDate, query.ToDate);
-
-      return SialMapper.Map(entries)
-                       .ToFixedList();
-    }
-
-
     public FixedList<SialDetailEntryDto> GetPayrollsDetailEntries(DateTime payrollDate) {
 
       Assertion.Require(payrollDate, nameof(payrollDate));
 
       FixedList<NominaDetalleEntry> entries = SialDataService.GetDetalle(payrollDate);
 
-      return SialMapper.MapToPayrollDetailEntries(entries)
-                      .Select(x => (SialDetailEntryDto) x)
-                      .ToFixedList();
+      return SialMapper.MapToPayrollDetailEntries(entries);
     }
 
 
-    public void UpdateProcessStatus(EntityStatus status, int payrollNumber) {
-      Assertion.Require(status, nameof(status));
-      Assertion.Require(payrollNumber, nameof(payrollNumber));
+    public FixedList<SialPayrollDto> SearchPayrolls(SialPayrollsQuery query) {
+      Assertion.Require(query, nameof(query));
 
-      SialDataService.UpdateProcessStatus(status, payrollNumber);
+      FixedList<NominaEncabezado> entries = SialDataService.SearchPayrolls(query.Status,
+                                                                           query.FromDate,
+                                                                           query.ToDate);
 
+      return SialMapper.Map(entries);
+    }
+
+
+    public SialPayrollDto UpdatePayrollStatus(int payrollUID,
+                                              EntityStatus newStatus) {
+
+      SialDataService.UpdatePayrollStatus(payrollUID, newStatus);
+
+      NominaEncabezado payroll = SialDataService.GetPayroll(payrollUID);
+
+      return SialMapper.Map(payroll);
     }
 
     #endregion Methods

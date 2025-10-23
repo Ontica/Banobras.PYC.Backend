@@ -54,8 +54,7 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
     public void Should_Update_ProcessStatus() {
       var services = SialServices.ServiceInteractor();
 
-      services.UpdateProcessStatus(EntityStatus.Deleted, 9903739);
-
+      services.UpdatePayrollStatus(9903739, EntityStatus.Deleted);
     }
 
     #endregion Facts

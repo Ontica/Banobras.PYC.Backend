@@ -18,13 +18,19 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
     #region Mappers
 
     static internal FixedList<SialPayrollDto> Map(FixedList<NominaEncabezado> payrolls) {
-      return payrolls.Select(x => new SialPayrollDto {
-        UID = x.NoNomina.ToString(),
-        PayrollNo = x.NoNomina.ToString(),
-        PayrollDate = x.Fecha,
-        Description = x.Descripcion,
+      return payrolls.Select(x => Map(x))
+                     .ToFixedList();
+    }
+
+
+    static internal SialPayrollDto Map(NominaEncabezado payroll) {
+      return new SialPayrollDto {
+        UID = payroll.NoNomina.ToString(),
+        PayrollNo = payroll.NoNomina.ToString(),
+        PayrollDate = payroll.Fecha,
+        Description = payroll.Descripcion,
         StatusName = EntityStatus.Pending.GetName()
-      }).ToFixedList();
+      };
     }
 
 
