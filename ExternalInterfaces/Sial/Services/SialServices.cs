@@ -48,16 +48,18 @@ namespace Empiria.BanobrasIntegration.Sial {
     public FixedList<SialPayrollDto> SearchPayrolls(SialPayrollsQuery query) {
       Assertion.Require(query, nameof(query));
 
-      FixedList<NominaEncabezado> entries = SialDataService.SearchPayrolls(query.Status,
-                                                                           query.FromDate,
-                                                                           query.ToDate);
+      FixedList<NominaEncabezado> payrolls = query.Execute();
 
-      return SialMapper.Map(entries);
+      return SialMapper.Map(payrolls);
     }
 
 
     public SialPayrollDto UpdatePayrollStatus(int payrollUID,
                                               EntityStatus newStatus) {
+
+      Assertion.Require(newStatus == EntityStatus.Deleted ||
+                        newStatus == EntityStatus.Closed ||
+                        newStatus == EntityStatus.Pending, nameof(newStatus));
 
       SialDataService.UpdatePayrollStatus(payrollUID, newStatus);
 

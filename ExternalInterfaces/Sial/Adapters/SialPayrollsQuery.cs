@@ -10,7 +10,10 @@
 
 using System;
 
+using Empiria.Data;
 using Empiria.StateEnums;
+
+using Empiria.BanobrasIntegration.Sial.Data;
 
 namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
@@ -29,8 +32,43 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
     public EntityStatus Status {
       get; set;
-    } = EntityStatus.Pending;
+    } = EntityStatus.All;
 
   }  // class SialPayrollsQuery
+
+
+
+  /// <summary>Extension methods for SialPayrollsQuery.</summary>
+  static internal class SialPayrollsQueryExtensions {
+
+    static internal FixedList<NominaEncabezado> Execute(this SialPayrollsQuery query) {
+      string dateRangeFilter = BuildDateRangeFilter(query.FromDate, query.ToDate);
+      string statusFilter = BuildStatusFilter(query.Status);
+
+      var filter = new Filter(dateRangeFilter);
+      filter.AppendAnd(statusFilter);
+
+      return SialDataService.SearchPayrolls(filter.ToString());
+    }
+
+    #region Helpers
+
+    static private string BuildDateRangeFilter(DateTime fromDate, DateTime toDate) {
+      return $"{DataCommonMethods.FormatSqlDbDate(fromDate)} <= BGME_FECHA_VOL AND " +
+             $"BGME_FECHA_VOL < {DataCommonMethods.FormatSqlDbDate(toDate.AddDays(1))}";
+    }
+
+
+    static private string BuildStatusFilter(EntityStatus status) {
+      if (status == EntityStatus.All) {
+        return string.Empty;
+      }
+
+      return $"BGME_STATUS = '{(char) status}'";
+    }
+
+    #endregion Helpers
+
+  }
 
 } // namespace Empiria.BanobrasIntegration.Sial.Adapters

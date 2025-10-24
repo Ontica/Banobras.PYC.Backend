@@ -41,13 +41,11 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
     }
 
 
-    static internal FixedList<NominaEncabezado> SearchPayrolls(EntityStatus status,
-                                                               DateTime fromDate, DateTime toDate) {
+    static internal FixedList<NominaEncabezado> SearchPayrolls(string filter) {
+      Assertion.Require(filter, nameof(filter));
 
       var sql = "SELECT * FROM NOMINA_ENCABEZADOS " +
-          $"WHERE {DataCommonMethods.FormatSqlDbDate(fromDate)} <= BGME_FECHA_VOL AND " +
-          $"BGME_FECHA_VOL < {DataCommonMethods.FormatSqlDbDate(toDate.AddDays(1))} AND " +
-          $"BGME_STATUS = '{(char) status}' " +
+          $"WHERE {filter} " +
           $"ORDER BY BGME_FECHA_VOL, BGME_NUM_VOL";
 
       var op = DataOperation.Parse(sql);
@@ -59,9 +57,11 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
     static internal void UpdatePayrollStatus(int payrollUID,
                                              EntityStatus status) {
 
+      Assertion.Require(status != EntityStatus.All, nameof(status));
+
       var sql = "UPDATE NOMINA_ENCABEZADOS " +
-                $"SET BGME_STATUS = '{(char) status}' " +
-                $"WHERE BGME_NUM_VOL = {payrollUID}";
+               $"SET BGME_STATUS = '{(char) status}' " +
+               $"WHERE BGME_NUM_VOL = {payrollUID}";
 
       var op = DataOperation.Parse(sql);
 

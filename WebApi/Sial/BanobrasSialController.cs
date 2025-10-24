@@ -36,7 +36,7 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
 
 
     [HttpPut, HttpPatch]
-    [Route("v2/pyc/integration/sial/{payrollUID:int}/update-status/{newStatus}")]
+    [Route("v2/pyc/integration/sial/payrolls/{payrollUID:int}/update-status/{newStatus}")]
     public SingleObjectModel UpdatePayrollStatus([FromUri] int payrollUID,
                                                  [FromUri] EntityStatus newStatus) {
 

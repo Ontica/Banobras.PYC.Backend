@@ -25,11 +25,11 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
     static internal SialPayrollDto Map(NominaEncabezado payroll) {
       return new SialPayrollDto {
-        UID = payroll.NoNomina.ToString(),
+        UID = payroll.UID,
         PayrollNo = payroll.NoNomina.ToString(),
         PayrollDate = payroll.Fecha,
         Description = payroll.Descripcion,
-        StatusName = EntityStatus.Pending.GetName()
+        StatusName = payroll.Status.GetName()
       };
     }
 

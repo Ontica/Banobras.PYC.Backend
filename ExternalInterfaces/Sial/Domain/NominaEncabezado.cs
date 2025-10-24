@@ -10,10 +10,20 @@
 
 using System;
 
+using Empiria.StateEnums;
+
 namespace Empiria.BanobrasIntegration.Sial {
 
   /// <summary>Holds payroll data.</summary>
   public class NominaEncabezado {
+
+
+    public string UID {
+      get {
+        return NoNomina.ToString();
+      }
+    }
+
 
     [DataField("BGME_NUM_VOL")]
     public int NoNomina {
@@ -29,6 +39,11 @@ namespace Empiria.BanobrasIntegration.Sial {
 
     [DataField("BGME_DESCRIP")]
     public string Descripcion {
+      get; set;
+    }
+
+    [DataField("BGME_STATUS", Default = EntityStatus.Pending)]
+    public EntityStatus Status {
       get; set;
     }
 
