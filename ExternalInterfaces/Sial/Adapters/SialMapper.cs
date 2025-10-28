@@ -37,23 +37,18 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
     static internal SialDetailDto MapToPayrollDetail(NominaDetalle payroll) {
       return new SialDetailDto {
         PayrollNo = payroll.NoNomina,
-        PayrollDate = payroll.Fecha,
         AreaNo = payroll.Area,
-        AccountNo = payroll.Cuenta,
-        SectorNo = payroll.Sector,
-        SubledgerAccountNo = payroll.Auxiliar,
+        AccountNo = payroll.CuentaContable,
         TypeMovement = payroll.TipoMovimiento,
         Amount = payroll.Importe
       };
     }
 
-    static internal FixedList<SialDetailEntryDto> MapToPayrollDetailEntries(FixedList<NominaDetalleEntry> entries) {
+    static internal FixedList<SialDetailEntryDto> MapToPayrollDetailEntries(FixedList<NominaDetalle> entries) {
       return entries.Select(x => new SialDetailEntryDto {
         PayrollNo = x.NoNomina.ToString(),
-        PayrollDate = x.Fecha,
         AreaNo = x.Area,
-        ConceptNo = x.Concepto,
-        AccountNo = x.Cuenta.ToString(),
+        AccountNo = x.CuentaContable.ToString(),
         TypeMovement = x.TipoMovimiento,
         Amount = x.Importe,
       }).ToFixedList();
