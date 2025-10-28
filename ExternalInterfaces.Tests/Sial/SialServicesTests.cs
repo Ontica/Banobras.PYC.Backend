@@ -14,8 +14,10 @@ using System;
 
 using Empiria.StateEnums;
 
-using Empiria.BanobrasIntegration.Sial;
+using Empiria.Banobras.Budgeting.Adapters;
+
 using Empiria.BanobrasIntegration.Sial.Adapters;
+using Empiria.BanobrasIntegration.Sial.Services;
 
 namespace Empiria.Tests.BanobrasIntegration.Sial {
 
@@ -25,26 +27,27 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
     #region Facts
 
     [Fact]
+    public void Should_ConvertPayrollToBudgetingInterface() {
+      var services = SialServices.ServiceInteractor();
+
+      BudgetingTransactionDto sut = services.ConvertPayrollToBudgetingInterface(9903739);
+
+      Assert.NotNull(sut);
+      Assert.NotNull(sut.Entries);
+      Assert.NotEmpty(sut.Entries);
+    }
+
+
+    [Fact]
     public void Should_Search_Payrolls() {
       var services = SialServices.ServiceInteractor();
 
       var query = new SialPayrollsQuery {
-        Status = EntityStatus.Pending,
         FromDate = DateTime.Parse("01-09-2025"),
         ToDate = DateTime.Parse("30-09-2025")
       };
 
       FixedList<SialPayrollDto> sut = services.SearchPayrolls(query);
-
-      Assert.NotNull(sut);
-    }
-
-
-    [Fact]
-    public void Should_Get_PayrollDataDetail() {
-      var services = SialServices.ServiceInteractor();
-
-      FixedList<SialDetailEntryDto> sut = services.GetPayrollsDetailEntries(DateTime.Parse("30/09/2025"));
 
       Assert.NotNull(sut);
     }

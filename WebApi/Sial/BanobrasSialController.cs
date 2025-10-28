@@ -13,8 +13,11 @@ using System.Web.Http;
 using Empiria.StateEnums;
 using Empiria.WebApi;
 
-using Empiria.BanobrasIntegration.Sial;
+using Empiria.Banobras.Budgeting.Adapters;
+using Empiria.Banobras.Budgeting.Services;
+
 using Empiria.BanobrasIntegration.Sial.Adapters;
+using Empiria.BanobrasIntegration.Sial.Services;
 
 namespace Empiria.PYC.WebApi.BanobrasIntegration {
 
@@ -22,6 +25,25 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
   public class BanobrasSialController : WebApiController {
 
     #region Web Apis
+
+    [HttpPost]
+    [Route("v2/pyc/integration/sial/payrolls/{payrollUID:int}/export")]
+    public SingleObjectModel ExportPayrollToBudgetingInterface([FromUri] int payrollUID) {
+
+
+      using (var payrollServices = SialServices.ServiceInteractor()) {
+        BudgetingTransactionDto payrollTxn =
+                         payrollServices.ConvertPayrollToBudgetingInterface(payrollUID);
+
+        using (var budgetingServices = BudgetingServices.ServiceInteractor()) {
+          //FileDto excelFile = budgetingServices.ExportToExcel(payrollTxn);
+
+          // return new SingleObjectModel(base.Request, excelFile);
+          throw new System.NotImplementedException("Export to Excel file.");
+        }  // budgetingServices
+      }  // payrollServices
+    }
+
 
     [HttpPost]
     [Route("v2/pyc/integration/sial/payrolls")]

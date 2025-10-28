@@ -8,8 +8,6 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
-
 using Empiria.Data;
 using Empiria.StateEnums;
 
@@ -17,18 +15,6 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
   /// <summary>Provides data access for SIAL payroll data.</summary>
   static internal class SialDataService {
-
-    static internal FixedList<NominaDetalleEntry> GetDetalle(DateTime payrollDate) {
-      var sql = "SELECT * " +
-                "FROM NOMINA_DETALLE " +
-                "WHERE " +
-                $"BGM_FECHA_VOL = {DataCommonMethods.FormatSqlDbDate(payrollDate)}";
-
-      var op = DataOperation.Parse(sql);
-
-      return DataReader.GetPlainObjectFixedList<NominaDetalleEntry>(op);
-    }
-
 
     static internal NominaEncabezado GetPayroll(int payrollUID) {
 
@@ -38,6 +24,18 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
       var op = DataOperation.Parse(sql);
 
       return DataReader.GetPlainObject<NominaEncabezado>(op);
+    }
+
+
+    static internal FixedList<NominaDetalle> GetPayrollEntries(int payrollUID) {
+      var sql = "SELECT * " +
+                "FROM NOMINA_DETALLE " +
+                "WHERE " +
+                $"BGM_NUM_VOL = {payrollUID}";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObjectFixedList<NominaDetalle>(op);
     }
 
 

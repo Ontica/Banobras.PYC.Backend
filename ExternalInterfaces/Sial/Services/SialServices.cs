@@ -8,15 +8,15 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
-
 using Empiria.Services;
 using Empiria.StateEnums;
+
+using Empiria.Banobras.Budgeting.Adapters;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Data;
 
-namespace Empiria.BanobrasIntegration.Sial {
+namespace Empiria.BanobrasIntegration.Sial.Services {
 
   /// <summary>Implements Banobras SIAL System services.</summary>
   public class SialServices : Service {
@@ -35,13 +35,24 @@ namespace Empiria.BanobrasIntegration.Sial {
 
     #region Methods
 
-    public FixedList<SialDetailEntryDto> GetPayrollsDetailEntries(DateTime payrollDate) {
+    public BudgetingTransactionDto ConvertPayrollToBudgetingInterface(int payrollUID) {
 
-      Assertion.Require(payrollDate, nameof(payrollDate));
+      NominaEncabezado payroll = SialDataService.GetPayroll(payrollUID);
 
-      FixedList<NominaDetalleEntry> entries = SialDataService.GetDetalle(payrollDate);
+      FixedList<NominaDetalle> entries = SialDataService.GetPayrollEntries(payrollUID);
 
-      return SialMapper.MapToPayrollDetailEntries(entries);
+      return new BudgetingTransactionDto {
+        Description = payroll.Descripcion,
+        Entries = entries.Select(x => new BudgetingEntryDto {
+          Year = payroll.Fecha.Year,
+          Month = payroll.Fecha.Month,
+          Day = payroll.Fecha.Day,
+          OrgUnitCode = x.Area,
+          OperationNo = x.Folio.ToString(),
+          BudgetAccountNo = x.CuentaPresupuestal,
+          Amount = x.Importe,
+        }).ToFixedList()
+      };
     }
 
 
@@ -72,4 +83,4 @@ namespace Empiria.BanobrasIntegration.Sial {
 
   } // class SialServices
 
-} // namespace Empiria.BanobrasIntegration.Sial
+} // namespace Empiria.BanobrasIntegration.Sial.Services
