@@ -8,6 +8,8 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using Empiria.Parties;
+
 using Empiria.Financial.Integration;
 using Empiria.Financial.Rules;
 
@@ -25,15 +27,18 @@ namespace Empiria.BanobrasIntegration.Sial {
       get; private set;
     }
 
+
     [DataField("BGM_FOLIO_VOL")]
     public int Folio {
       get; private set;
     }
 
+
     [DataField("BGM_AREA")]
     public string Area {
       get; private set;
     }
+
 
     [DataField("BGM_REG_CONTABLE")]
     private string _cuentaContable = string.Empty;
@@ -44,15 +49,18 @@ namespace Empiria.BanobrasIntegration.Sial {
       }
     }
 
+
     [DataField("BGM_CVE_MOV", ConvertFrom = typeof(int))]
     public int TipoMovimiento {
       get; private set;
     }
 
+
     [DataField("BGM_IMPORTE", ConvertFrom = typeof(decimal))]
     public decimal Importe {
       get; private set;
     }
+
 
     public string CuentaPresupuestal {
       get {
@@ -64,6 +72,41 @@ namespace Empiria.BanobrasIntegration.Sial {
 
         return rule.CreditConcept;
       }
+    }
+
+
+    public string NoOperacion {
+      get {
+        return $"{NoNomina:D8}-{Folio:D4}";
+      }
+    }
+
+
+    public string NombreCuentaContable {
+      get {
+        return "No determinado";
+        // return IntegrationLibrary.GetAccountingAcctName(CuentaContable);
+      }
+    }
+
+
+    public string NombreArea {
+      get {
+        Party orgUnit = OrganizationalUnit.TryParseWithID(Area);
+
+        return orgUnit != null ? orgUnit.Name : $"El área '{Area}' no está registrada en el sistema PYC.";
+      }
+    }
+
+
+    public string NombreCuentaPresupuestal {
+      get {
+        return "No determinado";
+      }
+    }
+
+    internal string GetObservations() {
+      return string.Empty;
     }
 
   } // class NominaDetalle

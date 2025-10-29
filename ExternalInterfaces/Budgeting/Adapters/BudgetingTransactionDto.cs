@@ -56,6 +56,26 @@ namespace Empiria.Banobras.Budgeting.Adapters {
       get; set;
     }
 
+    public string OrgUnitName {
+      get; internal set;
+    }
+
+    public string BudgetAccountName {
+      get; internal set;
+    }
+
+    public string AccountingAcctNo {
+      get; internal set;
+    }
+
+    public string AccountingAcctName {
+      get; internal set;
+    }
+
+    public string Observations {
+      get; internal set;
+    }
+
   }  // class BudgetingEntryDto
 
 }  // namespace Empiria.Banobras.Budgeting.Adapters

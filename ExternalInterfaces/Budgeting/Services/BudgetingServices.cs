@@ -1,20 +1,23 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras SIAL Integration                    Component : Web Api                               *
-*  Assembly : Banobras.PYC.WebApi.dll                      Pattern   : Web Api Controller                    *
-*  Type     : BanobrasSialController                       License   : Please read LICENSE.txt file          *
+*  Module   : Banobras Budgeting External Interfaces       Component : Services Layer                        *
+*  Assembly : Banobras.PYC.WebApi.dll                      Pattern   : Services interactor                   *
+*  Type     : BudgetingServices                            License   : Please read LICENSE.txt file          *
 *                                                                                                            *
-*  Summary  : Web API for Sial System integration.                                                           *
+*  Summary  : Provides Banobras budgeting-related services.                                                  *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using Empiria.Office;
 using Empiria.Services;
 using Empiria.Storage;
 
 using Empiria.Banobras.Budgeting.Adapters;
+using Empiria.Banobras.Budgeting.Exporters;
 
 namespace Empiria.Banobras.Budgeting.Services {
 
+  /// <summary>Provides Banobras budgeting-related services.</summary>
   public class BudgetingServices : Service {
 
     #region Constructors and parsers
@@ -32,7 +35,15 @@ namespace Empiria.Banobras.Budgeting.Services {
     public FileDto ExportToExcel(BudgetingTransactionDto budgetingTxn) {
       Assertion.Require(budgetingTxn, nameof(budgetingTxn));
 
-      throw new System.NotImplementedException();
+      var templateUID = $"{this.GetType().Name}.ExportBudgetingTransactionDto";
+
+      var templateConfig = FileTemplateConfig.Parse(templateUID);
+
+      var exporter = new BudgetingTransactionExcelBuilder(templateConfig);
+
+      ExcelFile excelFile = exporter.CreateExcelFile(budgetingTxn);
+
+      return excelFile.ToFileDto();
     }
 
   }  // class BudgetingServices

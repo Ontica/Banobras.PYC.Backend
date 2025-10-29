@@ -30,8 +30,8 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
     static internal FixedList<NominaDetalle> GetPayrollEntries(int payrollUID) {
       var sql = "SELECT * " +
                 "FROM NOMINA_DETALLE " +
-                "WHERE " +
-                $"BGM_NUM_VOL = {payrollUID}";
+                $"WHERE BGM_NUM_VOL = {payrollUID} " +
+                "ORDER BY BGM_FOLIO_VOL";
 
       var op = DataOperation.Parse(sql);
 

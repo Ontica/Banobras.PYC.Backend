@@ -11,6 +11,7 @@
 using System.Web.Http;
 
 using Empiria.StateEnums;
+using Empiria.Storage;
 using Empiria.WebApi;
 
 using Empiria.Banobras.Budgeting.Adapters;
@@ -18,6 +19,7 @@ using Empiria.Banobras.Budgeting.Services;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Services;
+
 
 namespace Empiria.PYC.WebApi.BanobrasIntegration {
 
@@ -36,10 +38,9 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
                          payrollServices.ConvertPayrollToBudgetingInterface(payrollUID);
 
         using (var budgetingServices = BudgetingServices.ServiceInteractor()) {
-          //FileDto excelFile = budgetingServices.ExportToExcel(payrollTxn);
+          FileDto excelFile = budgetingServices.ExportToExcel(payrollTxn);
 
-          // return new SingleObjectModel(base.Request, excelFile);
-          throw new System.NotImplementedException("Export to Excel file.");
+          return new SingleObjectModel(base.Request, excelFile);
         }  // budgetingServices
       }  // payrollServices
     }

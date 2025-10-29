@@ -62,15 +62,19 @@
     <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'Multisolutions' ">
+    <PackageReference Include="Empiria.Office" Version="2.0.0" />
     <PackageReference Include="Empiria.Services" Version="1.0.0" />
     <PackageReference Include="Empiria.WebApi.Client" Version="2.0.0" />
     <PackageReference Include="Empiria.Financial.Core" Version="1.0.0" />
+    <PackageReference Include="Empiria.Budgeting.Explorer" Version="2.0.0" />
     <PackageReference Include="Empiria.Payments.Core" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
+    <ProjectReference Include="..\..\extensions\Office\Empiria.Office.csproj" />
     <ProjectReference Include="..\..\extensions\Services\Empiria.Services.csproj" />
     <ProjectReference Include="..\..\extensions\WebApi.Client\Empiria.WebApi.Client.csproj" />
     <ProjectReference Include="..\..\financial.management\Core\Core\Empiria.Financial.Core.csproj" />
+    <ProjectReference Include="..\..\financial.management\Budgeting\Explorer\Empiria.Budgeting.Explorer.csproj" />
     <ProjectReference Include="..\..\financial.management\Payments\Core\Empiria.Payments.Core.csproj" />
   </ItemGroup>
 </Project>

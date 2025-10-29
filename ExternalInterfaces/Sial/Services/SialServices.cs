@@ -42,15 +42,20 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
       FixedList<NominaDetalle> entries = SialDataService.GetPayrollEntries(payrollUID);
 
       return new BudgetingTransactionDto {
-        Description = payroll.Descripcion,
+        Description = $"{payroll.NoNomina} - {payroll.Descripcion}",
         Entries = entries.Select(x => new BudgetingEntryDto {
           Year = payroll.Fecha.Year,
           Month = payroll.Fecha.Month,
           Day = payroll.Fecha.Day,
           OrgUnitCode = x.Area,
-          OperationNo = x.Folio.ToString(),
+          OperationNo = x.NoOperacion,
           BudgetAccountNo = x.CuentaPresupuestal,
           Amount = x.Importe,
+          AccountingAcctNo = x.CuentaContable,
+          AccountingAcctName = x.NombreCuentaContable,
+          OrgUnitName = x.NombreArea,
+          BudgetAccountName = x.NombreCuentaPresupuestal,
+          Observations = x.GetObservations()
         }).ToFixedList()
       };
     }
