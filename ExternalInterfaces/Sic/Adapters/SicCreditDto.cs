@@ -43,7 +43,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
       get; internal set;
     }
 
-    public OrganizationalUnit Area {
+    public OrganizationalUnit OrganizationalUnit {
       get; internal set;
     }
 

@@ -44,7 +44,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
         CreditType = credit.ClaveTipoCredito,
         ExternalCreditNo = credit.CreditoNo.ToString(),
         Currency = MapCurrency(credit.Moneda),
-        Area = MapArea(credit.Area),
+        OrganizationalUnit = MapArea(credit.Area),
         StandardAccount = credit.CuentaStandard,
         CurrentBalance = credit.Saldo,
         InvestmentTerm = credit.PlazoInversion,
