@@ -8,7 +8,9 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
 using Empiria.Data;
+using Empiria.HumanResources;
 using Empiria.StateEnums;
 
 namespace Empiria.BanobrasIntegration.Sial.Data {
@@ -66,6 +68,35 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
       DataWriter.Execute(op);
     }
 
+
+    static internal FixedList<SialOrganizationUnitEntry> GetOrganizationUnitEntries() {
+
+      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
+                $"ORDER BY CLAVE_AREA, NIVEL_CLAVE";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObjectFixedList<SialOrganizationUnitEntry>(op);
+    }
+
+    static internal SialOrganizationUnitEmployeeEntry TryGetEmployeeNo(string employeeNo) {
+
+      var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_UNIDAD@INTRAN " +
+                $"WHERE ID_USUARIO = '{employeeNo}'";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObject<SialOrganizationUnitEmployeeEntry>(op, null);
+    }
+
+    internal static FixedList<SialOrganizationUnitEmployeeEntry> GetOrganizationUnitEmployeesEntries() {
+
+      var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_UNIDAD@INTRAN";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObjectFixedList<SialOrganizationUnitEmployeeEntry>(op);
+    }
   }  // class SialDataService
 
 }  // namespace Empiria.BanobrasIntegration.Sial.Data

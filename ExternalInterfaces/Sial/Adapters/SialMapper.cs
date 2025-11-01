@@ -54,8 +54,44 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
       }).ToFixedList();
     }
 
+
+    static internal FixedList<SialOrganizationUnitEntryDto> MapToOrganizationUnitEntries(FixedList<SialOrganizationUnitEntry> entries) {
+      return entries.Select(x => new SialOrganizationUnitEntryDto {
+        OrganizationUnitNo = x.NoArea,
+        OrganizationUnitName = EmpiriaString.Clean(x.Descripcion),
+        SupervisingUnitNo = x.NoAreaSupervision,
+        SupervisingUnitName = EmpiriaString.Clean(x.AreaSupervision),
+        HierarchicalLevel = x.noNivel
+      }).ToFixedList();
+    }
+
+
+    static internal SialOrganizationUnitEmployeeEntryDto MapToOrganizationUnitEmployeeEntries(SialOrganizationUnitEmployeeEntry employee) {
+      return new SialOrganizationUnitEmployeeEntryDto {
+        EmployeeNo = employee.NoEmpleado.ToString(),
+        Name = EmpiriaString.Clean(employee.Nombre),
+        LastName = EmpiriaString.Clean(employee.ApellidoNombre),
+        OrganizationUnitNo = employee.NoArea,
+        JobNo = employee.NoPuesto,
+        JobTitle = EmpiriaString.Clean(employee.Puesto),
+        JobCategoryNo = employee.NoTabulador,
+      };
+    }
+
+    internal static FixedList<SialOrganizationUnitEmployeeEntryDto> MapToOrganizationUnitEmployeesEntries(FixedList<SialOrganizationUnitEmployeeEntry> entries) {
+      return entries.Select(x => new SialOrganizationUnitEmployeeEntryDto {
+        EmployeeNo = x.NoEmpleado.ToString(),
+        Name = EmpiriaString.Clean(x.Nombre),
+        LastName = EmpiriaString.Clean(x.ApellidoNombre),
+        OrganizationUnitNo = x.NoArea,
+        JobNo = x.NoPuesto,
+        JobTitle = EmpiriaString.Clean(x.Puesto),
+        JobCategoryNo = x.NoTabulador,
+      }).ToFixedList();
+    }
+
     #endregion Mappers
 
-  } // class SialMapper
+    } // class SialMapper
 
-}  //namespace Empiria.BanobrasIntegration.Sial.Adapters
+  }  //namespace Empiria.BanobrasIntegration.Sial.Adapters

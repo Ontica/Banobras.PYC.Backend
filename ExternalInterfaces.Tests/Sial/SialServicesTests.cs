@@ -18,6 +18,7 @@ using Empiria.Banobras.Budgeting.Adapters;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Services;
+using Empiria.Financial.Adapters;
 
 namespace Empiria.Tests.BanobrasIntegration.Sial {
 
@@ -59,6 +60,37 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
 
       services.UpdatePayrollStatus(9903739, EntityStatus.Deleted);
     }
+
+
+    [Fact]
+    public void Should_Get_OrganizationUnitData_OrgUnit() {
+      var services = SialServices.ServiceInteractor();
+
+      FixedList<ISialOrganizationUnitData> sut = services.GetOrganizationUnitEntries();
+
+      Assert.NotNull(sut);
+    }
+
+
+    [Fact]
+    public void Should_Get_OrganizationUnitData_Employees() {
+      var services = SialServices.ServiceInteractor();
+
+      FixedList<ISialOrganizationUnitEmployeesData> sut = services.GetOrganizationUnitEmployeesEntries();
+
+      Assert.NotNull(sut);
+    }
+
+
+    [Fact]
+    public void Should_Get_OrganizationUnitData_By_EmployeeNo() {
+      var services = SialServices.ServiceInteractor();
+
+      ISialOrganizationUnitEmployeesData sut = services.TryGetEmployeeNo("124809");
+
+      Assert.NotNull(sut);
+    }
+
 
     #endregion Facts
 

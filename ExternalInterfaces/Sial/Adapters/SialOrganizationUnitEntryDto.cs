@@ -1,56 +1,41 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras Sial Services                     Component : Adapters Layer                          *
+*  Module   : Banobras SIAL Integration                  Component : Adapters Layer                          *
 *  Assembly : Banobras.PYC.ExternalInterfaces            Pattern   : Output DTO                              *
-*  Type     : SialDetailDto                              License   : Please read LICENSE.txt file            *
+*  Type     : OrganizationUnitEntryDto                   License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : Output DTO used to return SIAL payroll data detail                                             *
+*  Summary  : Output DTO used to return a SIAL organization unit.                                            *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
+using Empiria.Financial.Adapters;
+using Empiria.Parties;
 
 namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
-  /// <summary>Output DTO used to return SIAL payroll data detail</summary>
-  public class SialDetailDto {
-
-    public int PayrollNo {
+  /// <summary>Output DTO used to return a SIAL organization unit.</summary>
+  public class SialOrganizationUnitEntryDto : ISialOrganizationUnitData {
+     
+    public string OrganizationUnitNo {
       get; internal set;
     }
 
-    public DateTime PayrollDate {
+    public string OrganizationUnitName {
+         get; internal set;
+    }
+
+    public string SupervisingUnitNo {  
       get; internal set;
     }
 
-    public string AreaNo {
+    public string SupervisingUnitName {
       get; internal set;
     }
 
-    public int ConceptNo {
+    public int HierarchicalLevel {
       get; internal set;
     }
 
-    public string AccountNo {
-      get; internal set;
-    }
-
-    public string SectorNo {
-      get; internal set;
-    }
-
-    public string SubledgerAccountNo {
-      get; internal set;
-    }
-
-    public int TypeMovement{
-      get; internal set;
-    }
-
-    public decimal Amount {
-      get; internal set;
-    }
-
-  }  // class SialDetailDto
+  }  // class OrganizationUnitEntryDto
 
 } // namespace Empiria.BanobrasIntegration.Sial.Adapters

@@ -15,11 +15,13 @@ using Empiria.Banobras.Budgeting.Adapters;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Data;
+using Empiria.Financial.Adapters;
+
 
 namespace Empiria.BanobrasIntegration.Sial.Services {
 
   /// <summary>Implements Banobras SIAL System services.</summary>
-  public class SialServices : Service {
+  public class SialServices : Service, ISialOrganizationUnitService {
 
     #region Constructors and parsers
 
@@ -60,7 +62,6 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
       };
     }
 
-
     public FixedList<SialPayrollDto> SearchPayrolls(SialPayrollsQuery query) {
       Assertion.Require(query, nameof(query));
 
@@ -82,6 +83,38 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
       NominaEncabezado payroll = SialDataService.GetPayroll(payrollUID);
 
       return SialMapper.Map(payroll);
+    }
+
+
+    public FixedList<ISialOrganizationUnitData> GetOrganizationUnitEntries() {
+
+      FixedList<SialOrganizationUnitEntry> entries = SialDataService.GetOrganizationUnitEntries();
+
+      return SialMapper.MapToOrganizationUnitEntries(entries)
+                      .Select(x => (ISialOrganizationUnitData) x)
+                      .ToFixedList();
+    }
+
+
+    public ISialOrganizationUnitEmployeesData TryGetEmployeeNo(string employeeNo) {
+      Assertion.Require(employeeNo, nameof(employeeNo));
+
+      SialOrganizationUnitEmployeeEntry employee = SialDataService.TryGetEmployeeNo(employeeNo);
+
+      if (employee == null) {
+        return null;
+      }
+
+      return SialMapper.MapToOrganizationUnitEmployeeEntries(employee);
+    }
+
+    public FixedList<ISialOrganizationUnitEmployeesData> GetOrganizationUnitEmployeesEntries() {
+
+      FixedList<SialOrganizationUnitEmployeeEntry> entries = SialDataService.GetOrganizationUnitEmployeesEntries();
+
+      return SialMapper.MapToOrganizationUnitEmployeesEntries(entries)
+                      .Select(x => (ISialOrganizationUnitEmployeesData) x)
+                      .ToFixedList();
     }
 
     #endregion Methods
