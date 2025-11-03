@@ -40,6 +40,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
         AccountNo = credit.CreditoNo.ToString(),
         Borrower = EmpiriaString.Clean(credit.NombreCliente),
         SubledgerAccountNo = EmpiriaString.Clean(credit.Auxiliar),
+        OrganizationalUnit = MapArea(credit.Area),
         CreditStage = credit.EtapaCredito.ToString(),
         CreditType = credit.ClaveTipoCredito,
         ExternalCreditNo = credit.CreditoNo.ToString(),

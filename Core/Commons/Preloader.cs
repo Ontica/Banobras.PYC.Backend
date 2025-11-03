@@ -51,8 +51,8 @@ namespace Empiria.Banobras.PYC {
         _ = BaseObject.GetFullList<StandardAccount>();
         _ = BaseObject.GetFullList<FinancialProject>();
         _ = BaseObject.GetFullList<FinancialAccount>();
-        _ = BaseObject.GetFullList<BudgetAccountSegment>();
-        _ = BaseObject.GetFullList<BudgetAccount>();
+        _ = BaseObject.GetFullList<FormerBudgetAcctSegment>();
+        _ = BaseObject.GetFullList<FormerBudgetAccount>();
 
         EmpiriaLog.Info($"Banobras PYC application preloading ends at {DateTime.Now}.");
       } catch {

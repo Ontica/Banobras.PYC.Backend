@@ -23,6 +23,10 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
       get; internal set;
     }
 
+    public OrganizationalUnit OrganizationalUnit {
+      get; internal set;
+    }
+
     public string SubledgerAccountNo {
       get; internal set;
     }
