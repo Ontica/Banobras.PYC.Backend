@@ -25,8 +25,8 @@
     <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/WebApi</PackageProjectUrl>
     <PackageIconUrl>http://www.ontica.org/logo.ontica.png</PackageIconUrl>
     <PackageTags>
-      Control presupuestal, flujo de efectivo, pago a proveedores, proyectos, contratos, programas,
-      gasto corriente, servicios web, PYC, Banca de desarrollo, BANOBRAS, México
+      Control presupuestal, flujo de efectivo, pagos, proyectos financieros, contratos de suministro, programas,
+      gasto corriente, adquisiciones, servicios web, PYC, Banca de desarrollo, BANOBRAS, México
     </PackageTags>
     <RepositoryUrl>https://github.com/Ontica/Banobras.PYC</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -69,9 +69,6 @@
     <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\financial.management\Core\WebApi\Empiria.Financial.Core.WebApi.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'Multisolutions' ">
@@ -82,9 +79,11 @@
     <PackageReference Include="Empiria.Data.Oracle" Version="7.0.0" />
     <PackageReference Include="Empiria.Central.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Billing.WebApi" Version="2.0.0" />
+    <PackageReference Include="Empiria.Financial.Core.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.Budgeting.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.CashFlow.WebApi" Version="1.0.0" />
     <PackageReference Include="Empiria.Payments.WebApi" Version="1.0.0" />
+    <PackageReference Include="Empiria.Orders.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Inventory.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Procurement.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Operations.Integration.WebApi" Version="8.0.0" />
@@ -98,10 +97,12 @@
     <ProjectReference Include="..\..\workflow\Workflow.WebApi\Empiria.Workflow.WebApi.csproj" />
     <ProjectReference Include="..\..\extensions\Data.Oracle\Empiria.Data.Oracle.csproj" />
     <ProjectReference Include="..\..\central\Central.WebApi\Empiria.Central.WebApi.csproj" />
+    <ProjectReference Include="..\..\financial.management\Core\WebApi\Empiria.Financial.Core.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Billing\WebApi\Empiria.Billing.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\CashFlow\WebApi\Empiria.CashFlow.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Payments\WebApi\Empiria.Payments.WebApi.csproj" />
+    <ProjectReference Include="..\..\operations.management\Orders\WebApi\Empiria.Orders.WebApi.csproj" />
     <ProjectReference Include="..\..\operations.management\Inventory\WebApi\Empiria.Inventory.WebApi.csproj" />
     <ProjectReference Include="..\..\operations.management\Procurement\WebApi\Empiria.Procurement.WebApi.csproj" />
     <ProjectReference Include="..\..\operations.management\Integration\WebApi\Empiria.Operations.Integration.WebApi.csproj" />
