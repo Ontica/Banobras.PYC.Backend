@@ -13,8 +13,6 @@ using System.Threading.Tasks;
 
 using Empiria.Contacts;
 using Empiria.Parties;
-
-using Empiria.Budgeting;
 using Empiria.Financial;
 using Empiria.Financial.Projects;
 
@@ -51,8 +49,6 @@ namespace Empiria.Banobras.PYC {
         _ = BaseObject.GetFullList<StandardAccount>();
         _ = BaseObject.GetFullList<FinancialProject>();
         _ = BaseObject.GetFullList<FinancialAccount>();
-        _ = BaseObject.GetFullList<FormerBudgetAcctSegment>();
-        _ = BaseObject.GetFullList<FormerBudgetAccount>();
 
         EmpiriaLog.Info($"Banobras PYC application preloading ends at {DateTime.Now}.");
       } catch {
