@@ -33,6 +33,18 @@ namespace Empiria.Banobras.Budgeting.WebApi {
       }
     }
 
+
+    [HttpPost]
+    [Route("v2/sigevi/integration/budgeting/request-budget")]
+    public SingleObjectModel RequestBudget([FromBody] ExternalBudgetRequestFields fields) {
+
+      using (var usecases = ExternalBudgetingUseCases.UseCaseInteractor()) {
+        ExternalBudgetRequestDto requestedBudget = usecases.RequestBudget(fields);
+
+        return new SingleObjectModel(base.Request, requestedBudget);
+      }
+    }
+
     #endregion Web Apis
 
   }  // class ExternalBudgetingController
