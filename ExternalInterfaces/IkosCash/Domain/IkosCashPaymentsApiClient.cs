@@ -47,12 +47,11 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       var jsonString = await response.Content.ReadAsStringAsync();
 
-      IkosCashCancelTransactionResult[] resultArray = JsonConvert.DeserializeObject<IkosCashCancelTransactionResult[]>(jsonString);
+      IkosCashCancelTransactionResult[] result = JsonConvert.DeserializeObject<IkosCashCancelTransactionResult[]>(jsonString);
 
-      Assertion.Require(resultArray != null && resultArray.Length > 0,
-                  "Ocurrió un problema al leer el regreso de la llamada a IKosCash. La respuesta regresó vacía.");
+      EnsureIkosCashSuccessResponse(result);
 
-      return resultArray[0];
+      return result[0];
     }
 
 
@@ -82,12 +81,11 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       var jsonString = await response.Content.ReadAsStringAsync();
 
-      IkosStatusDto[] resultArray = JsonConvert.DeserializeObject<IkosStatusDto[]>(jsonString);
+      IkosStatusDto[] result = JsonConvert.DeserializeObject<IkosStatusDto[]>(jsonString);
 
-      Assertion.Require(resultArray != null && resultArray.Length > 0,
-                        "Ocurrió un problema al leer el regreso de la llamada a IKosCash. La respuesta regresó vacía.");
+      EnsureIkosCashSuccessResponse(result);
 
-      return resultArray[0];
+      return result[0];
     }
 
 
@@ -103,13 +101,16 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       var jsonString = await response.Content.ReadAsStringAsync();
 
-      IkosCashTransactionResult[] resultArray = JsonConvert.DeserializeObject<IkosCashTransactionResult[]>(jsonString);
+      IkosCashTransactionResult[] result = JsonConvert.DeserializeObject<IkosCashTransactionResult[]>(jsonString);
 
+      EnsureIkosCashSuccessResponse(result);
 
-      Assertion.Require(resultArray != null && resultArray.Length > 0,
+      return result[0];
+    }
+
+    private void EnsureIkosCashSuccessResponse(Array result) {
+      Assertion.Require(result != null && result.Length > 0,
                         "Ocurrió un problema al leer el regreso de la llamada a IKosCash. La respuesta regresó vacía.");
-
-      return resultArray[0];
     }
 
     #endregion Methods
