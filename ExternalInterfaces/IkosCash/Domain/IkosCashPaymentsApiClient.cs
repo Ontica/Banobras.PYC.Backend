@@ -10,9 +10,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
@@ -38,6 +38,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     internal async Task<IkosCashCancelTransactionResult> CancelPaymentTransaction(IkosCashCancelTransactionPayload fields) {
       Assertion.Require(fields, nameof(fields));
 
+      await EnsureAccessTokenIsCreated();
+
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("delete/message",
                                                                        new IkosCashCancelTransactionPayload[1] { fields });
 
@@ -56,6 +58,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     internal async Task<List<DepartamentoDto>> GetDepartamentos(int idSistema) {
 
+      await EnsureAccessTokenIsCreated();
+
       HttpResponseMessage response = await _httpClient.GetAsync($"catalogos/departamento/{idSistema}");
 
       response.EnsureSuccessStatusCode();
@@ -68,6 +72,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     internal async Task<IkosStatusDto> GetPaymentTransactionStatus(SolicitudStatus solicitud) {
       Assertion.Require(solicitud, nameof(solicitud));
+
+      await EnsureAccessTokenIsCreated();
 
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("operacion/status",
                                                                         new SolicitudStatus[1] { solicitud });
@@ -88,12 +94,10 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     internal async Task<IkosCashTransactionResult> SendPaymentTransaction(IkosCashTransactionPayload paymentTransaction) {
       Assertion.Require(paymentTransaction, nameof(paymentTransaction));
 
-      EmpiriaLog.Debug("Before api call PaymentTransaction");
+      await EnsureAccessTokenIsCreated();
 
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("recepcion/message",
                                                                   new IkosCashTransactionPayload[1] { paymentTransaction });
-
-      EmpiriaLog.Debug("After api call PaymentTransaction");
 
       response.EnsureSuccessStatusCode();
 
@@ -112,10 +116,15 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     #region Helpers
 
-    private async Task<string> GetClientToken() {
-      var clientToken = new IkosCashTokenApiClient();
+    private async Task EnsureAccessTokenIsCreated() {
 
-      return await clientToken.GetToken();
+      if (_httpClient.DefaultRequestHeaders.Contains("Token")) {
+        return;
+      }
+
+      var tokenClient = new IkosCashTokenApiClient();
+
+      _httpClient.DefaultRequestHeaders.Add("Token", await tokenClient.GetToken());
     }
 
 
