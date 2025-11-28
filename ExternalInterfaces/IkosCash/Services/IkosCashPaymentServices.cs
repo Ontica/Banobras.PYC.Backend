@@ -60,7 +60,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    PaymentInstructionResultDto IPaymentsBrokerService.SendPaymentInstruction(PaymentInstructionDto instruction) {
+    async Task<PaymentInstructionResultDto> IPaymentsBrokerService.SendPaymentInstruction(PaymentInstructionDto instruction) {
       Assertion.Require(instruction, nameof(instruction));
 
       IkosCashTransactionPayload transactionPayload = IkosCashMapper.MapToTransactionPayload(instruction);
@@ -73,9 +73,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       transactionPayload.Header.SetFirma(firma);
 
-      IkosCashTransactionResult result = _apiClient.SendPaymentTransaction(transactionPayload)
-                                                   .GetAwaiter()
-                                                   .GetResult();
+      IkosCashTransactionResult result = await _apiClient.SendPaymentTransaction(transactionPayload);
 
       return IkosCashMapper.MapToPaymentResultDto(result);
     }
