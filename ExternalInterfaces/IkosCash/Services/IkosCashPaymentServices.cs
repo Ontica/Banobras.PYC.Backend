@@ -36,14 +36,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    PaymentInstructionResultDto IPaymentsBrokerService.CancelPaymentInstruction(PaymentInstructionDto instruction) {
+    async Task<PaymentInstructionResultDto> IPaymentsBrokerService.CancelPaymentInstruction(PaymentInstructionDto instruction) {
       Assertion.Require(instruction, nameof(instruction));
 
       IkosCashCancelTransactionPayload cancelPayload = IkosCashMapper.MapToCancelTransactionPayload(instruction);
 
-      IkosCashCancelTransactionResult result = _apiClient.CancelPaymentTransaction(cancelPayload)
-                                                         .GetAwaiter()
-                                                         .GetResult();
+      IkosCashCancelTransactionResult result = await _apiClient.CancelPaymentTransaction(cancelPayload);
 
       return IkosCashMapper.MapToPaymentResultDto(result);
     }
