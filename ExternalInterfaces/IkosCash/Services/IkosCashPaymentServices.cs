@@ -49,12 +49,10 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    PaymentInstructionStatusDto IPaymentsBrokerService.GetPaymentInstructionStatus(string instructionUID) {
+    async Task<PaymentInstructionStatusDto> IPaymentsBrokerService.GetPaymentInstructionStatus(string instructionUID) {
       SolicitudStatus statusRequest = IkosCashMapper.MapToIkosSolicitudStatus(instructionUID);
 
-      var ikosStatus = _apiClient.GetPaymentTransactionStatus(statusRequest)
-                                 .GetAwaiter()
-                                 .GetResult();
+      var ikosStatus = await _apiClient.GetPaymentTransactionStatus(statusRequest);
 
       return IkosCashMapper.MapToPaymentInstructionStatus(ikosStatus);
     }
