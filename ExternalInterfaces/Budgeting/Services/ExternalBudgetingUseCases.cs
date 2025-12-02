@@ -64,6 +64,16 @@ namespace Empiria.Banobras.Budgeting.UseCases {
     }
 
 
+    public FixedList<OrgUnitDto> GetBudgetingOrganizationalUnits() {
+      var orgUnits = BaseObject.GetFullList<BudgetAccount>()
+                               .SelectDistinct(x => x.OrganizationalUnit)
+                               .OrderBy(x => x.Code);
+
+      return orgUnits.Select(x => ToOrgUnitDto(x))
+                     .ToFixedList();
+    }
+
+
     public ExternalBudgetRequestDto RequestBudget(ExternalBudgetRequestFields fields) {
       Assertion.Require(fields, nameof(fields));
 
@@ -159,6 +169,17 @@ namespace Empiria.Banobras.Budgeting.UseCases {
     }
 
     #endregion Use cases
+
+    #region Helpers
+
+    private OrgUnitDto ToOrgUnitDto(OrganizationalUnit x) {
+      return new OrgUnitDto {
+        Code = x.Code,
+        Name = x.Name
+      };
+    }
+
+    #endregion Helpers
 
   }  // class ExternalBudgetingUseCases
 

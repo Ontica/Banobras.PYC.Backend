@@ -34,6 +34,18 @@ namespace Empiria.Banobras.Budgeting.WebApi {
     }
 
 
+    [HttpGet]
+    [Route("v2/sigevi/integration/budgeting/organizational-units")]
+    public CollectionModel GetBudgetingOrganizationalUnits() {
+
+      using (var usecases = ExternalBudgetingUseCases.UseCaseInteractor()) {
+        FixedList<OrgUnitDto> orgUnits = usecases.GetBudgetingOrganizationalUnits();
+
+        return new CollectionModel(base.Request, orgUnits);
+      }
+    }
+
+
     [HttpPost]
     [Route("v2/sigevi/integration/budgeting/request-budget")]
     public SingleObjectModel RequestBudget([FromBody] ExternalBudgetRequestFields fields) {
