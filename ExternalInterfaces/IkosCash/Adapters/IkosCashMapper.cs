@@ -82,12 +82,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
              request.Header.FechaOperacion.ToString("yyyyMMdd") + ";" +
              request.Header.IdDepartamento + ";" +
              request.Header.IdConcepto + ";";
-             //request.Payload.InstitucionBen + ";" +
-             //request.Payload.NomBen + ";" +
-             //request.Payload.RfcBen + ";" +
-             //request.Payload.TipoCtaBen + ";" +
-             //request.Payload.CtaBen + ";" +
-             //request.Payload.Iva.ToString("0.00");
+      //request.Payload.InstitucionBen + ";" +
+      //request.Payload.NomBen + ";" +
+      //request.Payload.RfcBen + ";" +
+      //request.Payload.TipoCtaBen + ";" +
+      //request.Payload.CtaBen + ";" +
+      //request.Payload.Iva.ToString("0.00");
     }
 
 
@@ -124,8 +124,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
     static internal IkosCashTransactionPayload MapToTransactionPayload(PaymentInstructionDto instruction) {
       return new IkosCashTransactionPayload {
-         Header = MapTransactionHeader(instruction),
-         Payload = MapTransactionInnerPayload(instruction),
+        Header = MapTransactionHeader(instruction),
+        Payload = MapTransactionInnerPayload(instruction),
       };
     }
 
@@ -188,14 +188,14 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       }
     }
 
-    static private IkosCashTransactionHeader MapTransactionHeader(PaymentInstructionDto instruction) {    
+    static private IkosCashTransactionHeader MapTransactionHeader(PaymentInstructionDto instruction) {
       return new IkosCashTransactionHeader {
         IdSistemaExterno = instruction.RequestUniqueNo,
         IdUsuario = IkosCashConstantValues.TRANSACTION_ID_USUARIO,
         IdDepartamento = 40,
-        IdConcepto = 372,
-        ClaveCliente = "VON990614PG4",
-        Cuenta = "012180001556696260", //instruction.PaymentOrder.PaymentAccount.CLABE,
+        IdConcepto = 418, // ToDo Cambiar por costo financiero
+        ClaveCliente = instruction.PaymentOrder.PayTo.Code,
+        Cuenta = instruction.PaymentOrder.PaymentAccount.CLABE,
         FechaOperacion = instruction.RequestedTime,
         FechaValor = instruction.RequestedTime,
         Monto = instruction.PaymentOrder.Total,
@@ -209,26 +209,16 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
 
     static private IkosCashTransactionInnerPayload MapTransactionInnerPayload(PaymentInstructionDto instruction) {
-      string rfc = "";
-
-      if (instruction.PaymentOrder.PayTo is Organization organization) {
-        rfc = organization.TaxData.TaxCode;
-
-      } else if (instruction.PaymentOrder.PayTo is Person person) {
-        rfc = person.TaxData.TaxCode;
-      } else {
-        throw Assertion.EnsureNoReachThisCode($"Unhandled PaymentOrder.PayTo type: " +
-                                              $"{instruction.PaymentOrder.PayTo.PartyType.DisplayName}");
-      }
+      string rfc = ((ITaxableParty) instruction.PaymentOrder.PayTo).TaxData.TaxCode;
 
       return new IkosCashTransactionInnerPayload {
-        NomBen = "LA VIA ONTICA, S.C.",//instruction.PaymentOrder.PaymentAccount.HolderName,
+        NomBen = instruction.PaymentOrder.PaymentAccount.HolderName,
         RfcBen = rfc,
         ClaveRastreo = "",
         CtaBen = "",
         Iva = 0,
-        InstitucionBen = "40012",
-        TipoCtaBen = 40,
+        InstitucionBen = instruction.PaymentOrder.PaymentAccount.Institution.BrokerCode,
+        TipoCtaBen = int.Parse(instruction.PaymentOrder.PaymentMethod.BrokerCode),
       };
     }
 
