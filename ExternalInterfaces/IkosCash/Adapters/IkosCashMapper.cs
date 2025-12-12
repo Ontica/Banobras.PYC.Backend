@@ -12,8 +12,8 @@ using System;
 using System.Collections.Generic;
 
 using Empiria.Parties;
-using Empiria.Payments.Processor;
-using Empiria.Payments.Processor.Adapters;
+
+using Empiria.Payments.Adapters;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 

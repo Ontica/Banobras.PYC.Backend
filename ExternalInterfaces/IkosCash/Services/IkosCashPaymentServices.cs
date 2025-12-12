@@ -11,8 +11,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Empiria.Payments.Adapters;
+using Empiria.Payments.Processor;
+
 using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
-using Empiria.Payments.Processor.Adapters;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
@@ -58,6 +60,10 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     async Task<PaymentInstructionResultDto> IPaymentsBrokerService.SendPaymentInstruction(PaymentInstructionDto instruction) {
       Assertion.Require(instruction, nameof(instruction));
+      Assertion.Require(!instruction.PaymentOrder.IsEmptyInstance, nameof(instruction.PaymentOrder));
+      Assertion.Require(instruction.PaymentOrder.CanCreatePaymentInstruction(),
+                        "No se puede enviar la instrucción de pago debido a que " +
+                        $"la orden de pago está en estado {instruction.PaymentOrder.Status.GetName()}.");
 
       IkosCashTransactionPayload transactionPayload = IkosCashMapper.MapToTransactionPayload(instruction);
 
