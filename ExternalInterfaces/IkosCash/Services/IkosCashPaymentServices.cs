@@ -9,10 +9,11 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System.Collections.Generic;
+
 using System.Threading.Tasks;
 
-using Empiria.Payments.Adapters;
 using Empiria.Payments.Processor;
+using Empiria.Payments.Processor.Adapters;
 
 using Empiria.Payments.BanobrasIntegration.IkosCash.Adapters;
 
@@ -38,49 +39,60 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    async Task<PaymentInstructionResultDto> IPaymentsBrokerService.CancelPaymentInstruction(PaymentInstructionDto instruction) {
-      Assertion.Require(instruction, nameof(instruction));
+    async Task<BrokerResponseDto> IPaymentsBrokerService.CancelPaymentInstruction(BrokerRequestDto brokerRequest) {
+      Assertion.Require(brokerRequest, nameof(brokerRequest));
 
-      IkosCashCancelTransactionPayload cancelPayload = IkosCashMapper.MapToCancelTransactionPayload(instruction);
+      IkosCashCancelTransactionPayload cancelPayload = IkosCashMapper.MapToCancelTransactionPayload(brokerRequest);
 
       IkosCashCancelTransactionResult result = await _apiClient.CancelPaymentTransaction(cancelPayload);
 
-      return IkosCashMapper.MapToPaymentResultDto(result);
+      return IkosCashMapper.MapToBrokerResponseDto(result);
     }
 
 
-    async Task<PaymentInstructionStatusDto> IPaymentsBrokerService.GetPaymentInstructionStatus(string instructionUID) {
-      SolicitudStatus statusRequest = IkosCashMapper.MapToIkosSolicitudStatus(instructionUID);
+    async Task<BrokerResponseDto> IPaymentsBrokerService.RequestPaymentStatus(BrokerRequestDto brokerRequest) {
+      IkosStatusRequest ikosStatusRequest = IkosCashMapper.MapToIkosSolicitudStatus(brokerRequest);
 
-      var ikosStatus = await _apiClient.GetPaymentTransactionStatus(statusRequest);
+      IkosStatusDto ikosStatus = await _apiClient.RequestPaymentStatus(ikosStatusRequest);
 
-      return IkosCashMapper.MapToPaymentInstructionStatus(ikosStatus);
+      return IkosCashMapper.MapToBrokerResponseDto(brokerRequest, ikosStatus);
     }
 
 
-    async Task<PaymentInstructionResultDto> IPaymentsBrokerService.SendPaymentInstruction(PaymentInstructionDto instruction) {
+    async Task<BrokerResponseDto> IPaymentsBrokerService.SendPaymentInstruction(BrokerRequestDto instruction) {
       Assertion.Require(instruction, nameof(instruction));
-      Assertion.Require(!instruction.PaymentOrder.IsEmptyInstance, nameof(instruction.PaymentOrder));
-      Assertion.Require(instruction.PaymentOrder.CanCreatePaymentInstruction(),
+
+      PaymentOrder paymentOrder = instruction.PaymentOrder;
+
+      Assertion.Require(!paymentOrder.IsEmptyInstance, nameof(paymentOrder));
+      Assertion.Require(paymentOrder.PaymentInstructions.CanCreateNewInstruction(),
                         "No se puede enviar la instrucción de pago debido a que " +
-                        $"la orden de pago está en estado {instruction.PaymentOrder.Status.GetName()}.");
+                        $"la orden de pago está en estado {paymentOrder.Status.GetName()}.");
 
-      IkosCashTransactionPayload transactionPayload = IkosCashMapper.MapToTransactionPayload(instruction);
+      IkosCashTransactionPayload payload = IkosCashMapper.MapToIkosCashTransactionPayload(instruction);
 
-      string cadenaOriginal = IkosCashMapper.GetCadenaOriginalFirma(transactionPayload);
+      SetElectronicSign(payload);
 
-      var certificateServices = new CertificateServices(IkosCashConstantValues.GET_PYC_CERTIFICATE());
+      IkosCashInstructionResult result = await _apiClient.SendPaymentTransaction(payload);
 
-      string firma = certificateServices.Sign(cadenaOriginal);
-
-      transactionPayload.Header.SetFirma(firma);
-
-      IkosCashTransactionResult result = await _apiClient.SendPaymentTransaction(transactionPayload);
-
-      return IkosCashMapper.MapToPaymentResultDto(result);
+      return IkosCashMapper.MapToBrokerResponseDto(result);
     }
 
     #endregion Methods
+
+    #region Helpers
+
+    private void SetElectronicSign(IkosCashTransactionPayload payload) {
+      string cadenaOriginal = IkosCashMapper.GetCadenaOriginalFirma(payload);
+
+      var certificateServices = new CertificateServices(IkosCashConstantValues.GET_PYC_CERTIFICATE());
+
+      string esign = certificateServices.Sign(cadenaOriginal);
+
+      payload.Header.SetFirma(esign);
+    }
+
+    #endregion Helpers
 
   } // class PaymentService
 

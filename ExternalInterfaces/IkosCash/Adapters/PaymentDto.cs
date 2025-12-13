@@ -35,12 +35,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
 
   /// <summary>DTO used to get IKOS payment instruction status.</summary>
-  public class SolicitudStatus {
+  public class IkosStatusRequest {
 
     public string IdSolicitud {
       get; set;
     }
 
-  }  // class SolicitudStatus
+  }  // class IkosStatusRequest
 
 } // namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters

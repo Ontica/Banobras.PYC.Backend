@@ -2,16 +2,16 @@
 *                                                                                                            *
 *  Module   : Transaction Management                     Component : Interface adapters                      *
 *  Assembly : Ikos.Cash.Connector.dll                    Pattern   : Data Transfer Object                    *
-*  Type     : IkosCashTransactionResult                  License   : Please read LICENSE.txt file            *
+*  Type     : IkosCashInstructionResult                  License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : DTO that holds the result of a IkosCash payment result.                                        *
+*  Summary  : DTO that holds an IkosCash payment instruction result.                                         *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
-  /// <summary>DTO that holds the result of a IkosCash payment result.</summary>
-  public class IkosCashTransactionResult {
+  /// <summary>DTO that holds an IkosCash payment instruction result.</summary>
+  public class IkosCashInstructionResult {
 
     public string IdSistemaExterno {
       get; set;
@@ -32,6 +32,19 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       get; set;
     } = -1;
 
-  } // class IkosCashTransactionResult
+
+    public bool Successful {
+      get {
+        return Code == 0;
+      }
+    }
+
+    public bool Failed {
+      get {
+        return Code != 0;
+      }
+    }
+
+  } // class IkosCashInstructionResult
 
 } // namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters

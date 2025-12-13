@@ -69,13 +69,13 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    internal async Task<IkosStatusDto> GetPaymentTransactionStatus(SolicitudStatus solicitud) {
+    internal async Task<IkosStatusDto> RequestPaymentStatus(IkosStatusRequest solicitud) {
       Assertion.Require(solicitud, nameof(solicitud));
 
       await EnsureAccessTokenIsCreated();
 
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("operacion/status",
-                                                                        new SolicitudStatus[1] { solicitud });
+                                                                        new IkosStatusRequest[1] { solicitud });
 
       response.EnsureSuccessStatusCode();
 
@@ -89,7 +89,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    internal async Task<IkosCashTransactionResult> SendPaymentTransaction(IkosCashTransactionPayload paymentTransaction) {
+    internal async Task<IkosCashInstructionResult> SendPaymentTransaction(IkosCashTransactionPayload paymentTransaction) {
       Assertion.Require(paymentTransaction, nameof(paymentTransaction));
 
       await EnsureAccessTokenIsCreated();
@@ -101,16 +101,11 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       var jsonString = await response.Content.ReadAsStringAsync();
 
-      IkosCashTransactionResult[] result = JsonConvert.DeserializeObject<IkosCashTransactionResult[]>(jsonString);
+      IkosCashInstructionResult[] result = JsonConvert.DeserializeObject<IkosCashInstructionResult[]>(jsonString);
 
       EnsureIkosCashSuccessResponse(result);
 
       return result[0];
-    }
-
-    private void EnsureIkosCashSuccessResponse(Array result) {
-      Assertion.Require(result != null && result.Length > 0,
-                        "Ocurrió un problema al leer el regreso de la llamada a IKosCash. La respuesta regresó vacía.");
     }
 
     #endregion Methods
@@ -126,6 +121,12 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
       var tokenClient = new IkosCashTokenApiClient();
 
       _httpClient.DefaultRequestHeaders.Add("Token", await tokenClient.GetToken());
+    }
+
+
+    private void EnsureIkosCashSuccessResponse(Array result) {
+      Assertion.Require(result != null && result.Length > 0,
+                        "Ocurrió un problema al leer el regreso de la llamada a IkosCash. La respuesta regresó vacía.");
     }
 
 

@@ -12,8 +12,7 @@ using System;
 using System.Collections.Generic;
 
 using Empiria.Parties;
-
-using Empiria.Payments.Adapters;
+using Empiria.Payments.Processor.Adapters;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
@@ -64,9 +63,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
 
-    static internal SolicitudStatus MapToIkosSolicitudStatus(string idSolicitud) {
-      return new SolicitudStatus {
-        IdSolicitud = idSolicitud
+    static internal IkosStatusRequest MapToIkosSolicitudStatus(BrokerRequestDto brokerRequest) {
+      return new IkosStatusRequest {
+        IdSolicitud = brokerRequest.RequestUniqueNo
       };
     }
 
@@ -91,48 +90,56 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
 
-    static internal IkosCashCancelTransactionPayload MapToCancelTransactionPayload(PaymentInstructionDto instruction) {
+    static internal IkosCashCancelTransactionPayload MapToCancelTransactionPayload(BrokerRequestDto brokerRequest) {
       throw new NotImplementedException();
     }
 
 
-    static internal PaymentInstructionResultDto MapToPaymentResultDto(IkosCashTransactionResult result) {
-      if (result.Code == 0) {
-        return new PaymentInstructionResultDto {
-          PaymentNo = result.IdSistemaExterno,
-          ExternalRequestID = result.IdSolicitud,
-          Status = PaymentInstructionStatus.InProcess,
-          ExternalStatusName = GetStatusName('O'),
-          ExternalResultText = result.ErrorMesage
+    static internal BrokerResponseDto MapToBrokerResponseDto(IkosCashInstructionResult result) {
+
+      const char SUCCESSFUL_STATUS = 'O';
+      const char FAILED_STATUS = 'K';
+
+      if (result.Successful) {
+        return new BrokerResponseDto {
+          BrokerInstructionNo = result.IdSolicitud,
+
+          InstructionNo = result.IdSistemaExterno,
+          BrokerStatusText = GetStatusName(SUCCESSFUL_STATUS),
+          BrokerMessage = result.ErrorMesage,
+          Status = PaymentInstructionStatus.Requested,
         };
       }
 
-      return new PaymentInstructionResultDto {
-        PaymentNo = result.IdSistemaExterno,
-        ExternalRequestID = "La solicitud a IkosCash falló",
+      return new BrokerResponseDto {
+        BrokerInstructionNo = result.IdSolicitud,
+        InstructionNo = result.IdSistemaExterno,
         Status = PaymentInstructionStatus.Failed,
-        ExternalStatusName = GetStatusName('K'),
-        ExternalResultText = result.ErrorMesage
+        BrokerStatusText = GetStatusName(FAILED_STATUS),
+        BrokerMessage = result.ErrorMesage
       };
     }
 
 
-    static internal PaymentInstructionResultDto MapToPaymentResultDto(IkosCashCancelTransactionResult result) {
+    static internal BrokerResponseDto MapToBrokerResponseDto(IkosCashCancelTransactionResult result) {
       throw new NotImplementedException();
     }
 
 
-    static internal IkosCashTransactionPayload MapToTransactionPayload(PaymentInstructionDto instruction) {
+    static internal IkosCashTransactionPayload MapToIkosCashTransactionPayload(BrokerRequestDto brokerRequest) {
       return new IkosCashTransactionPayload {
-        Header = MapTransactionHeader(instruction),
-        Payload = MapTransactionInnerPayload(instruction),
+        Header = MapTransactionHeader(brokerRequest),
+        Payload = MapTransactionInnerPayload(brokerRequest)
       };
     }
 
-    static internal PaymentInstructionStatusDto MapToPaymentInstructionStatus(IkosStatusDto ikosStatus) {
-      return new PaymentInstructionStatusDto {
-        ExternalRequestID = ikosStatus.IdSolicitud,
-        ExternalStatusName = GetStatusName(ikosStatus.Status),
+
+    static internal BrokerResponseDto MapToBrokerResponseDto(BrokerRequestDto brokerRequest, IkosStatusDto ikosStatus) {
+      return new BrokerResponseDto {
+        BrokerInstructionNo = ikosStatus.IdSolicitud,
+        BrokerMessage = string.Empty,
+        InstructionNo = brokerRequest.RequestUniqueNo,
+        BrokerStatusText = GetStatusName(ikosStatus.Status),
         Status = MapStatus(ikosStatus.Status)
       };
     }
@@ -175,7 +182,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
         case 'P':
         case 'C':
         case 'V':
-          return PaymentInstructionStatus.InProcess;
+          return PaymentInstructionStatus.InProgress;
 
         case 'K':
           return PaymentInstructionStatus.Failed;
@@ -188,18 +195,18 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       }
     }
 
-    static private IkosCashTransactionHeader MapTransactionHeader(PaymentInstructionDto instruction) {
+    static private IkosCashTransactionHeader MapTransactionHeader(BrokerRequestDto brokerRequest) {
       return new IkosCashTransactionHeader {
-        IdSistemaExterno = instruction.RequestUniqueNo,
+        IdSistemaExterno = brokerRequest.RequestUniqueNo,
         IdUsuario = IkosCashConstantValues.TRANSACTION_ID_USUARIO,
         IdDepartamento = 40,
         IdConcepto = 418, // ToDo Cambiar por costo financiero
-        ClaveCliente = instruction.PaymentOrder.PayTo.Code,
-        Cuenta = instruction.PaymentOrder.PaymentAccount.CLABE,
-        FechaOperacion = instruction.RequestedTime,
-        FechaValor = instruction.RequestedTime,
-        Monto = instruction.PaymentOrder.Total,
-        Referencia = instruction.ReferenceNo,
+        ClaveCliente = brokerRequest.PaymentOrder.PayTo.Code,
+        Cuenta = brokerRequest.PaymentOrder.PaymentAccount.CLABE,
+        FechaOperacion = brokerRequest.RequestedTime,
+        FechaValor = brokerRequest.RequestedTime,
+        Monto = brokerRequest.PaymentOrder.Total,
+        Referencia = brokerRequest.ReferenceNo,
         ConceptoPago = "Pago Banobras, S.N.C.",
         Origen = IkosCashConstantValues.TRANSACTION_ORIGEN,
         SerieFirma = IkosCashConstantValues.SERIE_FIRMA,
@@ -208,17 +215,17 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
     }
 
 
-    static private IkosCashTransactionInnerPayload MapTransactionInnerPayload(PaymentInstructionDto instruction) {
-      string rfc = ((ITaxableParty) instruction.PaymentOrder.PayTo).TaxData.TaxCode;
+    static private IkosCashTransactionInnerPayload MapTransactionInnerPayload(BrokerRequestDto brokerRequest) {
+      string rfc = ((ITaxableParty) brokerRequest.PaymentOrder.PayTo).TaxData.TaxCode;
 
       return new IkosCashTransactionInnerPayload {
-        NomBen = instruction.PaymentOrder.PaymentAccount.HolderName,
+        NomBen = brokerRequest.PaymentOrder.PaymentAccount.HolderName,
         RfcBen = rfc,
         ClaveRastreo = "",
         CtaBen = "",
         Iva = 0,
-        InstitucionBen = instruction.PaymentOrder.PaymentAccount.Institution.BrokerCode,
-        TipoCtaBen = int.Parse(instruction.PaymentOrder.PaymentMethod.BrokerCode),
+        InstitucionBen = brokerRequest.PaymentOrder.PaymentAccount.Institution.BrokerCode,
+        TipoCtaBen = int.Parse(brokerRequest.PaymentOrder.PaymentMethod.BrokerCode),
       };
     }
 
