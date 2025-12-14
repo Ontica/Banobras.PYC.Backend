@@ -10,8 +10,6 @@
 
 using System;
 using System.Collections.Generic;
-
-using Empiria.Parties;
 using Empiria.Payments.Processor.Adapters;
 
 namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
@@ -21,8 +19,88 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
     #region Internal Methods
 
+    static internal string BuildCadenaOriginalFirma(IkosCashTransactionPayload request) {
+
+      return request.Header.Referencia + ";" +
+             request.Header.IdUsuario.ToString() + ";" +
+             request.Header.Cuenta + ";" +
+             request.Header.FechaValor.ToString("yyyyMMdd") + ";" +
+             request.Header.Monto.ToString("0.00") + ";" +
+             request.Header.IdSistemaExterno + ";" +
+             request.Header.ClaveCliente + ";" +
+             request.Header.FechaOperacion.ToString("yyyyMMdd") + ";" +
+             request.Header.IdDepartamento + ";" +
+             request.Header.IdConcepto + ";";
+      //request.Payload.InstitucionBen + ";" +
+      //request.Payload.NomBen + ";" +
+      //request.Payload.RfcBen + ";" +
+      //request.Payload.TipoCtaBen + ";" +
+      //request.Payload.CtaBen + ";" +
+      //request.Payload.Iva.ToString("0.00");
+    }
+
+
+    static internal BrokerResponseDto MapToBrokerResponseDto(IkosCashInstructionResult result) {
+
+      const char SUCCESSFUL_STATUS = 'O';
+      const char FAILED_STATUS = 'K';
+
+      var brokerResponse = new BrokerResponseDto {
+        BrokerInstructionNo = result.IdSolicitud,
+        PaymentInstructionNo = result.IdSistemaExterno,
+        BrokerMessage = result.ErrorMesage,
+      };
+
+      if (result.Successful) {
+        brokerResponse.BrokerStatusText = GetStatusName(SUCCESSFUL_STATUS);
+        brokerResponse.Status = PaymentInstructionStatus.Requested;
+      } else {
+        brokerResponse.BrokerStatusText = GetStatusName(FAILED_STATUS);
+        brokerResponse.Status = PaymentInstructionStatus.Failed;
+      }
+
+      return brokerResponse;
+    }
+
+
+    static internal BrokerResponseDto MapToBrokerResponseDto(IkosCashCancelTransactionResult result) {
+      throw new NotImplementedException();
+    }
+
+
+    static internal BrokerResponseDto MapToBrokerResponseDto(BrokerRequestDto brokerRequest, IkosStatusDto ikosStatus) {
+      return new BrokerResponseDto {
+        BrokerInstructionNo = ikosStatus.IdSolicitud,
+        BrokerMessage = string.Empty,
+        PaymentInstructionNo = brokerRequest.PaymentInstructionNo,
+        BrokerStatusText = GetStatusName(ikosStatus.Status),
+        Status = MapStatus(ikosStatus.Status)
+      };
+    }
+
+
+    static internal IkosCashCancelTransactionPayload MapToIkosCashCancelTransactionPayload(BrokerRequestDto brokerRequest) {
+      throw new NotImplementedException();
+    }
+
+
+    static internal IkosCashTransactionPayload MapToIkosCashTransactionPayload(BrokerRequestDto brokerRequest) {
+      return new IkosCashTransactionPayload {
+        Header = MapTransactionHeader(brokerRequest),
+        Payload = MapTransactionInnerPayload(brokerRequest)
+      };
+    }
+
+
+    static internal IkosStatusRequest MapToIkosCashSolicitudStatus(BrokerRequestDto brokerRequest) {
+      return new IkosStatusRequest {
+        IdSolicitud = brokerRequest.PaymentInstructionNo
+      };
+    }
+
+
     static internal List<OrganizationUnitDto> MapToOrganizationUnits(List<DepartamentoDto> departamentos) {
-      List<OrganizationUnitDto> organizationUnits = new List<OrganizationUnitDto>();
+      var organizationUnits = new List<OrganizationUnitDto>(departamentos.Count);
 
       foreach (var departamento in departamentos) {
         organizationUnits.Add(MapToOrganizationUnit(departamento));
@@ -44,7 +122,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
 
     static internal List<OrganizationUnitConceptDto> MapToOrganizationUnitConcepts(List<ConceptoDto> conceptos) {
-      List<OrganizationUnitConceptDto> organizationUnitConcepts = new List<OrganizationUnitConceptDto>();
+      var organizationUnitConcepts = new List<OrganizationUnitConceptDto>(conceptos.Count);
 
       foreach (var concepto in conceptos) {
         organizationUnitConcepts.Add(MapToOrganizationUnitConcept(concepto));
@@ -52,6 +130,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
       return organizationUnitConcepts;
     }
+
 
     static internal OrganizationUnitConceptDto MapToOrganizationUnitConcept(ConceptoDto concepto) {
       return new OrganizationUnitConceptDto {
@@ -62,87 +141,6 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       };
     }
 
-
-    static internal IkosStatusRequest MapToIkosSolicitudStatus(BrokerRequestDto brokerRequest) {
-      return new IkosStatusRequest {
-        IdSolicitud = brokerRequest.RequestUniqueNo
-      };
-    }
-
-    static internal string GetCadenaOriginalFirma(IkosCashTransactionPayload request) {
-
-      return request.Header.Referencia + ";" +
-             request.Header.IdUsuario.ToString() + ";" +
-             request.Header.Cuenta + ";" +
-             request.Header.FechaValor.ToString("yyyyMMdd") + ";" +
-             request.Header.Monto.ToString("0.00") + ";" +
-             request.Header.IdSistemaExterno + ";" +
-             request.Header.ClaveCliente + ";" +
-             request.Header.FechaOperacion.ToString("yyyyMMdd") + ";" +
-             request.Header.IdDepartamento + ";" +
-             request.Header.IdConcepto + ";";
-      //request.Payload.InstitucionBen + ";" +
-      //request.Payload.NomBen + ";" +
-      //request.Payload.RfcBen + ";" +
-      //request.Payload.TipoCtaBen + ";" +
-      //request.Payload.CtaBen + ";" +
-      //request.Payload.Iva.ToString("0.00");
-    }
-
-
-    static internal IkosCashCancelTransactionPayload MapToCancelTransactionPayload(BrokerRequestDto brokerRequest) {
-      throw new NotImplementedException();
-    }
-
-
-    static internal BrokerResponseDto MapToBrokerResponseDto(IkosCashInstructionResult result) {
-
-      const char SUCCESSFUL_STATUS = 'O';
-      const char FAILED_STATUS = 'K';
-
-      if (result.Successful) {
-        return new BrokerResponseDto {
-          BrokerInstructionNo = result.IdSolicitud,
-
-          InstructionNo = result.IdSistemaExterno,
-          BrokerStatusText = GetStatusName(SUCCESSFUL_STATUS),
-          BrokerMessage = result.ErrorMesage,
-          Status = PaymentInstructionStatus.Requested,
-        };
-      }
-
-      return new BrokerResponseDto {
-        BrokerInstructionNo = result.IdSolicitud,
-        InstructionNo = result.IdSistemaExterno,
-        Status = PaymentInstructionStatus.Failed,
-        BrokerStatusText = GetStatusName(FAILED_STATUS),
-        BrokerMessage = result.ErrorMesage
-      };
-    }
-
-
-    static internal BrokerResponseDto MapToBrokerResponseDto(IkosCashCancelTransactionResult result) {
-      throw new NotImplementedException();
-    }
-
-
-    static internal IkosCashTransactionPayload MapToIkosCashTransactionPayload(BrokerRequestDto brokerRequest) {
-      return new IkosCashTransactionPayload {
-        Header = MapTransactionHeader(brokerRequest),
-        Payload = MapTransactionInnerPayload(brokerRequest)
-      };
-    }
-
-
-    static internal BrokerResponseDto MapToBrokerResponseDto(BrokerRequestDto brokerRequest, IkosStatusDto ikosStatus) {
-      return new BrokerResponseDto {
-        BrokerInstructionNo = ikosStatus.IdSolicitud,
-        BrokerMessage = string.Empty,
-        InstructionNo = brokerRequest.RequestUniqueNo,
-        BrokerStatusText = GetStatusName(ikosStatus.Status),
-        Status = MapStatus(ikosStatus.Status)
-      };
-    }
 
     #endregion Internal Methods
 
@@ -178,6 +176,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
     static private PaymentInstructionStatus MapStatus(char status) {
       switch (status) {
+
         case 'O':
         case 'P':
         case 'C':
@@ -195,37 +194,38 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       }
     }
 
+
     static private IkosCashTransactionHeader MapTransactionHeader(BrokerRequestDto brokerRequest) {
       return new IkosCashTransactionHeader {
-        IdSistemaExterno = brokerRequest.RequestUniqueNo,
         IdUsuario = IkosCashConstantValues.TRANSACTION_ID_USUARIO,
-        IdDepartamento = 40,
-        IdConcepto = 418, // ToDo Cambiar por costo financiero
-        ClaveCliente = brokerRequest.PaymentOrder.PayTo.Code,
-        Cuenta = brokerRequest.PaymentOrder.PaymentAccount.CLABE,
-        FechaOperacion = brokerRequest.RequestedTime,
-        FechaValor = brokerRequest.RequestedTime,
-        Monto = brokerRequest.PaymentOrder.Total,
-        Referencia = brokerRequest.ReferenceNo,
-        ConceptoPago = "Pago Banobras, S.N.C.",
         Origen = IkosCashConstantValues.TRANSACTION_ORIGEN,
         SerieFirma = IkosCashConstantValues.SERIE_FIRMA,
+
+        IdSistemaExterno = brokerRequest.PaymentInstructionNo,
+        IdDepartamento = brokerRequest.PaymentRequesterId,
+        IdConcepto = brokerRequest.PaymentWithdrawalAccountId,
+        ClaveCliente = brokerRequest.BeneficiaryTaxCode,
+        Cuenta = brokerRequest.BeneficiaryAccountNo,
+        FechaOperacion = brokerRequest.ProgrammedDate,
+        FechaValor = brokerRequest.EffectiveDate,
+        Monto = brokerRequest.PaymentTotal,
+        Referencia = brokerRequest.PaymentReferenceNo,
+        ConceptoPago = brokerRequest.PaymentDescription
       };
 
     }
 
 
     static private IkosCashTransactionInnerPayload MapTransactionInnerPayload(BrokerRequestDto brokerRequest) {
-      string rfc = ((ITaxableParty) brokerRequest.PaymentOrder.PayTo).TaxData.TaxCode;
 
       return new IkosCashTransactionInnerPayload {
-        NomBen = brokerRequest.PaymentOrder.PaymentAccount.HolderName,
-        RfcBen = rfc,
+        NomBen = brokerRequest.BeneficiaryName,
+        RfcBen = brokerRequest.BeneficiaryTaxCode,
         ClaveRastreo = "",
         CtaBen = "",
         Iva = 0,
-        InstitucionBen = brokerRequest.PaymentOrder.PaymentAccount.Institution.BrokerCode,
-        TipoCtaBen = int.Parse(brokerRequest.PaymentOrder.PaymentMethod.BrokerCode),
+        InstitucionBen = brokerRequest.BeneficiaryBankCode,
+        TipoCtaBen = int.Parse(brokerRequest.BeneficiaryAccountTypeCode)
       };
     }
 

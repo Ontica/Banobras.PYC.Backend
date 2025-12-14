@@ -12,7 +12,7 @@ using System.Security.Cryptography.X509Certificates;
 
 using Empiria.Json;
 
-namespace Empiria.Payments.BanobrasIntegration.IkosCash  {
+namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
   /// <summary>Provides constants values for Ikos Cash conector component.</summary>
   static public class IkosCashConstantValues {
@@ -40,9 +40,10 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash  {
 
     static internal int TRANSACTION_ID_USUARIO => _config.Get<int>("TRANSACTION_ID_USUARIO");
 
-    public static string TRANSACTION_ORIGEN => _config.Get<string>("TRANSACTION_ORIGEN");
+    static internal string TRANSACTION_ORIGEN => _config.Get<string>("TRANSACTION_ORIGEN");
 
-    public static string SERIE_FIRMA => _config.Get<string>("SERIE_FIRMA");
+    static internal string SERIE_FIRMA => _config.Get<string>("SERIE_FIRMA");
+
 
     static internal X509Certificate2 GET_PYC_CERTIFICATE() {
       return new X509Certificate2(PYC_ASSIGNED_CERTIFICATE_PATH,

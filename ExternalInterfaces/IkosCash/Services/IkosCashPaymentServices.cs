@@ -42,7 +42,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     async Task<BrokerResponseDto> IPaymentsBrokerService.CancelPaymentInstruction(BrokerRequestDto brokerRequest) {
       Assertion.Require(brokerRequest, nameof(brokerRequest));
 
-      IkosCashCancelTransactionPayload cancelPayload = IkosCashMapper.MapToCancelTransactionPayload(brokerRequest);
+      IkosCashCancelTransactionPayload cancelPayload = IkosCashMapper.MapToIkosCashCancelTransactionPayload(brokerRequest);
 
       IkosCashCancelTransactionResult result = await _apiClient.CancelPaymentTransaction(cancelPayload);
 
@@ -51,7 +51,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
 
     async Task<BrokerResponseDto> IPaymentsBrokerService.RequestPaymentStatus(BrokerRequestDto brokerRequest) {
-      IkosStatusRequest ikosStatusRequest = IkosCashMapper.MapToIkosSolicitudStatus(brokerRequest);
+      IkosStatusRequest ikosStatusRequest = IkosCashMapper.MapToIkosCashSolicitudStatus(brokerRequest);
 
       IkosStatusDto ikosStatus = await _apiClient.RequestPaymentStatus(ikosStatusRequest);
 
@@ -61,13 +61,6 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     async Task<BrokerResponseDto> IPaymentsBrokerService.SendPaymentInstruction(BrokerRequestDto instruction) {
       Assertion.Require(instruction, nameof(instruction));
-
-      PaymentOrder paymentOrder = instruction.PaymentOrder;
-
-      Assertion.Require(!paymentOrder.IsEmptyInstance, nameof(paymentOrder));
-      Assertion.Require(paymentOrder.PaymentInstructions.CanCreateNewInstruction(),
-                        "No se puede enviar la instrucción de pago debido a que " +
-                        $"la orden de pago está en estado {paymentOrder.Status.GetName()}.");
 
       IkosCashTransactionPayload payload = IkosCashMapper.MapToIkosCashTransactionPayload(instruction);
 
@@ -83,7 +76,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     #region Helpers
 
     private void SetElectronicSign(IkosCashTransactionPayload payload) {
-      string cadenaOriginal = IkosCashMapper.GetCadenaOriginalFirma(payload);
+      string cadenaOriginal = IkosCashMapper.BuildCadenaOriginalFirma(payload);
 
       var certificateServices = new CertificateServices(IkosCashConstantValues.GET_PYC_CERTIFICATE());
 
@@ -96,4 +89,4 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
   } // class PaymentService
 
-} // namespace  Empiria.Payments.BanobrasIntegration.IkosCash
+} // namespace Empiria.Payments.BanobrasIntegration.IkosCash

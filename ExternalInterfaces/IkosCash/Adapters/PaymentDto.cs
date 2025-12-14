@@ -17,13 +17,16 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       get; set;
     } = string.Empty;
 
+
     public string PaymentUID {
       get; set;
     } = string.Empty;
 
+
     public string ErrorMesage {
       get; set;
     } = string.Empty;
+
 
     public int ErrorCode {
       get; set;
