@@ -94,7 +94,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
     static internal IkosStatusRequest MapToIkosCashSolicitudStatus(BrokerRequestDto brokerRequest) {
       return new IkosStatusRequest {
-        IdSolicitud = brokerRequest.PaymentInstructionNo
+        IdSolicitud = brokerRequest.BrokerInstructionNo
       };
     }
 

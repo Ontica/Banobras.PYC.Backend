@@ -59,10 +59,10 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
     }
 
 
-    async Task<BrokerResponseDto> IPaymentsBrokerService.SendPaymentInstruction(BrokerRequestDto instruction) {
-      Assertion.Require(instruction, nameof(instruction));
+    async Task<BrokerResponseDto> IPaymentsBrokerService.SendPaymentInstruction(BrokerRequestDto brokerRequest) {
+      Assertion.Require(brokerRequest, nameof(brokerRequest));
 
-      IkosCashTransactionPayload payload = IkosCashMapper.MapToIkosCashTransactionPayload(instruction);
+      IkosCashTransactionPayload payload = IkosCashMapper.MapToIkosCashTransactionPayload(brokerRequest);
 
       SetElectronicSign(payload);
 
