@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 using Empiria.Contacts;
 using Empiria.Financial;
-using Empiria.Financial.Projects;
 using Empiria.Parties;
 using Empiria.Payments.Processor;
 
@@ -44,14 +43,14 @@ namespace Empiria.Banobras.PYC {
       try {
         EmpiriaLog.Info($"Banobras PYC application preloading starts at {DateTime.Now}.");
 
+        PaymentsEngine.Start();
+
         _ = BaseObject.GetFullList<Contact>();
         _ = BaseObject.GetFullList<Party>();
         _ = BaseObject.GetFullList<CommonStorage>();
         _ = BaseObject.GetFullList<StandardAccount>();
-        _ = BaseObject.GetFullList<FinancialProject>();
-        _ = BaseObject.GetFullList<FinancialAccount>();
-
-        PaymentsEngine.Start();
+        // _ = BaseObject.GetFullList<FinancialProject>();
+        // _ = BaseObject.GetFullList<FinancialAccount>();
 
         EmpiriaLog.Info($"Banobras PYC application preloading ends at {DateTime.Now}.");
 
