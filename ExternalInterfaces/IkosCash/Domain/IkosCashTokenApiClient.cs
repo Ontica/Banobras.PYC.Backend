@@ -81,7 +81,6 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
     #endregion Helpers
 
-
   } // class ApiClient
 
 } // namespace Empiria.Payments.BanobrasIntegration.IkosCash

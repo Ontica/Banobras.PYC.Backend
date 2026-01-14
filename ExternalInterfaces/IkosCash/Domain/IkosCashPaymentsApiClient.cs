@@ -125,6 +125,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
 
     private void EnsureIkosCashSuccessResponse(Array result) {
+
       Assertion.Require(result != null && result.Length > 0,
                         "Ocurrió un problema al leer el regreso de la llamada a IkosCash. La respuesta regresó vacía.");
     }
@@ -134,7 +135,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash {
 
       _httpClient.BaseAddress = new Uri(IkosCashConstantValues.PAYMENTS_API_BASE_ADDRESS);
 
-      _httpClient.Timeout = TimeSpan.FromSeconds(10);
+      _httpClient.Timeout = TimeSpan.FromSeconds(120);
 
       var headers = _httpClient.DefaultRequestHeaders;
 
