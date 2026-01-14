@@ -19,73 +19,157 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
   /// according to ICreditAccountData interface.</summary>
   public class SicCreditDto : ICreditAccountData {
 
-    public string AccountNo {
+    public string CreditNo {
       get; internal set;
     }
 
-    public OrganizationalUnit OrganizationalUnit {
-      get; internal set;
-    }
 
     public string SubledgerAccountNo {
       get; internal set;
     }
 
-    public string Borrower {
+
+    public string BaseInterestRate {
       get; internal set;
     }
 
-    public string CreditStage {
+
+    public string BaseMorInterestRate {
       get; internal set;
     }
 
-    public string CreditType {
+
+    public string PreviousCredits {
       get; internal set;
     }
 
-    public string ExternalCreditNo {
-      get; internal set;
-    }
-
-    public OrganizationalUnit Area {
-      get; internal set;
-    }
 
     public Currency Currency {
       get; internal set;
     }
 
+
+    public string FederalTaxPayersReg {
+      get; internal set;
+    }
+
+
+    public int FederalTaxPayersRegNo {
+      get; internal set;
+    }
+
+
+    public string CustomerType {
+      get; internal set;
+    }
+
+
+    public string CustomerName {
+      get; internal set;
+    }
+
+
+    public OrganizationalUnit OrganizationalUnit {
+      get; internal set;
+    }
+
+
+    public string CreditType {
+      get; internal set;
+    }
+
+
+    public string CreditStage {
+      get; internal set;
+    }
+
+
     public string StandardAccount {
       get; internal set;
     }
+
+
+    public string ExternalCreditNo {
+      get; internal set;
+    }
+
+
+    public DateTime MaxAvailabilityDate {
+      get; internal set;
+    }
+
+
+    public DateTime MaxRefinancingDate {
+      get; internal set;
+    }
+
+
+    public int LineCreditNo {
+      get; internal set;
+    }
+
+
+    public decimal NetFinancedAmount {
+      get; internal set;
+    }
+
+
+    public string ConstructionBuilding {
+      get; internal set;
+    }
+
+
+    public decimal ConstructionBuildingCost {
+      get; internal set;
+    }
+
+
+    public decimal LoanAmount {
+      get; internal set;
+    }
+
 
     public decimal CurrentBalance {
       get; internal set;
     }
 
+
     public int InvestmentTerm {
       get; internal set;
     }
 
-    public int GracePeriod {
+
+    public int DisbursementPeriod {
       get; internal set;
     }
+
+    
+    public DateTime DisbursementDate {
+      get; internal set;
+    }
+
 
     public int RepaymentTerm {
       get; internal set;
     }
 
+
     public DateTime RepaymentDate {
       get; internal set;
     }
 
-    public decimal InterestRate {
+    public int InterestRate {
+      get; internal set;
+    }
+
+    public int InterestGracePeriod {
       get; internal set;
     }
 
     public decimal InterestRateFactor {
       get; internal set;
     }
+
 
     public decimal InterestRateFloor {
       get; internal set;

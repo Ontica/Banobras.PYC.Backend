@@ -52,7 +52,7 @@ namespace Empiria.BanobrasIntegration.Sic.Data {
     static internal SicCredit TryGetCredit(string creditNo) {
 
       var sql = "SELECT * FROM vw_creditos_sic " +
-                $"WHERE Numero = {creditNo}";
+                $"WHERE numero = '{creditNo}'";
 
       var op = DataOperation.Parse(sql);
 
