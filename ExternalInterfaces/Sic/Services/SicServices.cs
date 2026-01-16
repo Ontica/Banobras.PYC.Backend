@@ -55,9 +55,7 @@ namespace Empiria.BanobrasIntegration.Sic {
 
       SicCredit credit = SicCreditDataService.TryGetCredit(creditNo);
 
-      if (credit == null) {
-        return null;
-      }
+      Assertion.Require(credit, $"El número de crédito {creditNo} no existe");
 
       return SicMapper.MapToCreditSic(credit);
     }
