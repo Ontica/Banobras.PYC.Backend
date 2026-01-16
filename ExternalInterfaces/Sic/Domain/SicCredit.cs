@@ -135,7 +135,7 @@ namespace Empiria.BanobrasIntegration.Sic {
     }
 
 
-    [DataField("F_MAX_REFI",  ConvertFrom = typeof (DateTime))]
+    [DataField("F_MAX_REFI", ConvertFrom = typeof(DateTime))]
     public DateTime FechaMaxRefinanciamiento {
       get; set;
     }
@@ -201,7 +201,7 @@ namespace Empiria.BanobrasIntegration.Sic {
     }
 
 
-    [DataField("PFI_FECHA_AMORTIZACION")]
+    [DataField("PFI_FECHA_AMORTIZACION", ConvertFrom = typeof(DateTime))]
     public DateTime FechaAmortizacion {
       get; set;
     }
@@ -211,7 +211,6 @@ namespace Empiria.BanobrasIntegration.Sic {
     public int PlazoDesembolso {
       get; set;
     }
-
 
     [DataField("PFI_FECHA_DESEMBOLSO", ConvertFrom = typeof(DateTime))]
     public DateTime FechaDesembolso {

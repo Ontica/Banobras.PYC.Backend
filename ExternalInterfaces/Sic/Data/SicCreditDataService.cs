@@ -59,6 +59,7 @@ namespace Empiria.BanobrasIntegration.Sic.Data {
       return DataReader.GetPlainObject<SicCredit>(op, null);
     }
 
+
   }  // class SicCreditDataService
 
 }  // namespace Empiria.BanobrasIntegration.Sic.Data

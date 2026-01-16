@@ -50,6 +50,19 @@ namespace Empiria.BanobrasIntegration.Sic {
     }
 
 
+    public ICreditSicData TryGetCreditSic(string creditNo) {
+      Assertion.Require(creditNo, nameof(creditNo));
+
+      SicCredit credit = SicCreditDataService.TryGetCredit(creditNo);
+
+      if (credit == null) {
+        return null;
+      }
+
+      return SicMapper.MapToCreditSic(credit);
+    }
+
+
     public ICreditAccountData TryGetCredit(string creditNo) {
       Assertion.Require(creditNo, nameof(creditNo));
 
@@ -61,6 +74,7 @@ namespace Empiria.BanobrasIntegration.Sic {
 
       return SicMapper.MapToCredit(credit);
     }
+
 
     #endregion Methods
 

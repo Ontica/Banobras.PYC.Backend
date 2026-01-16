@@ -2,7 +2,7 @@
 *                                                                                                            *
 *  Module   : Banobras SIC Services                      Component : Adapters Layer                          *
 *  Assembly : Sic.Connector.dll                          Pattern   : Output DTO                              *
-*  Type     : SicCreditDto                               License   : Please read LICENSE.txt file            *
+*  Type     : SicCreditAccountDto                        License   : Please read LICENSE.txt file            *
 *                                                                                                            *
 *  Summary  : Output DTO used to return SIC credit account data according to ICreditAccountData interface.   *
 *                                                                                                            *
@@ -11,12 +11,13 @@
 using System;
 using Empiria.Financial;
 using Empiria.Financial.Adapters;
+using Empiria.Parties;
 
 namespace Empiria.BanobrasIntegration.Sic.Adapters {
 
   /// <summary>Output DTO used to return SIC credit account data
-  /// according to ICreditSicData interface.</summary>
-  public class SicCreditDto : ICreditSicData {
+  /// according to ICreditAccountData interface.</summary>
+  public class SicCreditAccountDto : ICreditAccountData {
 
     public string CreditNo {
       get; internal set;
@@ -43,12 +44,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
     }
 
 
-    public string CurrencyNo {
-      get; internal set;
-    }
-
-
-    public string Currency {
+    public Currency Currency {
       get; internal set;
     }
 
@@ -73,12 +69,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
     }
 
 
-    public string OrganizationUnit {
-      get; internal set;
-    }
-
-
-    public string OrganizationUnitNo {
+    public OrganizationalUnit OrganizationalUnit {
       get; internal set;
     }
 

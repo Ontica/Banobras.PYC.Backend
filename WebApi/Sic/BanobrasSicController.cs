@@ -24,12 +24,12 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
     #region Web Apis
 
     [HttpGet]
-    [Route("v2/pyc/integration/sic/credits/export")]
-    public SingleObjectModel ExportCreditToBudgetingInterface() {
+    [Route("v2/pyc/integration/sic/credits/{creditNo}")]
+    public SingleObjectModel ExportCreditToBudgetingInterface([FromUri] string creditNo) {
 
         var services = new SicServices();
 
-        ICreditAccountData credit = services.TryGetCredit("12346");
+        ICreditSicData credit = services.TryGetCreditSic(creditNo);
 
       return new SingleObjectModel(base.Request, credit);
 

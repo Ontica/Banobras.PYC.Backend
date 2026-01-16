@@ -8,6 +8,8 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
+using System.Globalization;
 using Empiria.Financial;
 using Empiria.Parties;
 
@@ -29,25 +31,25 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
       }).ToFixedList();
     }
 
-    static public FixedList<SicCreditDto> MapToCredits(FixedList<SicCredit> credits) {
+    static public FixedList<SicCreditAccountDto> MapToCredits(FixedList<SicCredit> credits) {
       return credits.Select(x => MapToCredit(x))
                       .ToFixedList();
     }
 
 
-    static internal SicCreditDto MapToCredit(SicCredit credit) {
-      return new SicCreditDto {
+    static internal SicCreditAccountDto MapToCredit(SicCredit credit) {
+      return new SicCreditAccountDto {
         CreditNo = credit.CreditoNo,
         SubledgerAccountNo = EmpiriaString.Clean(credit.Auxiliar),
         BaseInterestRate = credit.TasaBaseInt,
         BaseMorInterestRate = credit.TasaBaseInt,
         PreviousCredits = credit.CreditoAnterior,
+        OrganizationalUnit = MapArea(credit.AreaPromocion),
         Currency = MapCurrency(credit.Moneda),
         FederalTaxPayersReg = credit.Rfc,
         FederalTaxPayersRegNo = credit.RfcConsecutivo,
         CustomerType = credit.TipoCliente,
         CustomerName = credit.NombreCliente,
-        OrganizationalUnit = MapArea(credit.AreaPromocion),
         CreditType = credit.ClasifCreditoDes,
         CreditStage = credit.EtapaCreditoDes,
         StandardAccount = credit.CtaRegistro,
@@ -72,6 +74,50 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
         InterestRateCeiling = credit.TasaTecho
       };
     }
+
+
+    static internal SicCreditDto MapToCreditSic(SicCredit credit) {
+      OrganizationalUnit orgUnit = MapArea(credit.AreaPromocion);
+      Currency currency = MapCurrency(credit.Moneda);
+      return new SicCreditDto {
+        CreditNo = credit.CreditoNo,
+        SubledgerAccountNo = EmpiriaString.Clean(credit.Auxiliar),
+        BaseInterestRate = credit.TasaBaseInt,
+        BaseMorInterestRate = credit.TasaBaseInt,
+        PreviousCredits = credit.CreditoAnterior,
+        Currency = currency.Name,
+        CurrencyNo = credit.Moneda.ToString(),
+        FederalTaxPayersReg = credit.Rfc,
+        FederalTaxPayersRegNo = credit.RfcConsecutivo,
+        CustomerType = credit.TipoCliente,
+        CustomerName = credit.NombreCliente,
+        OrganizationUnitNo = orgUnit.Code,
+        OrganizationUnit = orgUnit.Name,
+        CreditType = credit.ClasifCreditoDes,
+        CreditStage = credit.EtapaCreditoDes,
+        StandardAccount = credit.CtaRegistro,
+        ExternalCreditNo = credit.CreditoPasivoNo,
+        MaxAvailabilityDate = credit.FecMaxDisposicion,
+        MaxRefinancingDate = credit.FechaMaxRefinanciamiento,
+        LineCreditNo = credit.LineaCreditoNo,
+        NetFinancedAmount = credit.MontoNetoFinanciar,
+        ConstructionBuilding = credit.TipoObraDescripcion,
+        ConstructionBuildingCost = credit.MontoObra,
+        LoanAmount = credit.MontoCredito,
+        CurrentBalance = credit.Saldo,
+        InvestmentTerm = credit.PlazoInversion,
+        InterestGracePeriod = credit.PlazoGraciaInt,
+        DisbursementPeriod = credit.PlazoDesembolso,
+        DisbursementDate = credit.FechaDesembolso,
+        RepaymentTerm = credit.PlazoAmortizacion,
+        RepaymentDate = credit.FechaAmortizacion,
+        InterestRate = credit.Tasa,
+        InterestRateFactor = credit.FactorTasa,
+        InterestRateFloor = credit.TasaPiso,
+        InterestRateCeiling = credit.TasaTecho
+      };
+    }
+
 
     #endregion Internal Methods
 
