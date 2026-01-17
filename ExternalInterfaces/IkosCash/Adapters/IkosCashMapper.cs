@@ -196,6 +196,14 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
 
 
     static private IkosCashTransactionHeader MapTransactionHeader(BrokerRequestDto brokerRequest) {
+      string conceptoPago;
+
+      if (brokerRequest.PaymentReferenceNo.Length != 0) {
+        conceptoPago = brokerRequest.PaymentReferenceNo;
+      } else {
+        conceptoPago = brokerRequest.PaymentDescription;
+      }
+
       return new IkosCashTransactionHeader {
         IdUsuario = IkosCashConstantValues.TRANSACTION_ID_USUARIO,
         Origen = IkosCashConstantValues.TRANSACTION_ORIGEN,
@@ -209,10 +217,9 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
         FechaOperacion = brokerRequest.ProgrammedDate,
         FechaValor = brokerRequest.EffectiveDate,
         Monto = brokerRequest.PaymentTotal,
-        Referencia = brokerRequest.PaymentReferenceNo,
-        ConceptoPago = brokerRequest.PaymentDescription
+        Referencia = string.Empty,
+        ConceptoPago = conceptoPago
       };
-
     }
 
 
@@ -221,6 +228,7 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
       return new IkosCashTransactionInnerPayload {
         NomBen = brokerRequest.BeneficiaryName,
         RfcBen = brokerRequest.BeneficiaryTaxCode,
+        // RefNum = brokerRequest.PaymentInstructionId.ToString(), ??
         ClaveRastreo = "",
         CtaBen = "",
         Iva = 0,
@@ -228,7 +236,6 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
         TipoCtaBen = int.Parse(brokerRequest.BeneficiaryAccountTypeCode)
       };
     }
-
 
     #endregion Helpers
 
