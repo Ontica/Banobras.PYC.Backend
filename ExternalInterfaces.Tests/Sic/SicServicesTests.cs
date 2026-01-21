@@ -25,7 +25,7 @@ namespace Empiria.Sic.Tests.BanobrasIntegration {
     public void Should_Get_CreditAccountData_By_CreditNo() {
       var services = new SicServices();
 
-      ICreditSicData sut = services.TryGetCreditSic("12346");
+      ICreditSicData sut = services.TryGetCreditSic("13789");
 
       Assert.NotNull(sut);
     }

@@ -24,7 +24,7 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
     #region Web Apis
 
     [HttpGet]
-    [Route("v2/pyc/integration/sic/credits/{creditNo}")]
+    [Route("v2/pyc/integration/sic/credits/{creditNo}/export")]
     public SingleObjectModel ExportCreditToBudgetingInterface([FromUri] string creditNo) {
 
         var services = new SicServices();
