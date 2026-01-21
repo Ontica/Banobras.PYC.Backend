@@ -82,7 +82,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
     static internal SialOrganizationUnitEmployeeEntry TryGetEmployeeNo(string employeeNo) {
 
       var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_UNIDAD@INTRAN " +
-                $"WHERE ID_USUARIO = '{employeeNo}'";
+                $"WHERE ID_USUARIO = {employeeNo}";
 
       var op = DataOperation.Parse(sql);
 

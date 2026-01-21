@@ -31,7 +31,7 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
     public void Should_ConvertPayrollToBudgetingInterface() {
       var services = SialServices.ServiceInteractor();
 
-      BudgetingTransactionDto sut = services.ConvertPayrollToBudgetingInterface(9903739);
+      BudgetingTransactionDto sut = services.ConvertPayrollToBudgetingInterface(9903995);
 
       Assert.NotNull(sut);
       Assert.NotNull(sut.Entries);
@@ -45,7 +45,8 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
 
       var query = new SialPayrollsQuery {
         FromDate = DateTime.Parse("01-09-2025"),
-        ToDate = DateTime.Parse("30-09-2025")
+        ToDate = DateTime.Parse("30-09-2025"),
+        Status = EntityStatus.Pending,
       };
 
       FixedList<SialPayrollDto> sut = services.SearchPayrolls(query);
@@ -58,7 +59,8 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
     public void Should_Update_ProcessStatus() {
       var services = SialServices.ServiceInteractor();
 
-      services.UpdatePayrollStatus(9903739, EntityStatus.Deleted);
+      services.UpdatePayrollStatus(9903997, EntityStatus.Deleted);
+
     }
 
 

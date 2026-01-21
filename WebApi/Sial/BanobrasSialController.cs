@@ -19,6 +19,7 @@ using Empiria.Banobras.Budgeting.Services;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Services;
+using Empiria.Financial.Adapters;
 
 
 namespace Empiria.PYC.WebApi.BanobrasIntegration {
@@ -68,6 +69,16 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
 
         return new SingleObjectModel(base.Request, payroll);
       }
+    }
+
+    [HttpGet]
+    [Route("v2/pyc/integration/sial/employees/{employeeNo}/export")]
+    public SingleObjectModel WorkerPayrollNo([FromUri] string employeeNo) {
+      var services = SialServices.ServiceInteractor();
+
+      ISialOrganizationUnitEmployeesData payrollNo = services.TryGetEmployeeNo(employeeNo);
+
+      return new SingleObjectModel(base.Request, payrollNo);
     }
 
     #endregion Web Apis
