@@ -214,8 +214,8 @@ namespace Empiria.Payments.BanobrasIntegration.IkosCash.Adapters {
         IdConcepto = brokerRequest.PaymentWithdrawalAccountId,
         ClaveCliente = brokerRequest.BeneficiaryTaxCode,
         Cuenta = brokerRequest.BeneficiaryAccountNo,
-        FechaOperacion = brokerRequest.ProgrammedDate,
-        FechaValor = brokerRequest.EffectiveDate,
+        FechaOperacion = DateTime.Today,
+        FechaValor = DateTime.Today,
         Monto = brokerRequest.PaymentTotal,
         Referencia = string.Empty,
         ConceptoPago = conceptoPago
