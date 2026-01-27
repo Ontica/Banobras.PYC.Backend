@@ -81,6 +81,16 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
       return new SingleObjectModel(base.Request, payrollNo);
     }
 
+    [HttpGet]
+    [Route("v2/pyc/integration/sial/employeesrfc/{employeeRfc}/export")]
+    public SingleObjectModel WorkerPayrollRfc([FromUri] string employeeRfc) {
+      var services = SialServices.ServiceInteractor();
+
+      ISialOrganizationUnitEmployeesData payrollNo = services.TryGetEmployeeRfc(employeeRfc);
+
+      return new SingleObjectModel(base.Request, payrollNo);
+    }
+
     #endregion Web Apis
 
   }  // class BanobrasSialController

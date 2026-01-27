@@ -19,6 +19,10 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
       get; internal set;
     }
 
+    public string FedTaxpayersReg {
+      get; internal set;
+    }
+
     public string Name {
       get; internal set;
     }

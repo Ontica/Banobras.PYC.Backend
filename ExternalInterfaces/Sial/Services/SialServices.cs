@@ -96,6 +96,16 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
     }
 
 
+    public FixedList<ISialOrganizationUnitEmployeesData> GetOrganizationUnitEmployeesEntries() {
+
+      FixedList<SialOrganizationUnitEmployeeEntry> entries = SialDataService.GetOrganizationUnitEmployeesEntries();
+
+      return SialMapper.MapToOrganizationUnitEmployeesEntries(entries)
+                      .Select(x => (ISialOrganizationUnitEmployeesData) x)
+                      .ToFixedList();
+    }
+
+
     public ISialOrganizationUnitEmployeesData TryGetEmployeeNo(string employeeNo) {
       Assertion.Require(employeeNo, nameof(employeeNo));
 
@@ -108,14 +118,20 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
       return SialMapper.MapToOrganizationUnitEmployeeEntries(employee);
     }
 
-    public FixedList<ISialOrganizationUnitEmployeesData> GetOrganizationUnitEmployeesEntries() {
 
-      FixedList<SialOrganizationUnitEmployeeEntry> entries = SialDataService.GetOrganizationUnitEmployeesEntries();
+    public ISialOrganizationUnitEmployeesData TryGetEmployeeRfc(string employeeRfc) {
+      Assertion.Require(employeeRfc, nameof(employeeRfc));
 
-      return SialMapper.MapToOrganizationUnitEmployeesEntries(entries)
-                      .Select(x => (ISialOrganizationUnitEmployeesData) x)
-                      .ToFixedList();
+      SialOrganizationUnitEmployeeEntry employee = SialDataService.TryGetEmployeeRfc(employeeRfc);
+
+      if (employee == null) {
+        return null;
+      }
+
+      return SialMapper.MapToOrganizationUnitEmployeeEntries(employee);
     }
+
+
 
     #endregion Methods
 

@@ -71,7 +71,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
     static internal FixedList<SialOrganizationUnitEntry> GetOrganizationUnitEntries() {
 
-      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
+      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_PYC@INTRAN " +
                 $"ORDER BY CLAVE_AREA, NIVEL_CLAVE";
 
       var op = DataOperation.Parse(sql);
@@ -81,8 +81,18 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
     static internal SialOrganizationUnitEmployeeEntry TryGetEmployeeNo(string employeeNo) {
 
-      var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_UNIDAD@INTRAN " +
+      var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_PYC@INTRAN " +
                 $"WHERE ID_USUARIO = {employeeNo}";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObject<SialOrganizationUnitEmployeeEntry>(op, null);
+    }
+
+    static internal SialOrganizationUnitEmployeeEntry TryGetEmployeeRfc(string employeeRfc) {
+
+      var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_PYC@INTRAN " +
+                $"WHERE RFC = '{employeeRfc}'";
 
       var op = DataOperation.Parse(sql);
 
@@ -91,7 +101,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
     internal static FixedList<SialOrganizationUnitEmployeeEntry> GetOrganizationUnitEmployeesEntries() {
 
-      var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_UNIDAD@INTRAN";
+      var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_PYC@INTRAN";
 
       var op = DataOperation.Parse(sql);
 

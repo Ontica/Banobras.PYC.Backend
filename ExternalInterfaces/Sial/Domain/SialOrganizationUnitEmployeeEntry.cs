@@ -17,7 +17,14 @@ namespace Empiria.BanobrasIntegration.Sial {
     [DataField("ID_USUARIO", ConvertFrom = typeof(string))]
     public string NoEmpleado {
       get; private set;
-    } 
+    }
+
+
+    [DataField("RFC")]
+    public string RfcEmpleado {
+      get; private set;
+    }
+
 
     [DataField("CLAVE_AREA")]
     public string NoArea {

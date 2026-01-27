@@ -69,6 +69,7 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
     static internal SialOrganizationUnitEmployeeEntryDto MapToOrganizationUnitEmployeeEntries(SialOrganizationUnitEmployeeEntry employee) {
       return new SialOrganizationUnitEmployeeEntryDto {
         EmployeeNo = employee.NoEmpleado.ToString(),
+        FedTaxpayersReg = employee.RfcEmpleado,
         Name = EmpiriaString.Clean(employee.Nombre),
         LastName = EmpiriaString.Clean(employee.ApellidoNombre),
         OrganizationUnitNo = employee.NoArea,
