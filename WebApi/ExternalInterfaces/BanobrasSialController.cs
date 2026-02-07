@@ -14,15 +14,15 @@ using Empiria.StateEnums;
 using Empiria.Storage;
 using Empiria.WebApi;
 
+using Empiria.Financial.Adapters;
+
 using Empiria.Banobras.Budgeting.Adapters;
 using Empiria.Banobras.Budgeting.Services;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Services;
-using Empiria.Financial.Adapters;
 
-
-namespace Empiria.PYC.WebApi.BanobrasIntegration {
+namespace Empiria.BanobrasIntegration.Sial.WebApi {
 
   /// <summary>Web API for Sial System integration.</summary>
   public class BanobrasSialController : WebApiController {
@@ -31,7 +31,7 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
 
     [HttpPost]
     [Route("v2/pyc/integration/sial/payrolls/{payrollUID:int}/export")]
-    public SingleObjectModel ExportPayrollToBudgetingInterface([FromUri] int payrollUID) {
+    public SingleObjectModel ExportPayrollToExcelBudgetingInterface([FromUri] int payrollUID) {
 
 
       using (var payrollServices = SialServices.ServiceInteractor()) {
@@ -42,7 +42,8 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
           FileDto excelFile = budgetingServices.ExportToExcel(payrollTxn);
 
           return new SingleObjectModel(base.Request, excelFile);
-        }  // budgetingServices
+        }
+
       }  // payrollServices
     }
 
@@ -71,9 +72,11 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
       }
     }
 
+
     [HttpGet]
     [Route("v2/pyc/integration/sial/employees/{employeeNo}/export")]
-    public SingleObjectModel WorkerPayrollNo([FromUri] string employeeNo) {
+    public SingleObjectModel EmployeePayrollNo([FromUri] string employeeNo) {
+
       var services = SialServices.ServiceInteractor();
 
       ISialOrganizationUnitEmployeesData payrollNo = services.TryGetEmployeeNo(employeeNo);
@@ -81,9 +84,10 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
       return new SingleObjectModel(base.Request, payrollNo);
     }
 
+
     [HttpGet]
     [Route("v2/pyc/integration/sial/employeesrfc/{employeeRfc}/export")]
-    public SingleObjectModel WorkerPayrollRfc([FromUri] string employeeRfc) {
+    public SingleObjectModel EmployeePayrollRfc([FromUri] string employeeRfc) {
       var services = SialServices.ServiceInteractor();
 
       ISialOrganizationUnitEmployeesData payrollNo = services.TryGetEmployeeRfc(employeeRfc);
@@ -95,4 +99,4 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
 
   }  // class BanobrasSialController
 
-}  // namespace Empiria.PYC.WebApi.BanobrasIntegration
+}  // namespace Empiria.BanobrasIntegration.Sial.WebApi

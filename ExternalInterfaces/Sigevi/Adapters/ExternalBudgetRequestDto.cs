@@ -1,6 +1,6 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras PYC External Interfaces          Component : Adapters Layer                           *
+*  Module   : Banobras SIGEVI Integration               Component : Adapters Layer                           *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll       Pattern   : Output Data Transfer Object              *
 *  Type     : ExternalBudgetRequestDto                  License   : Please read LICENSE.txt file             *
 *                                                                                                            *
@@ -10,7 +10,7 @@
 
 using System;
 
-namespace Empiria.Banobras.Budgeting.Adapters {
+namespace Empiria.BanobrasIntegration.Sigevi.Adapters {
 
   /// <summary>Returns external budget request information for one or more budget accounts.</summary>
   public class ExternalBudgetRequestDto {
@@ -103,4 +103,4 @@ namespace Empiria.Banobras.Budgeting.Adapters {
 
   }  // class ExternalBudgetRequestEntryDto
 
-}  // namespace Empiria.Banobras.Budgeting.Adapters
+}  // namespace Empiria.BanobrasIntegration.Sigevi.Adapters

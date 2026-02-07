@@ -1,10 +1,10 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras PYC External Interfaces             Component : Web Api                               *
+*  Module   : Banobras SIGEVI Integration                  Component : Web Api                               *
 *  Assembly : Banobras.PYC.WebApi.dll                      Pattern   : Web Api Controller                    *
-*  Type     : ExternalBudgetingController                  License   : Please read LICENSE.txt file          *
+*  Type     : BanobrasSigeviController                     License   : Please read LICENSE.txt file          *
 *                                                                                                            *
-*  Summary  : Web API used for budget integration with other Banobras' systems.                              *
+*  Summary  : Web services invoked by Banobras' SIGEVI system.                                               *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
@@ -12,21 +12,21 @@ using System.Web.Http;
 
 using Empiria.WebApi;
 
-using Empiria.Banobras.Budgeting.Adapters;
-using Empiria.Banobras.Budgeting.UseCases;
+using Empiria.BanobrasIntegration.Sigevi.Adapters;
+using Empiria.BanobrasIntegration.Sigevi.Services;
 
-namespace Empiria.Banobras.Budgeting.WebApi {
+namespace Empiria.BanobrasIntegration.Sigevi.WebApi {
 
-  /// <summary>Web API used for budget integration with other Banobras' systems.</summary>
-  public class ExternalBudgetingController : WebApiController {
+  /// <summary>Web services invoked by Banobras' SIGEVI system.</summary>
+  public class BanobrasSigeviController : WebApiController {
 
     #region Web Apis
 
     [HttpPost]
-    [Route("v2/sigevi/integration/budgeting/available-budget")]
+    [Route("v2/pyc/integration/sigevi/available-budget")]
     public SingleObjectModel AvailableBudget([FromBody] AvailableBudgetQuery query) {
 
-      using (var usecases = ExternalBudgetingUseCases.UseCaseInteractor()) {
+      using (var usecases = SigeviIntegrationServices.ServiceInteractor()) {
         AvailableBudgetDto available = usecases.AvailableBudget(query);
 
         return new SingleObjectModel(base.Request, available);
@@ -35,10 +35,10 @@ namespace Empiria.Banobras.Budgeting.WebApi {
 
 
     [HttpGet]
-    [Route("v2/sigevi/integration/budgeting/organizational-units")]
+    [Route("v2/pyc/integration/sigevi/organizational-units")]
     public CollectionModel GetBudgetingOrganizationalUnits() {
 
-      using (var usecases = ExternalBudgetingUseCases.UseCaseInteractor()) {
+      using (var usecases = SigeviIntegrationServices.ServiceInteractor()) {
         FixedList<OrgUnitDto> orgUnits = usecases.GetBudgetingOrganizationalUnits();
 
         return new CollectionModel(base.Request, orgUnits);
@@ -47,10 +47,10 @@ namespace Empiria.Banobras.Budgeting.WebApi {
 
 
     [HttpPost]
-    [Route("v2/sigevi/integration/budgeting/request-budget")]
+    [Route("v2/pyc/integration/sigevi/request-budget")]
     public SingleObjectModel RequestBudget([FromBody] ExternalBudgetRequestFields fields) {
 
-      using (var usecases = ExternalBudgetingUseCases.UseCaseInteractor()) {
+      using (var usecases = SigeviIntegrationServices.ServiceInteractor()) {
         ExternalBudgetRequestDto requestedBudget = usecases.RequestBudget(fields);
 
         return new SingleObjectModel(base.Request, requestedBudget);
@@ -59,6 +59,6 @@ namespace Empiria.Banobras.Budgeting.WebApi {
 
     #endregion Web Apis
 
-  }  // class ExternalBudgetingController
+  }  // class BanobrasSigeviController
 
-}  // namespace Empiria.Banobras.Budgeting.WebApi
+}  // namespace Empiria.BanobrasIntegration.Sigevi.WebApi

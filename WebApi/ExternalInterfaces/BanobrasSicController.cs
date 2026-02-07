@@ -12,11 +12,9 @@ using System.Web.Http;
 
 using Empiria.WebApi;
 
-using Empiria.BanobrasIntegration.Sic;
 using Empiria.Financial.Adapters;
 
-
-namespace Empiria.PYC.WebApi.BanobrasIntegration {
+namespace Empiria.BanobrasIntegration.Sic.WebApi {
 
   /// <summary>Web API for Sic System integration.</summary>
   public class BanobrasSicController : WebApiController {
@@ -27,9 +25,9 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
     [Route("v2/pyc/integration/sic/credits/{creditNo}/export")]
     public SingleObjectModel ExportCreditToBudgetingInterface([FromUri] string creditNo) {
 
-        var services = new SicServices();
+      var services = new SicServices();
 
-        ICreditSicData credit = services.TryGetCreditSic(creditNo);
+      ICreditSicData credit = services.TryGetCreditSic(creditNo);
 
       return new SingleObjectModel(base.Request, credit);
 
@@ -37,8 +35,8 @@ namespace Empiria.PYC.WebApi.BanobrasIntegration {
     }  // SicServices
 
 
-  #endregion Web Apis
+    #endregion Web Apis
 
-}  // class BanobrasSicController
+  }  // class BanobrasSicController
 
-}  // namespace Empiria.PYC.WebApi.BanobrasIntegration
+}  // namespace Empiria.BanobrasIntegration.Sic.WebApi

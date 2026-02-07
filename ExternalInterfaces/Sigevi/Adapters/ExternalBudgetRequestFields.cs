@@ -1,6 +1,6 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras PYC External Interfaces          Component : Adapters Layer                           *
+*  Module   : Banobras SIGEVI Integration               Component : Adapters Layer                           *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll       Pattern   : Input Fields DTO                         *
 *  Type     : ExternalBudgetRequestFields               License   : Please read LICENSE.txt file             *
 *                                                                                                            *
@@ -10,7 +10,7 @@
 
 using System;
 
-namespace Empiria.Banobras.Budgeting.Adapters {
+namespace Empiria.BanobrasIntegration.Sigevi.Adapters {
 
   /// <summary>Input fields DTO to request budget for one or more accounts.</summary>
   public class ExternalBudgetRequestFields {
@@ -97,4 +97,4 @@ namespace Empiria.Banobras.Budgeting.Adapters {
 
   }  // class BudgetEntryFields
 
-}  // namespace Empiria.Banobras.Budgeting.Adapters
+}  // namespace Empiria.BanobrasIntegration.Sigevi.Adapters

@@ -1,39 +1,42 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras PYC External Interfaces          Component : Use cases Layer                          *
+*  Module   : Banobras SIGEVI Integration               Component : Use cases Layer                          *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll       Pattern   : Use case interactor class                *
-*  Type     : ExternalBudgetingUseCases                 License   : Please read LICENSE.txt file             *
+*  Type     : SigeviIntegrationServices                 License   : Please read LICENSE.txt file             *
 *                                                                                                            *
-*  Summary  : Use cases for budget integration with other Banobras' systems.                                 *
+*  Summary  : Provides integration services to Banobras' SIGEVI System.                                      *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
 using System.Linq;
-using Empiria.Banobras.Budgeting.Adapters;
-using Empiria.Budgeting;
+
 using Empiria.Json;
 using Empiria.Parties;
 using Empiria.Services;
 
-namespace Empiria.Banobras.Budgeting.UseCases {
+using Empiria.Budgeting;
 
-  /// <summary>Use cases for budget integration with other Banobras' systems.</summary>
-  public class ExternalBudgetingUseCases : UseCase {
+using Empiria.BanobrasIntegration.Sigevi.Adapters;
+
+namespace Empiria.BanobrasIntegration.Sigevi.Services {
+
+  /// <summary>Provides integration services to Banobras' SIGEVI System.</summary>
+  public class SigeviIntegrationServices : Service {
 
     #region Constructors and parsers
 
-    protected ExternalBudgetingUseCases() {
+    protected SigeviIntegrationServices() {
       // no-op
     }
 
-    static public ExternalBudgetingUseCases UseCaseInteractor() {
-      return UseCase.CreateInstance<ExternalBudgetingUseCases>();
+    static public SigeviIntegrationServices ServiceInteractor() {
+      return Service.CreateInstance<SigeviIntegrationServices>();
     }
 
     #endregion Constructors and parsers
 
-    #region Use cases
+    #region Services
 
     public AvailableBudgetDto AvailableBudget(AvailableBudgetQuery query) {
       Assertion.Require(query, nameof(query));
@@ -168,7 +171,7 @@ namespace Empiria.Banobras.Budgeting.UseCases {
       };
     }
 
-    #endregion Use cases
+    #endregion Services
 
     #region Helpers
 
@@ -181,6 +184,6 @@ namespace Empiria.Banobras.Budgeting.UseCases {
 
     #endregion Helpers
 
-  }  // class ExternalBudgetingUseCases
+  }  // class SigeviIntegrationServices
 
-}  // namespace Empiria.Banobras.Budgeting.UseCases
+}  // namespace Empiria.BanobrasIntegration.Sigevi.Services

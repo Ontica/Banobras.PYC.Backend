@@ -1,6 +1,6 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras PYC External Interfaces          Component : Adapters Layer                           *
+*  Module   : Banobras SIGEVI Integration               Component : Adapters Layer                           *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll       Pattern   : Output Data Transfer Object              *
 *  Type     : AvailableBudgetDto                        License   : Please read LICENSE.txt file             *
 *                                                                                                            *
@@ -8,7 +8,7 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-namespace Empiria.Banobras.Budgeting.Adapters {
+namespace Empiria.BanobrasIntegration.Sigevi.Adapters {
 
   /// <summary>Returns available budget information for one or more budget accounts.</summary>
   public class AvailableBudgetDto {
@@ -35,4 +35,4 @@ namespace Empiria.Banobras.Budgeting.Adapters {
 
   }  // class AvailableBudgetDto
 
-}  // namespace Empiria.Banobras.Budgeting.Adapters
+}  // namespace Empiria.BanobrasIntegration.Sigevi.Adapters

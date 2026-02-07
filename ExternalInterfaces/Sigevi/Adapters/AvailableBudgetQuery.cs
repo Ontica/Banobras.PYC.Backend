@@ -1,6 +1,6 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras PYC External Interfaces          Component : Adapters Layer                           *
+*  Module   : Banobras SIGEVI Integration               Component : Adapters Layer                           *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll       Pattern   : Input Query                              *
 *  Type     : AvailableBudgetQuery                      License   : Please read LICENSE.txt file             *
 *                                                                                                            *
@@ -8,7 +8,7 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-namespace Empiria.Banobras.Budgeting.Adapters {
+namespace Empiria.BanobrasIntegration.Sigevi.Adapters {
 
   public class AvailableBudgetQuery {
 
@@ -31,4 +31,4 @@ namespace Empiria.Banobras.Budgeting.Adapters {
 
   }  // class AvailableBudgetQuery
 
-}  // namespace Empiria.Banobras.Budgeting.Adapters
+}  // namespace Empiria.BanobrasIntegration.Sigevi.Adapters
