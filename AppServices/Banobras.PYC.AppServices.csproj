@@ -3,22 +3,22 @@
     <Company>Ontica</Company>
     <Product>BANOBRAS - Sistema PYC</Product>
     <Description>
-      Este módulo contiene el código con los casos de uso específicos del
-      Sistema PYC de BANOBRAS, así como código para integrar los casos de uso
-      y componentes de Empiria Budgeting, Empiria CashFlow y Empiria Payments.
+      Este módulo contiene el código con los servicios de aplicación específicos del
+      Sistema PYC de BANOBRAS, los cuales sirven para orquestar e integrar los casos de uso
+      y componentes específicos de Empiria Budgeting, Empiria CashFlow y Empiria Payments.
 
       Así mismo, se enlaza con Banobras.PYC.ExternalInterfaces para obtener
       información proveniente de otros sistemas del Banco, como es el caso
       de los sistemas SICOFIN, SIC, SIMEFIN y CFDI.
     </Description>
-    <Copyright>(c) 2024-2025. La Vía Óntica SC, Ontica LLC y de los autores. Todos los derechos reservados.</Copyright>
+    <Copyright>(c) 2024-2026. La Vía Óntica SC, Ontica LLC y de los autores. Todos los derechos reservados.</Copyright>
     <Version>1.0</Version>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/Core/LICENSE.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/Core</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/AppServices/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/AppServices</PackageProjectUrl>
     <PackageIconUrl>http://www.ontica.org/logo.ontica.png</PackageIconUrl>
     <PackageTags>
       Control presupuestal, flujo de efectivo, pago a proveedores, ingresos, egresos, proyectos, contratos,
@@ -31,8 +31,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <NeutralLanguage></NeutralLanguage>
     <Configurations>Debug;Release;Multisolutions</Configurations>
-    <AssemblyName>Banobras.PYC.Core</AssemblyName>
-    <RootNamespace>Banobras.PYC</RootNamespace>
+    <AssemblyName>Banobras.PYC.AppServices</AssemblyName>
+    <RootNamespace>Empiria.Banobras.PYC</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Multisolutions|AnyCPU' ">
@@ -71,6 +71,7 @@
     <PackageReference Include="Empiria.Financial.Core" Version="2.0.0" />
     <PackageReference Include="Empiria.Budgeting.Core" Version="2.0.0" />
     <PackageReference Include="Empiria.Payments.Core" Version="2.0.0" />
+    <PackageReference Include="Banobras.PYC.ExternalInterfaces" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
     <ProjectReference Include="..\..\core\Core\Empiria.Core.csproj" />
@@ -78,5 +79,6 @@
     <ProjectReference Include="..\..\financial.management\Core\Core\Empiria.Financial.Core.csproj" />
     <ProjectReference Include="..\..\financial.management\Budgeting\Core\Empiria.Budgeting.Core.csproj" />
     <ProjectReference Include="..\..\financial.management\Payments\Core\Empiria.Payments.Core.csproj" />
+    <ProjectReference Include="..\ExternalInterfaces\Banobras.PYC.ExternalInterfaces.csproj" />
   </ItemGroup>
 </Project>

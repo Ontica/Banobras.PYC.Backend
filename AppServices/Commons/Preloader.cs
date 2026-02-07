@@ -1,7 +1,7 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras PYC Core                          Component : Common Types                            *
-*  Assembly : Banobras.PYC.Core.dll                      Pattern   : Application data preloader              *
+*  Module   : Banobras PYC Application Services          Component : Common Types                            *
+*  Assembly : Banobras.PYC.AppServices.dll               Pattern   : Application data preloader              *
 *  Type     : Preloader                                  License   : Please read LICENSE.txt file            *
 *                                                                                                            *
 *  Summary  : Application data preloader for Banobras' PYC System.                                           *

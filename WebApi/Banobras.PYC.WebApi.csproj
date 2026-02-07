@@ -15,7 +15,7 @@
       Este módulo es el que se instala en el servidor de aplicaciones IIS donde
       se ejecuta el backend del Sistema PYC.
     </Description>
-    <Copyright>(c) 2024-2025. La Vía Óntica SC, Ontica LLC y de los autores. Todos los derechos reservados.</Copyright>
+    <Copyright>(c) 2024-2026. La Vía Óntica SC, Ontica LLC y de los autores. Todos los derechos reservados.</Copyright>
     <Version>1.0</Version>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
@@ -36,7 +36,7 @@
     <NeutralLanguage></NeutralLanguage>
     <Configurations>Debug;Release;Multisolutions</Configurations>
     <AssemblyName>Banobras.PYC.WebApi</AssemblyName>
-    <RootNamespace>Banobras.PYC.WebApi</RootNamespace>
+    <RootNamespace>Empiria.Banobras.PYC.WebApi</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Multisolutions|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -87,7 +87,7 @@
     <PackageReference Include="Empiria.Inventory.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Procurement.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Operations.Integration.WebApi" Version="8.0.0" />
-    <PackageReference Include="Banobras.PYC.Core" Version="1.0.0" />
+    <PackageReference Include="Banobras.PYC.AppServices" Version="1.0.0" />
     <PackageReference Include="Banobras.PYC.ExternalInterfaces" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
@@ -106,7 +106,7 @@
     <ProjectReference Include="..\..\operations.management\Inventory\WebApi\Empiria.Inventory.WebApi.csproj" />
     <ProjectReference Include="..\..\operations.management\Procurement\WebApi\Empiria.Procurement.WebApi.csproj" />
     <ProjectReference Include="..\..\operations.management\Integration\WebApi\Empiria.Operations.Integration.WebApi.csproj" />
-    <ProjectReference Include="..\Core\Banobras.PYC.Core.csproj" />
+    <ProjectReference Include="..\AppServices\Banobras.PYC.AppServices.csproj" />
     <ProjectReference Include="..\ExternalInterfaces\Banobras.PYC.ExternalInterfaces.csproj" />
   </ItemGroup>
   <ItemGroup>

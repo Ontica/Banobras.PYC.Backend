@@ -1,11 +1,11 @@
 ﻿/* BANOBRAS **************************************************************************************************
 *                                                                                                            *
-*  System   : Sistema PYC (Planeación y control)                 Module  : PYC Core Module Tests             *
-*  Assembly : Banobras.PYC.Core.Tests.dll                        Pattern : Assembly Attributes File          *
+*  System   : Sistema PYC (Planeación y control)                 Module  : PYC App Services Tests Module     *
+*  Assembly : Banobras.PYC.AppServices.Tests.dll                 Pattern : Assembly Attributes File          *
 *                                                                License : Please read LICENSE.txt file      *
 *                                                                                                            *
-*  Summary  : Suite de casos de prueba específica para los componentes core del Sistema PYC                  *
-*             de BANOBRAS (Banobras.PYC.Core).                                                               *
+*  Summary  : Suite de casos de prueba específicos para los servicios de aplicación del Sistema PYC          *
+*             de BANOBRAS (Banobras.PYC.AppServices).                                                        *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 using System;

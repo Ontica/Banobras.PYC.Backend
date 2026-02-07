@@ -1,7 +1,12 @@
-﻿# BANOBRAS - Sistema PYC - Core Tests Module
+﻿# BANOBRAS - Sistema PYC - Application Services Module
 
-Suite de casos de prueba específica para los componentes core
-del Sistema PYC de BANOBRAS (Banobras.PYC.Core).
+Este módulo contiene el código con los servicios de aplicación específicos del
+Sistema PYC de BANOBRAS, los cuales sirven para orquestar e integrar los casos de uso
+y componentes específicos de Empiria Budgeting, Empiria CashFlow y Empiria Payments.
+
+Así mismo, se enlaza con Banobras.PYC.ExternalInterfaces para obtener
+información proveniente de otros sistemas del Banco, como es el caso
+de los sistemas SICOFIN, SIC, SIMEFIN y CFDI.
 
 ## Licencia
 
@@ -23,5 +28,5 @@ e internacionales de derechos de autor.
 
 ## Copyright
 
-Copyright © 2024-2025. La Vía Óntica SC, Ontica LLC y autores.
+Copyright © 2024-2026. La Vía Óntica SC, Ontica LLC y autores.
 Todos los derechos reservados.

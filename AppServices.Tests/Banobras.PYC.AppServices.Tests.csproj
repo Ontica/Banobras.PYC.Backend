@@ -3,17 +3,17 @@
     <Company>Ontica</Company>
     <Product>BANOBRAS - Sistema PYC</Product>
     <Description>
-      Suite de casos de prueba específica para los componentes core del Sistema PYC
-      de BANOBRAS (Banobras.PYC.Core).
+      Suite de casos de prueba específicos para los servicios de aplicación del Sistema PYC
+      de BANOBRAS (Banobras.PYC.AppServices).
     </Description>
-    <Copyright>(c) 2024-2025. La Vía Óntica SC, Ontica LLC y de los autores. Todos los derechos reservados.</Copyright>
+    <Copyright>(c) 2024-2026. La Vía Óntica SC, Ontica LLC y de los autores. Todos los derechos reservados.</Copyright>
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/Core.Tests/LICENSE.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/Core.Tests</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/AppServices.Tests/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/AppServices.Tests</PackageProjectUrl>
     <PackageIconUrl>http://www.ontica.org/logo.ontica.png</PackageIconUrl>
     <PackageTags>
       Control presupuestal, flujo de efectivo, pago a proveedores, ingresos, egresos, proyectos, contratos, programas,
@@ -26,8 +26,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <NeutralLanguage></NeutralLanguage>
     <Configurations>Debug;Release;Multisolutions</Configurations>
-    <AssemblyName>Banobras.PYC.Core.Tests</AssemblyName>
-    <RootNamespace>Banobras.Tests.PYC</RootNamespace>
+    <AssemblyName>Banobras.PYC.AppServices.Tests</AssemblyName>
+    <RootNamespace>Banobras.Tests.PYC.AppServices</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Multisolutions|AnyCPU' ">
@@ -84,10 +84,11 @@
   <ItemGroup Condition=" '$(Configuration)' != 'Multisolutions' ">
     <PackageReference Include="Empiria.Tests" Version="1.0.0" />
     <PackageReference Include="Banobras.PYC.Core" Version="1.0.0" />
+    <PackageReference Include="Banobras.PYC.AppServices" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
     <ProjectReference Include="..\..\extensions\Tests\Empiria.Tests.csproj" />
-    <ProjectReference Include="..\Core\Banobras.PYC.Core.csproj" />
+    <ProjectReference Include="..\AppServices\Banobras.PYC.AppServices.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="empiria.config.json">
