@@ -12,7 +12,7 @@
     <FileVersion>1.0.0.0</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/AppServices.Tests/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/blob/master/AppServices.Tests/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/AppServices.Tests</PackageProjectUrl>
     <PackageIconUrl>http://www.ontica.org/logo.ontica.png</PackageIconUrl>
     <PackageTags>
@@ -27,7 +27,7 @@
     <NeutralLanguage></NeutralLanguage>
     <Configurations>Debug;Release;Multisolutions</Configurations>
     <AssemblyName>Banobras.PYC.AppServices.Tests</AssemblyName>
-    <RootNamespace>Banobras.Tests.PYC.AppServices</RootNamespace>
+    <RootNamespace>Banobras.Tests.AppServices</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Multisolutions|AnyCPU' ">

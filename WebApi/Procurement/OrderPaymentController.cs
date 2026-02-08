@@ -1,7 +1,7 @@
 ﻿/* Banobras - PYC ********************************************************************************************
 *                                                                                                            *
 *  Module   : Banobras Procurement Services                 Component : Web Api Layer                        *
-*  Assembly : Empiria.Operations.Integration.WebApi.dll     Pattern   : Web Api Controller                   *
+*  Assembly : Banobras.PYC.WebApi.dll                       Pattern   : Web Api Controller                   *
 *  Type     : OrderPaymentController                        License   : Please read LICENSE.txt file         *
 *                                                                                                            *
 *  Summary  : Web api used to handle order payment requests.                                                 *

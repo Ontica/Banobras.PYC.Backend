@@ -17,7 +17,7 @@
     <FileVersion>1.0.0.0</FileVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/tree/master/AppServices/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/Ontica/Banobras.PYC/blob/master/AppServices/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Ontica/Banobras.PYC/tree/master/AppServices</PackageProjectUrl>
     <PackageIconUrl>http://www.ontica.org/logo.ontica.png</PackageIconUrl>
     <PackageTags>
@@ -32,7 +32,7 @@
     <NeutralLanguage></NeutralLanguage>
     <Configurations>Debug;Release;Multisolutions</Configurations>
     <AssemblyName>Banobras.PYC.AppServices</AssemblyName>
-    <RootNamespace>Empiria.Banobras.PYC</RootNamespace>
+    <RootNamespace>Empiria.Banobras</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Multisolutions|AnyCPU' ">

@@ -1,7 +1,7 @@
 ﻿/* Banobras - PYC ********************************************************************************************
 *                                                                                                            *
 *  Module   : Banobras Procurement Services                 Component : Web Api Layer                        *
-*  Assembly : Empiria.Operations.Integration.WebApi.dll     Pattern   : Web Api Controller                   *
+*  Assembly : Banobras.PYC.WebApi.dll                       Pattern   : Web Api Controller                   *
 *  Type     : BudgetingProcurementController                License   : Please read LICENSE.txt file         *
 *                                                                                                            *
 *  Summary  : Web API used to retrieve and generate budget procurement transactions.                         *
