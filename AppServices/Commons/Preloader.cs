@@ -1,4 +1,4 @@
-﻿/* Empiria Financial *****************************************************************************************
+﻿/* Banobras - PYC ********************************************************************************************
 *                                                                                                            *
 *  Module   : Banobras PYC Application Services          Component : Common Types                            *
 *  Assembly : Banobras.PYC.AppServices.dll               Pattern   : Application data preloader              *
@@ -16,10 +16,10 @@ using Empiria.Financial;
 using Empiria.Parties;
 using Empiria.Payments.Processor;
 
-namespace Empiria.Banobras.PYC {
+namespace Empiria.Banobras {
 
   /// <summary>Application data preloader for Banobras' PYC System.</summary>
-  static public class Preloader {
+  static public class PYCPreloader {
 
     static private bool _alreadyExecuted = false;
 
@@ -59,6 +59,6 @@ namespace Empiria.Banobras.PYC {
       }
     }
 
-  }  // class Preloader
+  }  // class PYCPreloader
 
-} // namespace Empiria.Banobras.PYC
+} // namespace Empiria.Banobras

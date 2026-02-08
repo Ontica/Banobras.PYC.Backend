@@ -86,7 +86,6 @@
     <PackageReference Include="Empiria.Orders.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Inventory.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Procurement.WebApi" Version="8.0.0" />
-    <PackageReference Include="Empiria.Operations.Integration.WebApi" Version="8.0.0" />
     <PackageReference Include="Banobras.PYC.AppServices" Version="1.0.0" />
     <PackageReference Include="Banobras.PYC.ExternalInterfaces" Version="1.0.0" />
   </ItemGroup>
@@ -105,7 +104,6 @@
     <ProjectReference Include="..\..\operations.management\Orders\WebApi\Empiria.Orders.WebApi.csproj" />
     <ProjectReference Include="..\..\operations.management\Inventory\WebApi\Empiria.Inventory.WebApi.csproj" />
     <ProjectReference Include="..\..\operations.management\Procurement\WebApi\Empiria.Procurement.WebApi.csproj" />
-    <ProjectReference Include="..\..\operations.management\Integration\WebApi\Empiria.Operations.Integration.WebApi.csproj" />
     <ProjectReference Include="..\AppServices\Banobras.PYC.AppServices.csproj" />
     <ProjectReference Include="..\ExternalInterfaces\Banobras.PYC.ExternalInterfaces.csproj" />
   </ItemGroup>
