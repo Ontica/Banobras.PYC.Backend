@@ -88,6 +88,7 @@
     <PackageReference Include="Empiria.Procurement.WebApi" Version="8.0.0" />
     <PackageReference Include="Banobras.PYC.AppServices" Version="1.0.0" />
     <PackageReference Include="Banobras.PYC.ExternalInterfaces" Version="1.0.0" />
+    <PackageReference Include="Banobras.PYC.ReportingServices" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
     <ProjectReference Include="..\..\extensions\WebApi\Empiria.WebApi.csproj" />
@@ -106,6 +107,7 @@
     <ProjectReference Include="..\..\operations.management\Procurement\WebApi\Empiria.Procurement.WebApi.csproj" />
     <ProjectReference Include="..\AppServices\Banobras.PYC.AppServices.csproj" />
     <ProjectReference Include="..\ExternalInterfaces\Banobras.PYC.ExternalInterfaces.csproj" />
+    <ProjectReference Include="..\ReportingServices\Banobras.PYC.ReportingServices.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="empiria.config.json">
