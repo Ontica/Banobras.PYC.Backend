@@ -72,6 +72,7 @@
     <PackageReference Include="Empiria.Budgeting.Core" Version="2.0.0" />
     <PackageReference Include="Empiria.Payments.Core" Version="2.0.0" />
     <PackageReference Include="Empiria.Orders.Core" Version="8.0.0" />
+    <PackageReference Include="Empiria.FinancialAccounting.WebApiClient" Version="3.0.0" />
     <PackageReference Include="Banobras.PYC.ExternalInterfaces" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Multisolutions' ">
@@ -81,6 +82,7 @@
     <ProjectReference Include="..\..\financial.management\Budgeting\Core\Empiria.Budgeting.Core.csproj" />
     <ProjectReference Include="..\..\financial.management\Payments\Core\Empiria.Payments.Core.csproj" />
     <ProjectReference Include="..\..\operations.management\Orders\Core\Empiria.Orders.Core.csproj" />
+    <ProjectReference Include="..\..\financial.accounting\WebApiClient\Empiria.FinancialAccounting.WebApiClient.csproj" />
     <ProjectReference Include="..\ExternalInterfaces\Banobras.PYC.ExternalInterfaces.csproj" />
   </ItemGroup>
 </Project>

@@ -16,8 +16,8 @@ using Empiria.Storage;
 using Empiria.Billing;
 using Empiria.Budgeting;
 using Empiria.Budgeting.Transactions;
+
 using Empiria.Orders;
-using Empiria.Procurement.Suppliers;
 
 namespace Empiria.Payments.Reporting {
 
@@ -162,7 +162,7 @@ namespace Empiria.Payments.Reporting {
 
       Set("{{PAYMENT.PAYMENT_TYPE}}", BuildPaymentType());
 
-      var payTo = (Supplier) _paymentOrder.PayTo;
+      var payTo = (Payee) _paymentOrder.PayTo;
 
       Set("{{PAYMENT.PAY_TO}}", $"{payTo.Name} ({payTo.SubledgerAccount})");
 
@@ -211,7 +211,7 @@ namespace Empiria.Payments.Reporting {
       }
 
       if (!_paymentOrder.Debtor.IsEmptyInstance) {
-        var debtor = (Supplier) _paymentOrder.Debtor;
+        var debtor = (Payee) _paymentOrder.Debtor;
 
         Set("{{PAYMENT.DEBTOR}}", $"{debtor.Name} ({debtor.SubledgerAccount})");
       } else {
