@@ -12,8 +12,7 @@ using Empiria.Documents;
 using Empiria.History;
 
 using Empiria.Billing.Adapters;
-
-using Empiria.Financial.Adapters;
+using Empiria.Payments.Adapters;
 
 namespace Empiria.Banobras.Payments.Adapters {
 

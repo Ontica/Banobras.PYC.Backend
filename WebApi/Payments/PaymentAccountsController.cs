@@ -12,10 +12,8 @@ using System.Web.Http;
 
 using Empiria.WebApi;
 
-using Empiria.Financial;
-using Empiria.Financial.Adapters;
-
 using Empiria.Payments;
+using Empiria.Payments.Adapters;
 using Empiria.Payments.UseCases;
 
 using Empiria.Banobras.Payments.Adapters;
@@ -47,15 +45,53 @@ namespace Empiria.Banobras.Payments.WebApi {
 
 
     [HttpGet]
+    [Route("v8/financial/financial-institutions")]      // ToDo: Remove this route in future versions
+    [Route("v2/payments-management/financial-institutions")]
+    public CollectionModel GetFinancialInstitutions() {
+
+      FixedList<FinancialInstitution> institutions = FinancialInstitution.GetList();
+
+      return new CollectionModel(Request, institutions.MapToNamedEntityList());
+    }
+
+
+    [HttpGet]
     [Route("v8/procurement/suppliers/{payeeUID:guid}/payment-accounts")]  // ToDo: Remove this route in future versions
     [Route("v2/payments-management/payees/{payeeUID:guid}/payment-accounts")]
     public CollectionModel GetPaymentAccounts([FromUri] string payeeUID) {
 
       using (var usecases = PaymentAccountsUseCases.UseCaseInteractor()) {
-        FixedList<PaymentAccountDto> accounts = usecases.GetPaymentAccounts(payeeUID);
+
+        var payee = Payee.Parse(payeeUID);
+
+        FixedList<PaymentAccountDto> accounts = PaymentAccountDto.MapFor(payee);
 
         return new CollectionModel(base.Request, accounts);
       }
+    }
+
+
+    [HttpGet]
+    [Route("v8/financial/payment-account-types")]     // ToDo: Remove this route in future versions
+    [Route("v2/payments-management/payment-account-types")]
+    public CollectionModel GetPaymentAccountTypes() {
+
+      FixedList<PaymentAccountType> accountTypes = PaymentAccountType.GetList();
+
+      return new CollectionModel(Request, accountTypes.MapToNamedEntityList());
+    }
+
+
+    [HttpGet]
+    [Route("v8/financial/payment-methods")]   // ToDo: Remove this route in future versions
+    [Route("v2/payments-management/payment-methods")]
+    public CollectionModel GetPaymentMethods() {
+
+      FixedList<PaymentMethod> paymentMethods = PaymentMethod.GetList();
+
+      FixedList<PaymentMethodDto> dtos = PaymentMethodDto.Map(paymentMethods);
+
+      return new CollectionModel(Request, dtos);
     }
 
 

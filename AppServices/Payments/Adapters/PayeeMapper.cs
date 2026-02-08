@@ -15,9 +15,8 @@ using Empiria.StateEnums;
 using Empiria.Billing;
 using Empiria.Billing.Adapters;
 
-using Empiria.Financial.Services;
-
 using Empiria.Payments;
+using Empiria.Payments.Adapters;
 
 namespace Empiria.Banobras.Payments.Adapters {
 
@@ -37,7 +36,7 @@ namespace Empiria.Banobras.Payments.Adapters {
 
       return new PayeeHolderDto {
         Payee = MapToDto(payee),
-        PaymentAccounts = PaymentAccountServices.GetPaymentAccounts(payee),
+        PaymentAccounts = PaymentAccountDto.MapFor(payee),
         Bills = BillMapper.MapToBillStructure(bills),
         Documents = DocumentServices.GetAllEntityDocuments(payee),
         History = HistoryServices.GetEntityHistory(payee),
