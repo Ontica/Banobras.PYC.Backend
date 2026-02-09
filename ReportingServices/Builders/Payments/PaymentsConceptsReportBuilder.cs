@@ -91,16 +91,16 @@ namespace Empiria.Payments.Reporting {
     internal FixedList<DataTableColumn> BuildColumns() {
       return new List<DataTableColumn>() {
         new DataTableColumn("paymentOrderNo", "Solicitud de pago", "text-link", linkField: "paymentOrderUID"),
-        new DataTableColumn("payToName", "Beneficiario", "text"),
+        new DataTableColumn("payToName", "Beneficiario", "text") { Size = "md" },
         new DataTableColumn("payToCode", "RFC", "text"),
         new DataTableColumn("paymentDate", "Fecha de pago", "date"),
         new DataTableColumn("paymentMethod", "Forma de pago", "text"),
         new DataTableColumn("total", "Total pagado", "decimal"),
         new DataTableColumn("orgUnitCode", "Area", "text"),
-        new DataTableColumn("orgUnitName", "Nombre área", "text"),
-        new DataTableColumn("conceptCode", "Partida", "text"),
-        new DataTableColumn("conceptName", "Nombre partida", "text"),
-        new DataTableColumn("conceptDescription", "Descripción", "text"),
+        new DataTableColumn("orgUnitName", "Nombre área", "text") { Size = "lg" , Truncate = true},
+        new DataTableColumn("conceptCode", "Partida", "text") { TooltipField = "conceptName" },
+        new DataTableColumn("conceptName", "Nombre partida", "text") { Size = "lg", Truncate = true },
+        new DataTableColumn("conceptDescription", "Descripción", "text")  { Size = "lg", Truncate = true },
         new DataTableColumn("conceptAmount", "Importe partida", "decimal"),
       }.ToFixedList();
     }
