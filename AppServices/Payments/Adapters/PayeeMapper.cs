@@ -36,7 +36,7 @@ namespace Empiria.Banobras.Payments.Adapters {
 
       return new PayeeHolderDto {
         Payee = MapToDto(payee),
-        PaymentAccounts = PaymentAccountDto.MapFor(payee),
+        PaymentAccounts = PaymentAccountDto.Map(payee.GetAccounts()),
         Bills = BillMapper.MapToBillStructure(bills),
         Documents = DocumentServices.GetAllEntityDocuments(payee),
         History = HistoryServices.GetEntityHistory(payee),

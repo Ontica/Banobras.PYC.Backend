@@ -52,12 +52,9 @@ namespace Empiria.Banobras.Payments.AppServices {
         Assertion.RequireFail("Ya existe otro beneficiario con el mismo RFC y auxiliar contable.");
       }
 
-      using (var usecase = PayeesUseCases.UseCaseInteractor()) {
+      Payee payee = PaymentAccountService.AddPayee(fields);
 
-        Payee payee = usecase.AddPayee(fields);
-
-        return PayeeMapper.Map(payee);
-      }
+      return PayeeMapper.Map(payee);
     }
 
 
@@ -79,24 +76,20 @@ namespace Empiria.Banobras.Payments.AppServices {
     public PayeeHolderDto RemovePayee(string payeeUID) {
       Assertion.Require(payeeUID, nameof(payeeUID));
 
-      using (var usecase = PayeesUseCases.UseCaseInteractor()) {
+      var payee = Payee.Parse(payeeUID);
 
-        Payee payee = usecase.DeletePayee(payeeUID);
+      PaymentAccountService.RemovePayee(payee);
 
-        return PayeeMapper.Map(payee);
-      }
+      return PayeeMapper.Map(payee);
     }
 
 
     public FixedList<PayeeDescriptor> SearchPayees(PayeesQuery query) {
       Assertion.Require(query, nameof(query));
 
-      using (var usecase = PayeesUseCases.UseCaseInteractor()) {
+      FixedList<Payee> payees = PaymentAccountService.SearchPayees(query);
 
-        FixedList<Payee> payees = usecase.SearchPayees(query);
-
-        return PayeeMapper.Map(payees);
-      }
+      return PayeeMapper.Map(payees);
     }
 
 
@@ -118,12 +111,9 @@ namespace Empiria.Banobras.Payments.AppServices {
         Assertion.RequireFail("Ya existe otro beneficiario con el mismo RFC y auxiliar contable.");
       }
 
-      using (var usecase = PayeesUseCases.UseCaseInteractor()) {
+      payee = PaymentAccountService.UpdatePayee(payee, fields);
 
-        payee = usecase.UpdatePayee(payee, fields);
-
-        return PayeeMapper.Map(payee);
-      }
+      return PayeeMapper.Map(payee);
     }
 
     #endregion Use cases

@@ -33,14 +33,11 @@ namespace Empiria.Banobras.Payments.WebApi {
 
       var payee = Payee.Parse(payeeUID);
 
-      using (var usecases = PaymentAccountsUseCases.UseCaseInteractor()) {
+      _ = PaymentAccountService.AddPaymentAccount(payee, fields);
 
-        _ = usecases.AddPaymentAccount(payee, fields);
+      PayeeHolderDto payeeDto = PayeeMapper.Map(payee);
 
-        PayeeHolderDto payeeDto = PayeeMapper.Map(payee);
-
-        return new SingleObjectModel(base.Request, payeeDto);
-      }
+      return new SingleObjectModel(base.Request, payeeDto);
     }
 
 
@@ -60,14 +57,11 @@ namespace Empiria.Banobras.Payments.WebApi {
     [Route("v2/payments-management/payees/{payeeUID:guid}/payment-accounts")]
     public CollectionModel GetPaymentAccounts([FromUri] string payeeUID) {
 
-      using (var usecases = PaymentAccountsUseCases.UseCaseInteractor()) {
+      var payee = Payee.Parse(payeeUID);
 
-        var payee = Payee.Parse(payeeUID);
+      FixedList<PaymentAccountDto> accounts = PaymentAccountDto.Map(payee.GetAccounts());
 
-        FixedList<PaymentAccountDto> accounts = PaymentAccountDto.MapFor(payee);
-
-        return new CollectionModel(base.Request, accounts);
-      }
+      return new CollectionModel(base.Request, accounts);
     }
 
 
@@ -104,14 +98,11 @@ namespace Empiria.Banobras.Payments.WebApi {
       var payee = Payee.Parse(payeeUID);
       var account = PaymentAccount.Parse(accountUID);
 
-      using (var usecases = PaymentAccountsUseCases.UseCaseInteractor()) {
+      _ = PaymentAccountService.RemovePaymentAccount(payee, account);
 
-        _ = usecases.RemovePaymentAccount(payee, account);
+      PayeeHolderDto payeeDto = PayeeMapper.Map(payee);
 
-        PayeeHolderDto payeeDto = PayeeMapper.Map(payee);
-
-        return new SingleObjectModel(base.Request, payeeDto);
-      }
+      return new SingleObjectModel(base.Request, payeeDto);
     }
 
 
@@ -126,14 +117,11 @@ namespace Empiria.Banobras.Payments.WebApi {
 
       fields.UID = accountUID;
 
-      using (var usecases = PaymentAccountsUseCases.UseCaseInteractor()) {
+      _ = PaymentAccountService.UpdatePaymentAccount(payee, fields);
 
-        _ = usecases.UpdatePaymentAccount(payee, fields);
+      PayeeHolderDto payeeDto = PayeeMapper.Map(payee);
 
-        PayeeHolderDto payeeDto = PayeeMapper.Map(payee);
-
-        return new SingleObjectModel(base.Request, payeeDto);
-      }
+      return new SingleObjectModel(base.Request, payeeDto);
     }
 
     #endregion Web apis
