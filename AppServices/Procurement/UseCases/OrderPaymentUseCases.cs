@@ -9,6 +9,7 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using Empiria.Services;
+using Empiria.StateEnums;
 
 using Empiria.Billing;
 
@@ -81,6 +82,11 @@ namespace Empiria.Banobras.Procurement.UseCases {
       paymentOrder.Update(fields);
 
       paymentOrder.Save();
+
+      if (order.Status == EntityStatus.Pending) {
+        order.Activate();
+        order.Save();
+      }
 
       return PayableOrderMapper.Map(order);
     }
