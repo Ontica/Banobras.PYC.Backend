@@ -78,29 +78,6 @@ namespace Empiria.Banobras.Procurement.UseCases {
     }
 
 
-    public BudgetTransactionDescriptorDto ExcerciseBudget(BudgetRequestFields fields) {
-      Assertion.Require(fields, nameof(fields));
-
-      fields.EnsureValid();
-
-      var paymentOrder = PaymentOrder.Parse(fields.BaseObjectUID);
-
-      var order = Order.Parse(paymentOrder.PayableEntity.UID);
-
-      BudgetTransaction budgetTxn = CreateAnSendBudgetTransaction(order, BudgetOperationType.Exercise);
-
-      budgetTxn.Authorize();
-
-      budgetTxn.Save();
-
-      budgetTxn.Close();
-
-      budgetTxn.Save();
-
-      return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
-    }
-
-
     public BudgetTransactionDescriptorDto RequestBudget(BudgetRequestFields fields) {
       Assertion.Require(fields, nameof(fields));
 
@@ -169,7 +146,7 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
     #region Helpers
 
-    private BudgetTransaction CreateAnSendBudgetTransaction(Order order, BudgetOperationType operationType) {
+    internal BudgetTransaction CreateAnSendBudgetTransaction(Order order, BudgetOperationType operationType) {
 
       var bdgTxnType = BudgetTransactionType.GetFor(order.BudgetType, operationType);
 
