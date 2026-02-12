@@ -104,7 +104,7 @@ namespace Empiria.Payments.Reporting {
         new DataTableColumn("orgUnitCode", "Area", "text"),
         new DataTableColumn("orgUnitName", "Nombre área", "text"),
         new DataTableColumn("billType", "Comprobante", "text"),
-        new DataTableColumn("billNo", "Número", "text"),
+        new DataTableColumn("billNo", "Número", "text-nowrap"),
         new DataTableColumn("billSubtotal", "Subtotal", "decimal"),
         new DataTableColumn("billIVA", "IVA", "decimal"),
         new DataTableColumn("billISR", "ISR", "decimal"),

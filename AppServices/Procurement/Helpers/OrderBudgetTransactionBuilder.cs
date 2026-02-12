@@ -115,42 +115,42 @@ namespace Empiria.Banobras.Procurement {
     }
 
 
-    private BudgetEntryFields BuildEntryFields(OrderItem entry,
+    private BudgetEntryFields BuildEntryFields(OrderItem orderEntry,
                                                BalanceColumn balanceColumn,
                                                bool isDeposit) {
 
-      DateTime budgetingDate = DetermineEntryBudgetingDate(entry, balanceColumn, isDeposit);
+      DateTime budgetingDate = DetermineEntryBudgetingDate(orderEntry, balanceColumn, isDeposit);
 
       string relatedEntryUID = string.Empty;
 
-      if (!entry.RequisitionItem.IsEmptyInstance) {
-        relatedEntryUID = entry.RequisitionItem.BudgetEntry.UID;
+      if (!orderEntry.RequisitionItem.IsEmptyInstance) {
+        relatedEntryUID = orderEntry.RequisitionItem.BudgetEntry.UID;
       }
 
       return new BudgetEntryFields {
-        BudgetUID = entry.Budget.UID,
-        BudgetAccountUID = entry.BudgetAccount.UID,
+        BudgetUID = orderEntry.Budget.UID,
+        BudgetAccountUID = orderEntry.BudgetAccount.UID,
         BalanceColumnUID = balanceColumn.UID,
-        Description = entry.Description,
-        Justification = entry.Justification,
-        ProductUID = entry.Product.UID,
-        ProductCode = entry.ProductCode,
-        ProductName = entry.ProductName,
-        ProductUnitUID = entry.ProductUnit.UID,
-        OriginCountryUID = entry.OriginCountry.UID,
-        ProductQty = entry.Quantity,
-        ProjectUID = entry.Project.UID,
-        PartyUID = entry.RequestedBy.UID,
+        Description = orderEntry.Description,
+        Justification = orderEntry.Justification,
+        ProductUID = orderEntry.Product.UID,
+        ProductCode = orderEntry.ProductCode,
+        ProductName = orderEntry.ProductName,
+        ProductUnitUID = orderEntry.ProductUnit.UID,
+        OriginCountryUID = orderEntry.OriginCountry.UID,
+        ProductQty = orderEntry.Quantity,
+        ProjectUID = orderEntry.Project.UID,
+        PartyUID = orderEntry.RequestedBy.UID,
         Year = budgetingDate.Year,
         Month = budgetingDate.Month,
         Day = budgetingDate.Day,
-        EntityTypeId = entry.GetEmpiriaType().Id,
-        EntityId = entry.Id,
+        EntityTypeId = orderEntry.GetEmpiriaType().Id,
+        EntityId = orderEntry.Id,
         RelatedEntryUID = relatedEntryUID,
         ExchangeRate = _order.ExchangeRate,
-        CurrencyUID = entry.Currency.UID,
-        CurrencyAmount = entry.Subtotal,
-        Amount = Math.Round((isDeposit ? entry.Subtotal : -1 * entry.Subtotal) * _order.ExchangeRate, 2)
+        CurrencyUID = orderEntry.Currency.UID,
+        CurrencyAmount = orderEntry.Subtotal,
+        Amount = Math.Round((isDeposit ? orderEntry.Subtotal : -1 * orderEntry.Subtotal) * _order.ExchangeRate, 2)
       };
     }
 
@@ -196,24 +196,26 @@ namespace Empiria.Banobras.Procurement {
       };
     }
 
-    private DateTime DetermineEntryBudgetingDate(OrderItem entry, BalanceColumn balanceColumn, bool isDeposit) {
+    private DateTime DetermineEntryBudgetingDate(OrderItem orderEntry,
+                                                 BalanceColumn balanceColumn,
+                                                 bool isDeposit) {
 
       switch (_transactionType.OperationType) {
         case BudgetOperationType.Request:
 
-          return DetermineBudgetRequestDate(entry);
+          return DetermineBudgetRequestDate(orderEntry);
 
         case BudgetOperationType.Commit:
 
-          return DetermineBudgetCommitRequestDate(entry, isDeposit);
+          return DetermineBudgetCommitRequestDate(orderEntry, isDeposit);
 
         case BudgetOperationType.ApprovePayment:
 
-          return DetermineApprovePaymentRequestDate(entry, isDeposit);
+          return DetermineApprovePaymentRequestDate(orderEntry, isDeposit);
 
         case BudgetOperationType.Exercise:
 
-          return DetermineExcerciseRequestDate(entry);
+          return DetermineExcerciseRequestDate(orderEntry);
 
         default:
           throw Assertion.EnsureNoReachThisCode($"Budget entry budgeting date rule is undefined: " +
@@ -222,13 +224,13 @@ namespace Empiria.Banobras.Procurement {
     }
 
 
-    private DateTime DetermineApprovePaymentRequestDate(OrderItem entry, bool isDeposit) {
+    private DateTime DetermineApprovePaymentRequestDate(OrderItem orderEntry, bool isDeposit) {
       if (isDeposit) {
         return DateTime.Today.Date;
       }
 
-      DateTime budgetRequisitionDate = !entry.RequisitionItem.BudgetEntry.IsEmptyInstance ?
-                                             entry.RequisitionItem.BudgetEntry.Date : DateTime.Today;
+      DateTime budgetRequisitionDate = !orderEntry.RequisitionItem.BudgetEntry.IsEmptyInstance ?
+                                             orderEntry.RequisitionItem.BudgetEntry.Date : DateTime.Today;
 
       return new DateTime(budgetRequisitionDate.Year, budgetRequisitionDate.Month, 1);
     }
