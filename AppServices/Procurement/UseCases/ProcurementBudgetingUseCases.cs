@@ -150,7 +150,9 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       var bdgTxnType = BudgetTransactionType.GetFor(order.BudgetType, operationType);
 
-      var builder = new OrderBudgetTransactionBuilder(bdgTxnType, order);
+      bool updateOrderItems = bdgTxnType.OperationType != BudgetOperationType.Exercise;
+
+      var builder = new OrderBudgetTransactionBuilder(bdgTxnType, order, updateOrderItems);
 
       BudgetTransaction transaction = builder.Build();
 
@@ -158,7 +160,12 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       transaction.Save();
 
-      foreach (var item in order.GetItems<OrderItem>().FindAll(x => x.IsDirty)) {
+      if (!updateOrderItems) {
+        return transaction;
+      }
+
+      foreach (var item in order.GetItems<OrderItem>()
+                                .FindAll(x => x.IsDirty)) {
         item.Save();
       }
 

@@ -25,10 +25,13 @@ namespace Empiria.Banobras.Procurement {
 
     private readonly BudgetTransactionType _transactionType;
     private readonly Order _order;
+    private readonly bool _updateOrderItems;
 
     private BudgetTransaction _transaction;
 
-    public OrderBudgetTransactionBuilder(BudgetTransactionType transactionType, Order order) {
+    public OrderBudgetTransactionBuilder(BudgetTransactionType transactionType,
+                                         Order order,
+                                         bool updateOrderItems) {
 
       Assertion.Require(transactionType, nameof(transactionType));
       Assertion.Require(order, nameof(order));
@@ -37,6 +40,7 @@ namespace Empiria.Banobras.Procurement {
 
       _transactionType = transactionType;
       _order = order;
+      _updateOrderItems = updateOrderItems;
     }
 
 
@@ -55,17 +59,19 @@ namespace Empiria.Banobras.Procurement {
 
     #region Helpers
 
-    private void BuildDoubleEntries(OrderItem entry,
+    private void BuildDoubleEntries(OrderItem orderEntry,
                                     BalanceColumn withdrawalColumn,
                                     BalanceColumn depositColumn) {
 
-      var fields = BuildEntryFields(entry, depositColumn, true);
+      var fields = BuildEntryFields(orderEntry, depositColumn, true);
 
       BudgetEntry depositEntry = _transaction.AddEntry(fields);
 
-      entry.SetBudgetEntry(depositEntry);
+      if (_updateOrderItems) {
+        orderEntry.SetBudgetEntry(depositEntry);
+      }
 
-      fields = BuildEntryFields(entry, withdrawalColumn, false);
+      fields = BuildEntryFields(orderEntry, withdrawalColumn, false);
 
       _transaction.AddEntry(fields);
     }
@@ -207,7 +213,7 @@ namespace Empiria.Banobras.Procurement {
 
         case BudgetOperationType.Exercise:
 
-          return DetermineExcerciseRequestDate(entry, isDeposit);
+          return DetermineExcerciseRequestDate(entry);
 
         default:
           throw Assertion.EnsureNoReachThisCode($"Budget entry budgeting date rule is undefined: " +
@@ -258,11 +264,7 @@ namespace Empiria.Banobras.Procurement {
     }
 
 
-    private DateTime DetermineExcerciseRequestDate(OrderItem entry, bool isDeposit) {
-
-      if (isDeposit) {
-        return DateTime.Today.Date;
-      }
+    private DateTime DetermineExcerciseRequestDate(OrderItem entry) {
 
       DateTime budgetRequisitionDate = !entry.RequisitionItem.BudgetEntry.IsEmptyInstance ?
                                              entry.RequisitionItem.BudgetEntry.Date : DateTime.Today;
