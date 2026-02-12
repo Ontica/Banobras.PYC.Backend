@@ -18,6 +18,7 @@ using Empiria.Budgeting;
 using Empiria.Budgeting.Transactions;
 
 using Empiria.Banobras.Procurement.UseCases;
+using Empiria.Data;
 
 namespace Empiria.Banobras.Budgeting.AppServices {
 
@@ -40,9 +41,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     public int ExerciseBudget() {
 
-      const int BATCH_SIZE = 5;
-
-      EnsureCanExecute();
+      const int BATCH_SIZE = 75;
 
       FixedList<PaymentOrder> paymentOrders = GetPayedPaymentOrders();
 
@@ -55,10 +54,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         }
 
         Order order = (Order) paymentOrder.PayableEntity;
-
-        if (order.IsForMultipleBeneficiaries) {
-          continue;
-        }
 
         BudgetTransaction approvePaymentTxn = TryGetUnexercisedApprovePaymentBudgetTransaction(order);
 
@@ -77,15 +72,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Helpers
 
-    static private void EnsureCanExecute() {
-      if (ExecutionServer.CurrentUserId == 1002) {
-        return;
-      }
-      Assertion.RequireFail("Esta funcionalidad está en proceso de desarrollo y pruebas, " +
-                            "por lo que todavía no está disponible en producción.");
-    }
-
-
     static private FixedList<PaymentOrder> GetPayedPaymentOrders() {
       return PaymentOrder.GetList<PaymentOrder>()
                          .FindAll(x => x.Status == PaymentOrderStatus.Payed &&
@@ -99,17 +85,18 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       var order = Order.Parse(paymentOrder.PayableEntity.UID);
 
       using (var usecase = ProcurementBudgetingUseCases.UseCaseInteractor()) {
+
         BudgetTransaction budgetTxn = usecase.CreateAnSendBudgetTransaction(order, BudgetOperationType.Exercise);
 
         budgetTxn.Authorize();
 
-        budgetTxn.Save();
-
-        budgetTxn.SetExerciseData(paymentOrder.LastPaymentInstruction.PostingTime, paymentApproval);
+        budgetTxn.SetExerciseData(paymentOrder.LastPaymentInstruction.PostingTime, paymentApproval, paymentOrder);
 
         budgetTxn.Close();
 
         budgetTxn.Save();
+
+        UpdatePaymentApprovalBudgetTransaction(paymentApproval, paymentOrder);
 
         return budgetTxn;
       }
@@ -126,6 +113,20 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       return txns.FindLast(x => x.OperationType == BudgetOperationType.ApprovePayment &&
                                 x.Status == TransactionStatus.Closed);
 
+    }
+
+    static private void UpdatePaymentApprovalBudgetTransaction(BudgetTransaction paymentApproval,
+                                                               PaymentOrder paymentOrder) {
+
+      paymentApproval.SetPayable(paymentOrder);
+
+      var sql = $"UPDATE FMS_BUDGET_TRANSACTIONS " +
+                $"SET BDG_TXN_PAYABLE_ID = {paymentOrder.Id} " +
+                $"WHERE BDG_TXN_ID = {paymentApproval.Id}";
+
+      var op = DataOperation.Parse(sql);
+
+      DataWriter.Execute(op);
     }
 
     #endregion Helpers
