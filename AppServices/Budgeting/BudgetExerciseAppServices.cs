@@ -40,22 +40,19 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     public int ExerciseBudget() {
 
-      if (ExecutionServer.CurrentUserId != 1002) {
-        Assertion.RequireFail("Esta funcionalidad está en proceso de desarrollo y pruebas, " +
-                              "por lo que todavía no está disponible en producción.");
-      }
+      const int BATCH_SIZE = 5;
 
-      var paymentOrders = PaymentOrder.GetList<PaymentOrder>()
-                                      .FindAll(x => x.Status == PaymentOrderStatus.Payed &&
-                                                    x.PayableEntity.Budget.UID != BudgetType.None.UID);
+      EnsureCanExecute();
+
+      FixedList<PaymentOrder> paymentOrders = GetPayedPaymentOrders();
 
       int counter = 0;
 
       foreach (var paymentOrder in paymentOrders) {
-        if (counter >= 5) {
+
+        if (counter >= BATCH_SIZE) {
           break;
         }
-
 
         Order order = (Order) paymentOrder.PayableEntity;
 
@@ -63,20 +60,14 @@ namespace Empiria.Banobras.Budgeting.AppServices {
           continue;
         }
 
-        var txns = BudgetTransaction.GetFor(order);
+        BudgetTransaction approvePaymentTxn = TryGetUnexercisedApprovePaymentBudgetTransaction(order);
 
-        if (txns.Contains(x => x.OperationType == BudgetOperationType.Exercise)) {
+        if (approvePaymentTxn == null) {
           continue;
         }
 
-
-        var txn = txns.FindLast(x => x.OperationType == BudgetOperationType.ApprovePayment &&
-                                     x.Status == TransactionStatus.Closed);
-        if (txn != null) {
-          ExcerciseBudget(paymentOrder, txn);
-          counter++;
-          continue;
-        }
+        ExcerciseBudget(paymentOrder, approvePaymentTxn);
+        counter++;
       }
 
       return counter;
@@ -86,7 +77,24 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Helpers
 
-    private BudgetTransaction ExcerciseBudget(PaymentOrder paymentOrder, BudgetTransaction paymentApproval) {
+    static private void EnsureCanExecute() {
+      if (ExecutionServer.CurrentUserId == 1002) {
+        return;
+      }
+      Assertion.RequireFail("Esta funcionalidad está en proceso de desarrollo y pruebas, " +
+                            "por lo que todavía no está disponible en producción.");
+    }
+
+
+    static private FixedList<PaymentOrder> GetPayedPaymentOrders() {
+      return PaymentOrder.GetList<PaymentOrder>()
+                         .FindAll(x => x.Status == PaymentOrderStatus.Payed &&
+                                       x.PayableEntity.Budget.UID != BudgetType.None.UID)
+                         .ToFixedList();
+    }
+
+
+    static private BudgetTransaction ExcerciseBudget(PaymentOrder paymentOrder, BudgetTransaction paymentApproval) {
 
       var order = Order.Parse(paymentOrder.PayableEntity.UID);
 
@@ -103,9 +111,21 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
         budgetTxn.Save();
 
-
         return budgetTxn;
       }
+    }
+
+
+    private BudgetTransaction TryGetUnexercisedApprovePaymentBudgetTransaction(Order order) {
+      var txns = BudgetTransaction.GetFor(order);
+
+      if (txns.Contains(x => x.OperationType == BudgetOperationType.Exercise)) {
+        return null;
+      }
+
+      return txns.FindLast(x => x.OperationType == BudgetOperationType.ApprovePayment &&
+                                x.Status == TransactionStatus.Closed);
+
     }
 
     #endregion Helpers
