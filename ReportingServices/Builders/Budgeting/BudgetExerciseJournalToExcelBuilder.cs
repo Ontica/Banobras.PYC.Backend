@@ -67,7 +67,7 @@ namespace Empiria.Budgeting.Reporting {
 
         PaymentOrder paymentOrder = PaymentOrder.Parse(txn.PayableId);
 
-        foreach (var entry in txn.Entries.FindAll(x => x.Withdrawal > 0)) {
+        foreach (var entry in txn.Entries.FindAll(x => x.Deposit > 0)) {
           _excelFile.SetCell($"A{i}", entry.BudgetAccount.OrganizationalUnit.Code);
           _excelFile.SetCell($"B{i}", entry.BudgetAccount.Code);
           _excelFile.SetCell($"C{i}", entry.BudgetAccount.OrganizationalUnit.Name);

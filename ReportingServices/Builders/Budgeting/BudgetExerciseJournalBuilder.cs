@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 
 using Empiria.DynamicData;
-using Empiria.StateEnums;
 
 using Empiria.Payments;
 
@@ -103,7 +102,7 @@ namespace Empiria.Budgeting.Reporting {
       return new List<DataTableColumn>() {
         new DataTableColumn("orgUnit", "Área", "text"),
         new DataTableColumn("budgetAccount", "Partida", "text"),
-        new DataTableColumn("budgetProgram", "Program", "text"),
+        new DataTableColumn("budgetProgram", "Programa", "text"),
         new DataTableColumn("budget", "Presupuesto", "text"),
         new DataTableColumn("controlNo", "Num Verif", "text-nowrap"),
         new DataTableColumn("budgetTransactionNo", "'Transacción'", "text-nowrap"),
@@ -124,8 +123,11 @@ namespace Empiria.Budgeting.Reporting {
       var entries = new List<BudgetExerciseJournalEntry>(_transactions.Count * 2);
 
       foreach (var txn in _transactions) {
-        foreach (var entry in txn.Entries.FindAll(x => x.Withdrawal > 0)) {
+
+        foreach (var entry in txn.Entries.FindAll(x => x.Deposit > 0)) {
+
           BudgetExerciseJournalEntry journalEntry = CreateJournalEntry(txn, entry);
+
           entries.Add(journalEntry);
         }
       }
@@ -148,14 +150,14 @@ namespace Empiria.Budgeting.Reporting {
         ControlNo = entry.ControlNo,
         Description = entry.Description,
         MonthName = entry.MonthName,
-        Status = entry.Status.GetName()
+        Status = txn.Status.ToString()
       };
 
       var paymentOrder = PaymentOrder.Parse(txn.PayableId);
 
       if (txn.OperationType == BudgetOperationType.Exercise) {
 
-        journalEntry.Exercise = entry.Withdrawal;
+        journalEntry.Exercise = entry.Deposit;
         journalEntry.PaymentDate = paymentOrder.LastPaymentInstruction.LastUpdateTime;
         journalEntry.PaymentMethod = paymentOrder.PaymentMethod.Name;
         journalEntry.PayTo = paymentOrder.PayTo.Name;
@@ -163,13 +165,14 @@ namespace Empiria.Budgeting.Reporting {
 
 
       } else if (!paymentOrder.IsEmptyInstance) {
-        journalEntry.ToPay = entry.Withdrawal;
+        journalEntry.ToPay = entry.Deposit;
         journalEntry.PaymentDate = ExecutionServer.DateMinValue;
         journalEntry.PaymentMethod = paymentOrder.PaymentMethod.Name;
         journalEntry.PayTo = paymentOrder.PayTo.Name;
         journalEntry.PaymentOrderNo = paymentOrder.PaymentOrderNo;
+
       } else {
-        journalEntry.ToPay = entry.Withdrawal;
+        journalEntry.ToPay = entry.Deposit;
         journalEntry.PaymentDate = ExecutionServer.DateMinValue;
       }
 
