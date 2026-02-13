@@ -37,9 +37,22 @@ namespace Empiria.Budgeting.Reporting {
 
     #region Services
 
+    public DynamicDto<BudgetAllocationJournalEntry> BuildBudgetAllocationJournal(DateTime fromDate, DateTime toDate) {
+
+      FixedList<BudgetTransaction> transactions = GetAllocationJournalTransactions(fromDate, toDate);
+
+      var builder = new BudgetAllocationJournalBuilder(transactions);
+
+      var columns = builder.BuildColumns();
+      var entries = builder.BuildEntries();
+
+      return new DynamicDto<BudgetAllocationJournalEntry>(columns, entries);
+    }
+
+
     public DynamicDto<BudgetExerciseJournalEntry> BuildBudgetExerciseJournal(DateTime fromDate, DateTime toDate) {
 
-      FixedList<BudgetTransaction> transactions = GetJournalTransactions(fromDate, toDate);
+      FixedList<BudgetTransaction> transactions = GetExerciseJournalTransactions(fromDate, toDate);
 
       var builder = new BudgetExerciseJournalBuilder(transactions);
 
@@ -57,7 +70,7 @@ namespace Empiria.Budgeting.Reporting {
 
       var exporter = new BudgetExerciseJournalToExcelBuilder(templateConfig);
 
-      FixedList<BudgetTransaction> transactions = GetJournalTransactions(fromDate, toDate);
+      FixedList<BudgetTransaction> transactions = GetExerciseJournalTransactions(fromDate, toDate);
 
       ExcelFile excelFile = exporter.CreateExcelFile(transactions);
 
@@ -68,14 +81,22 @@ namespace Empiria.Budgeting.Reporting {
 
     #region Helpers
 
-    static private FixedList<BudgetTransaction> GetJournalTransactions(DateTime fromDate, DateTime toDate) {
+    static private FixedList<BudgetTransaction> GetAllocationJournalTransactions(DateTime fromDate, DateTime toDate) {
+      return BudgetTransaction.GetFullList<BudgetTransaction>()
+                              .FindAll(x => (x.OperationType == BudgetOperationType.Authorize ||
+                                             x.OperationType == BudgetOperationType.Expand ||
+                                             x.OperationType == BudgetOperationType.Modify) &&
+                                            (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)));
+    }
+
+
+    static private FixedList<BudgetTransaction> GetExerciseJournalTransactions(DateTime fromDate, DateTime toDate) {
       return BudgetTransaction.GetFullList<BudgetTransaction>()
                               .FindAll(x => (x.OperationType == BudgetOperationType.Exercise ||
                                             (x.OperationType == BudgetOperationType.ApprovePayment && x.PayableId <= 0)) &&
                                             (x.InProcess || x.IsClosed) &&
                                             (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)));
     }
-
 
     #endregion Helpers
 

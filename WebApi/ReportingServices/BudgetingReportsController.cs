@@ -23,14 +23,27 @@ namespace Empiria.Banobras.Reporting.WebApi {
     #region Web apis
 
     [HttpPost]
+    [Route("v2/financial-management/reports/budget-allocation-journal")]
+    public SingleObjectModel BuildBudgetAllocationJournalReport([FromBody] ReportFields fields) {
+
+      using (var service = BudgetingReportingService.ServiceInteractor()) {
+
+        var allocationJournal = service.BuildBudgetAllocationJournal(fields.FromDate, fields.ToDate);
+
+        return new SingleObjectModel(base.Request, allocationJournal);
+      }
+    }
+
+
+    [HttpPost]
     [Route("v2/financial-management/reports/budget-exercise-journal")]
     public SingleObjectModel BuildBudgetExerciseJournalReport([FromBody] ReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
-        var budgetExerciseJournal = service.BuildBudgetExerciseJournal(fields.FromDate, fields.ToDate);
+        var exerciseJournal = service.BuildBudgetExerciseJournal(fields.FromDate, fields.ToDate);
 
-        return new SingleObjectModel(base.Request, budgetExerciseJournal);
+        return new SingleObjectModel(base.Request, exerciseJournal);
       }
     }
 
@@ -41,14 +54,9 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
       using (var reportingService = BudgetingReportingService.ServiceInteractor()) {
 
-        var result = new FileResultDto(
-            reportingService.ExportBudgetExerciseJournal(fields.FromDate, fields.ToDate),
-            $"Se exportaron los movimientos del ejercicio presupuestal a Excel."
-        );
+        FileDto exerciseJournal = reportingService.ExportBudgetExerciseJournal(fields.FromDate, fields.ToDate);
 
-        SetOperation(result.Message);
-
-        return new SingleObjectModel(base.Request, result.File);
+        return new SingleObjectModel(base.Request, exerciseJournal);
       }
     }
 
