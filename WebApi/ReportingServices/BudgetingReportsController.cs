@@ -10,6 +10,7 @@
 
 using System.Web.Http;
 
+using Empiria.DynamicData;
 using Empiria.Storage;
 using Empiria.WebApi;
 
@@ -24,42 +25,56 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-allocation-journal")]
-    public SingleObjectModel BuildBudgetAllocationJournalReport([FromBody] ReportFields fields) {
+    public SingleObjectModel AllocationJournalDataTable([FromBody] ReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
-        var allocationJournal = service.BuildBudgetAllocationJournal(fields.FromDate, fields.ToDate);
+        DynamicDto<BudgetAllocationJournalEntry> journal =
+                                    service.AllocationJournalDynamicTable(fields.FromDate, fields.ToDate);
 
-        return new SingleObjectModel(base.Request, allocationJournal);
+        return new SingleObjectModel(base.Request, journal);
+      }
+    }
+
+
+    [HttpPost]
+    [Route("v2/financial-management/reports/budget-allocation-journal/export")]
+    public SingleObjectModel AllocationJournalToExcel([FromBody] ReportFields fields) {
+
+      using (var reportingService = BudgetingReportingService.ServiceInteractor()) {
+
+        FileDto journal = reportingService.AllocationJournalToExcel(fields.FromDate, fields.ToDate);
+
+        return new SingleObjectModel(base.Request, journal);
       }
     }
 
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-exercise-journal")]
-    public SingleObjectModel BuildBudgetExerciseJournalReport([FromBody] ReportFields fields) {
+    public SingleObjectModel ExerciseJournalDataTable([FromBody] ReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
-        var exerciseJournal = service.BuildBudgetExerciseJournal(fields.FromDate, fields.ToDate);
+        DynamicDto<BudgetExerciseJournalEntry> journal =
+                                  service.ExerciseJournalDynamicTable(fields.FromDate, fields.ToDate);
 
-        return new SingleObjectModel(base.Request, exerciseJournal);
+        return new SingleObjectModel(base.Request, journal);
       }
     }
 
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-exercise-journal/export")]
-    public SingleObjectModel ExportPaymentOrdersToExcel([FromBody] ReportFields fields) {
+    public SingleObjectModel ExerciseJournalToExcel([FromBody] ReportFields fields) {
 
       using (var reportingService = BudgetingReportingService.ServiceInteractor()) {
 
-        FileDto exerciseJournal = reportingService.ExportBudgetExerciseJournal(fields.FromDate, fields.ToDate);
+        FileDto journal = reportingService.ExerciseJournalToExcel(fields.FromDate, fields.ToDate);
 
-        return new SingleObjectModel(base.Request, exerciseJournal);
+        return new SingleObjectModel(base.Request, journal);
       }
     }
-
 
     #endregion Web apis
 

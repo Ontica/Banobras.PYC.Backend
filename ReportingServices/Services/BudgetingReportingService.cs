@@ -37,7 +37,7 @@ namespace Empiria.Budgeting.Reporting {
 
     #region Services
 
-    public DynamicDto<BudgetAllocationJournalEntry> BuildBudgetAllocationJournal(DateTime fromDate, DateTime toDate) {
+    public DynamicDto<BudgetAllocationJournalEntry> AllocationJournalDynamicTable(DateTime fromDate, DateTime toDate) {
 
       FixedList<BudgetTransaction> transactions = GetAllocationJournalTransactions(fromDate, toDate);
 
@@ -50,7 +50,22 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    public DynamicDto<BudgetExerciseJournalEntry> BuildBudgetExerciseJournal(DateTime fromDate, DateTime toDate) {
+    public FileDto AllocationJournalToExcel(DateTime fromDate, DateTime toDate) {
+      var templateUID = $"{GetType().Name}.BudgetAllocationJournal";
+
+      var templateConfig = FileTemplateConfig.Parse(templateUID);
+
+      var exporter = new BudgetAllocationJournalToExcelBuilder(templateConfig);
+
+      FixedList<BudgetTransaction> transactions = GetAllocationJournalTransactions(fromDate, toDate);
+
+      ExcelFile excelFile = exporter.CreateExcelFile(transactions);
+
+      return excelFile.ToFileDto();
+    }
+
+
+    public DynamicDto<BudgetExerciseJournalEntry> ExerciseJournalDynamicTable(DateTime fromDate, DateTime toDate) {
 
       FixedList<BudgetTransaction> transactions = GetExerciseJournalTransactions(fromDate, toDate);
 
@@ -63,8 +78,8 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    public FileDto ExportBudgetExerciseJournal(DateTime fromDate, DateTime toDate) {
-      var templateUID = $"{GetType().Name}.ExportBudgetExerciseJournalToExcel";
+    public FileDto ExerciseJournalToExcel(DateTime fromDate, DateTime toDate) {
+      var templateUID = $"{GetType().Name}.BudgetExerciseJournal";
 
       var templateConfig = FileTemplateConfig.Parse(templateUID);
 

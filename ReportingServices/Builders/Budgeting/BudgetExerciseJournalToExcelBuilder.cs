@@ -4,7 +4,7 @@
 *  Assembly : Empiria.Financial.Reporting.Core.dll          Pattern   : Report builder                       *
 *  Type     : BudgetExerciseJournalToExcelBuilder           License   : Please read LICENSE.txt file         *
 *                                                                                                            *
-*  Summary  : Builds an Excel file with the results of a budget explorer request.                            *
+*  Summary  : Builds an Excel file with budget exercise entries.                                             *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
@@ -14,12 +14,13 @@ using Empiria.Office;
 using Empiria.StateEnums;
 using Empiria.Storage;
 
-using Empiria.Budgeting.Transactions;
 using Empiria.Payments;
+
+using Empiria.Budgeting.Transactions;
 
 namespace Empiria.Budgeting.Reporting {
 
-  /// <summary>Builds an Excel file with the results of a budget explorer request.</summary>
+  /// <summary>Builds an Excel file with budget exercise entries.</summary>
   internal class BudgetExerciseJournalToExcelBuilder {
 
     private readonly FileTemplateConfig _templateConfig;
@@ -31,7 +32,6 @@ namespace Empiria.Budgeting.Reporting {
 
       _templateConfig = templateConfig;
     }
-
 
 
     internal ExcelFile CreateExcelFile(FixedList<BudgetTransaction> transactions) {
@@ -109,11 +109,10 @@ namespace Empiria.Budgeting.Reporting {
           _excelFile.SetCell($"X{i}", txn.Justification);
 
           i++;
-
-        }
-      }
+        }  // // foreach entry
+      }  // foreach txn
     }
 
-  } // class BudgetExplorerResultBuilder
+  } // class BudgetExerciseJournalToExcelBuilder
 
 } // namespace Empiria.Budgeting.Reporting
