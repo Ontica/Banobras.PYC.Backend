@@ -70,43 +70,56 @@ namespace Empiria.Budgeting.Reporting {
         foreach (var entry in txn.Entries.FindAll(x => x.Deposit > 0)) {
           _excelFile.SetCell($"A{i}", entry.BudgetAccount.OrganizationalUnit.Code);
           _excelFile.SetCell($"B{i}", entry.BudgetAccount.Code);
-          _excelFile.SetCell($"C{i}", entry.BudgetAccount.OrganizationalUnit.Name);
-          _excelFile.SetCell($"D{i}", entry.BudgetAccount.Name);
-          _excelFile.SetCell($"E{i}", entry.BudgetProgram.Code);
-          _excelFile.SetCell($"F{i}", entry.Budget.Name);
-          _excelFile.SetCell($"G{i}", entry.ControlNo);
-          _excelFile.SetCell($"H{i}", txn.TransactionNo);
-          _excelFile.SetCell($"I{i}", string.Empty);  // txnAutpago
-          _excelFile.SetCell($"J{i}", entry.MonthName);
+          _excelFile.SetCell($"C{i}", entry.BudgetProgram.Code);
+          _excelFile.SetCell($"D{i}", entry.ControlNo);
+          _excelFile.SetCell($"E{i}", entry.Year);
+          _excelFile.SetCell($"F{i}", entry.MonthName);
+
           if (txn.OperationType == BudgetOperationType.Exercise) {
-            _excelFile.SetCell($"K{i}", 0);
-            _excelFile.SetCell($"L{i}", entry.Amount);
+            _excelFile.SetCell($"G{i}", 0);
+            _excelFile.SetCell($"H{i}", entry.Amount);
           } else {
-            _excelFile.SetCell($"K{i}", entry.Amount);
-            _excelFile.SetCell($"L{i}", 0);
+            _excelFile.SetCell($"G{i}", entry.Amount);
+            _excelFile.SetCell($"H{i}", 0);
           }
-          _excelFile.SetCell($"M{i}", entry.Description);
+          _excelFile.SetCell($"I{i}", txn.TransactionNo);
+          _excelFile.SetCell($"J{i}", EmpiriaString.FirstWithValue(entry.Description,
+                                                                   txn.Description,
+                                                                   txn.Justification));
+          _excelFile.SetCell($"K{i}", string.Empty);  // txnAutpago
+
           if (!paymentOrder.IsEmptyInstance && paymentOrder.Payed) {
-            _excelFile.SetCell($"N{i}", paymentOrder.PaymentOrderNo);
-            _excelFile.SetCell($"O{i}", paymentOrder.PaymentMethod.Name);
-            _excelFile.SetCell($"P{i}", paymentOrder.PayTo.Name);
-            _excelFile.SetCell($"Q{i}", paymentOrder.PayTo.Code);
-            _excelFile.SetCell($"R{i}", paymentOrder.LastPaymentInstruction.LastUpdateTime.ToString("dd/MMM/yyyy HH:mm"));
+            _excelFile.SetCell($"L{i}", paymentOrder.PaymentOrderNo);
+            _excelFile.SetCell($"M{i}", paymentOrder.PaymentMethod.Name);
+            _excelFile.SetCell($"N{i}", paymentOrder.PayTo.Name);
+            _excelFile.SetCell($"O{i}", paymentOrder.PayTo.Code);
+            _excelFile.SetCell($"P{i}", paymentOrder.LastPaymentInstruction.LastUpdateTime.ToString("dd/MMM/yyyy HH:mm"));
+
           } else if (!paymentOrder.IsEmptyInstance) {
-            _excelFile.SetCell($"N{i}", paymentOrder.PaymentOrderNo);
-            _excelFile.SetCell($"O{i}", paymentOrder.PaymentMethod.Name);
-            _excelFile.SetCell($"P{i}", paymentOrder.PayTo.Name);
-            _excelFile.SetCell($"Q{i}", paymentOrder.PayTo.Code);
-            _excelFile.SetCell($"R{i}", "Por pagar");
+            _excelFile.SetCell($"L{i}", paymentOrder.PaymentOrderNo);
+            _excelFile.SetCell($"M{i}", paymentOrder.PaymentMethod.Name);
+            _excelFile.SetCell($"N{i}", paymentOrder.PayTo.Name);
+            _excelFile.SetCell($"O{i}", paymentOrder.PayTo.Code);
+            _excelFile.SetCell($"P{i}", "Por pagar");
+
           } else if (paymentOrder.IsEmptyInstance) {
-            _excelFile.SetCell($"N{i}", "Por determinar");
+            _excelFile.SetCell($"L{i}", "Por determinar");
+            _excelFile.SetCell($"M{i}", string.Empty);
+            _excelFile.SetCell($"N{i}", string.Empty);
             _excelFile.SetCell($"O{i}", string.Empty);
             _excelFile.SetCell($"P{i}", string.Empty);
-            _excelFile.SetCell($"Q{i}", string.Empty);
-            _excelFile.SetCell($"R{i}", string.Empty);
           }
-          _excelFile.SetCell($"W{i}", txn.Status.GetName());
-          _excelFile.SetCell($"X{i}", txn.Justification);
+
+          // ToDo: Accounting data
+
+          _excelFile.SetCell($"U{i}", txn.RequestedDate.ToString("dd/MMM/yyyy"));
+          _excelFile.SetCell($"V{i}", txn.RequestedBy.Name);
+          _excelFile.SetCell($"W{i}", txn.AuthorizationDate.ToString("dd/MMM/yyyy"));
+          _excelFile.SetCell($"X{i}", txn.AuthorizedBy.Name);
+          _excelFile.SetCell($"Y{i}", entry.BudgetAccount.OrganizationalUnit.Name);
+          _excelFile.SetCell($"Z{i}", entry.BudgetAccount.Name);
+          _excelFile.SetCell($"AA{i}", entry.Budget.Name);
+          _excelFile.SetCell($"AB{i}", txn.Status.GetName());
 
           i++;
         }  // // foreach entry

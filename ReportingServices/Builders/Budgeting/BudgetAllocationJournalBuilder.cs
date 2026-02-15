@@ -8,12 +8,11 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
 using System.Collections.Generic;
 
 using Empiria.DynamicData;
 using Empiria.StateEnums;
-
-using Empiria.Payments;
 
 using Empiria.Budgeting.Transactions;
 
@@ -65,6 +64,22 @@ namespace Empiria.Budgeting.Reporting {
       get; internal set;
     }
 
+    public string RequestedBy {
+      get; internal set;
+    }
+
+    public DateTime RequestedDate {
+      get; internal set;
+    }
+
+    public DateTime AuthorizationDate {
+      get; internal set;
+    }
+
+    public string AuthorizedBy {
+      get; internal set;
+    }
+
     public string Status {
       get; internal set;
     }
@@ -87,13 +102,17 @@ namespace Empiria.Budgeting.Reporting {
         new DataTableColumn("orgUnit", "Área", "text"),
         new DataTableColumn("budgetAccount", "Partida", "text"),
         new DataTableColumn("budgetProgram", "Programa", "text"),
-        new DataTableColumn("budget", "Presupuesto", "text"),
-        new DataTableColumn("budgetTransactionNo", "'Transacción'", "text-nowrap"),
         new DataTableColumn("monthName", "Mes", "text"),
         new DataTableColumn("authorized", "Autorizado", "decimal"),
         new DataTableColumn("expanded", "Ampliaciones", "decimal"),
         new DataTableColumn("reduced", "Reducciones", "decimal"),
+        new DataTableColumn("budgetTransactionNo", "Transacción", "text-nowrap"),
         new DataTableColumn("description", "Descripción", "text"),
+        new DataTableColumn("requestedDate", "Solicitado el", "date"),
+        new DataTableColumn("requestedBy", "Solicitado por", "text"),
+        new DataTableColumn("authorizationDate", "Autorizado el", "date"),
+        new DataTableColumn("authorizedBy", "Autorizado por", "text"),
+        new DataTableColumn("budget", "Presupuesto", "text"),
         new DataTableColumn("status", "Estado", "text")
       }.ToFixedList();
     }
@@ -127,8 +146,12 @@ namespace Empiria.Budgeting.Reporting {
         Budget = entry.Budget.Name,
         BudgetProgram = entry.BudgetProgram.Code,
         BudgetTransactionNo = txn.TransactionNo,
-        Description = txn.Description,
+        Description = EmpiriaString.FirstWithValue(entry.Description, txn.Description, txn.Justification),
         MonthName = entry.MonthName,
+        RequestedDate = txn.RequestedDate,
+        RequestedBy = txn.RequestedBy.Name,
+        AuthorizationDate = txn.AuthorizationDate,
+        AuthorizedBy = txn.AuthorizedBy.Name,
         Status = txn.Status.GetName()
       };
 

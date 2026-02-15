@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 
 using Empiria.DynamicData;
+using Empiria.StateEnums;
 
 using Empiria.Payments;
 
@@ -81,6 +82,22 @@ namespace Empiria.Budgeting.Reporting {
       get; internal set;
     }
 
+    public string RequestedBy {
+      get; internal set;
+    }
+
+    public DateTime RequestedDate {
+      get; internal set;
+    }
+
+    public DateTime AuthorizationDate {
+      get; internal set;
+    }
+
+    public string AuthorizedBy {
+      get; internal set;
+    }
+
     public string Status {
       get; internal set;
     }
@@ -103,17 +120,21 @@ namespace Empiria.Budgeting.Reporting {
         new DataTableColumn("orgUnit", "Área", "text"),
         new DataTableColumn("budgetAccount", "Partida", "text"),
         new DataTableColumn("budgetProgram", "Programa", "text"),
-        new DataTableColumn("budget", "Presupuesto", "text"),
         new DataTableColumn("controlNo", "Num Verif", "text-nowrap"),
-        new DataTableColumn("budgetTransactionNo", "'Transacción'", "text-nowrap"),
         new DataTableColumn("monthName", "Mes", "text"),
         new DataTableColumn("toPay", "Por pagar", "decimal"),
         new DataTableColumn("exercise", "Ejercido", "decimal"),
+        new DataTableColumn("budgetTransactionNo", "Transacción", "text-nowrap"),
         new DataTableColumn("description", "Descripción", "text"),
         new DataTableColumn("paymentOrderNo", "No Solicitud pago", "text-nowrap"),
         new DataTableColumn("paymentMethod", "Método de pago", "text"),
         new DataTableColumn("payTo", "Pagar a", "text"),
         new DataTableColumn("paymentDate", "Fecha pago", "date"),
+        new DataTableColumn("requestedDate", "Solicitado el", "date"),
+        new DataTableColumn("requestedBy", "Solicitado por", "text"),
+        new DataTableColumn("authorizationDate", "Autorizado el", "date"),
+        new DataTableColumn("authorizedBy", "Autorizado por", "text"),
+        new DataTableColumn("budget", "Presupuesto", "text"),
         new DataTableColumn("status", "Estado", "text"),
       }.ToFixedList();
     }
@@ -148,9 +169,13 @@ namespace Empiria.Budgeting.Reporting {
         BudgetProgram = entry.BudgetProgram.Code,
         BudgetTransactionNo = txn.TransactionNo,
         ControlNo = entry.ControlNo,
-        Description = entry.Description,
         MonthName = entry.MonthName,
-        Status = txn.Status.ToString()
+        Description = EmpiriaString.FirstWithValue(entry.Description, txn.Description, txn.Justification),
+        RequestedDate = txn.RequestedDate,
+        RequestedBy = txn.RequestedBy.Name,
+        AuthorizationDate = txn.AuthorizationDate,
+        AuthorizedBy = txn.AuthorizedBy.Name,
+        Status = txn.Status.GetName()
       };
 
       var paymentOrder = PaymentOrder.Parse(txn.PayableId);

@@ -14,8 +14,6 @@ using Empiria.Office;
 using Empiria.StateEnums;
 using Empiria.Storage;
 
-using Empiria.Payments;
-
 using Empiria.Budgeting.Transactions;
 
 namespace Empiria.Budgeting.Reporting {
@@ -71,23 +69,30 @@ namespace Empiria.Budgeting.Reporting {
 
           _excelFile.SetCell($"A{i}", entry.BudgetAccount.OrganizationalUnit.Code);
           _excelFile.SetCell($"B{i}", entry.BudgetAccount.Code);
-          _excelFile.SetCell($"C{i}", entry.BudgetAccount.OrganizationalUnit.Name);
-          _excelFile.SetCell($"D{i}", entry.BudgetAccount.Name);
-          _excelFile.SetCell($"E{i}", entry.BudgetProgram.Code);
-          _excelFile.SetCell($"F{i}", entry.Budget.Name);
-          _excelFile.SetCell($"G{i}", txn.TransactionNo);
-          _excelFile.SetCell($"H{i}", entry.MonthName);
+          _excelFile.SetCell($"C{i}", entry.BudgetProgram.Code);
+          _excelFile.SetCell($"D{i}", entry.Year);
+          _excelFile.SetCell($"E{i}", entry.MonthName);
 
           if (entry.BalanceColumn.Equals(BalanceColumn.Authorized)) {
-            _excelFile.SetCell($"I{i}", amount);
+            _excelFile.SetCell($"F{i}", amount);
           } else if (entry.BalanceColumn.Equals(BalanceColumn.Expanded)) {
-            _excelFile.SetCell($"J{i}", amount);
+            _excelFile.SetCell($"G{i}", amount);
           } else if (entry.BalanceColumn.Equals(BalanceColumn.Reduced)) {
-            _excelFile.SetCell($"K{i}", amount);
+            _excelFile.SetCell($"H{i}", amount);
           }
 
-          _excelFile.SetCell($"L{i}", txn.Justification);
-          _excelFile.SetCell($"M{i}", txn.Status.GetName());
+          _excelFile.SetCell($"I{i}", txn.TransactionNo);
+          _excelFile.SetCell($"J{i}", EmpiriaString.FirstWithValue(entry.Description,
+                                                                   txn.Description,
+                                                                   txn.Justification));
+          _excelFile.SetCell($"K{i}", txn.RequestedDate.ToString("dd/MMM/yyyy"));
+          _excelFile.SetCell($"L{i}", txn.RequestedBy.Name);
+          _excelFile.SetCell($"M{i}", txn.AuthorizationDate.ToString("dd/MMM/yyyy"));
+          _excelFile.SetCell($"N{i}", txn.AuthorizedBy.Name);
+          _excelFile.SetCell($"O{i}", entry.BudgetAccount.OrganizationalUnit.Name);
+          _excelFile.SetCell($"P{i}", entry.BudgetAccount.Name);
+          _excelFile.SetCell($"Q{i}", entry.Budget.Name);
+          _excelFile.SetCell($"R{i}", txn.Status.GetName());
 
           i++;
         }  // // foreach entry
