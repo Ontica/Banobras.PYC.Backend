@@ -41,7 +41,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     public int ExerciseBudget() {
 
-      const int BATCH_SIZE = 75;
+      const int BATCH_SIZE = 5;
 
       FixedList<PaymentOrder> paymentOrders = GetPayedPaymentOrders();
 
@@ -87,9 +87,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       using (var usecase = ProcurementBudgetingUseCases.UseCaseInteractor()) {
 
-        BudgetTransaction budgetTxn = usecase.CreateAndSendBudgetTransaction(order, BudgetOperationType.Exercise);
-
-        budgetTxn.Authorize();
+        BudgetTransaction budgetTxn = usecase.CreateBudgetTransaction(order, BudgetOperationType.Exercise);
 
         budgetTxn.SetExerciseData(paymentOrder.LastPaymentInstruction.LastUpdateTime,
                                   paymentApproval,
@@ -117,6 +115,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                                 x.Status == TransactionStatus.Closed);
 
     }
+
 
     static private void UpdatePaymentApprovalBudgetTransaction(BudgetTransaction paymentApproval,
                                                                PaymentOrder paymentOrder) {

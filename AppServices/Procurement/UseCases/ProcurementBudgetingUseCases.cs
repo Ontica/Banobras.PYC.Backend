@@ -64,7 +64,9 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       order.Save();
 
-      BudgetTransaction budgetTxn = CreateAndSendBudgetTransaction(order, BudgetOperationType.ApprovePayment);
+      BudgetTransaction budgetTxn = CreateBudgetTransaction(order, BudgetOperationType.ApprovePayment);
+
+      SendBudgetTransaction(budgetTxn, order);
 
       return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
     }
@@ -86,22 +88,24 @@ namespace Empiria.Banobras.Procurement.UseCases {
         $"no es posible solicitar el compromiso presupuestal.");
 
       Assertion.Require(order.HasBudgetableItems,
-                       $"Esta(e) {order.OrderType.DisplayName} no tiene conceptos asociados " +
-                       $"a partidas presupuestales. No es posible solicitar el compromiso presupuestal.");
+        $"Esta(e) {order.OrderType.DisplayName} no tiene conceptos asociados " +
+        $"a partidas presupuestales. No es posible solicitar el compromiso presupuestal.");
 
       var bdgRequisitions = BudgetTransaction.GetFor(order.Requisition)
                                              .FindAll(x => x.OperationType == BudgetOperationType.Request &&
                                                            x.IsClosed);
 
       Assertion.Require(bdgRequisitions.Count > 0,
-          $"Esta(e) {order.OrderType.DisplayName} no tiene una suficiencia presupuestal cerrada, " +
-          $"por lo que no es posible solicitar el compromiso presupuestal.");
+        $"Esta(e) {order.OrderType.DisplayName} no tiene una suficiencia presupuestal cerrada, " +
+        $"por lo que no es posible solicitar el compromiso presupuestal.");
 
       order.Activate();
 
       order.Save();
 
-      BudgetTransaction budgetTxn = CreateAndSendBudgetTransaction(order, BudgetOperationType.Commit);
+      BudgetTransaction budgetTxn = CreateBudgetTransaction(order, BudgetOperationType.Commit);
+
+      SendBudgetTransaction(budgetTxn, order);
 
       return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
     }
@@ -134,7 +138,9 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       order.Save();
 
-      BudgetTransaction budgetTxn = CreateAndSendBudgetTransaction(order, BudgetOperationType.Request);
+      BudgetTransaction budgetTxn = CreateBudgetTransaction(order, BudgetOperationType.Request);
+
+      SendBudgetTransaction(budgetTxn, order);
 
       return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
     }
@@ -188,7 +194,7 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
     #region Helpers
 
-    internal BudgetTransaction CreateAndSendBudgetTransaction(Order order, BudgetOperationType operationType) {
+    internal BudgetTransaction CreateBudgetTransaction(Order order, BudgetOperationType operationType) {
 
       var bdgTxnType = BudgetTransactionType.GetFor(order.BudgetType, operationType);
 
@@ -197,19 +203,6 @@ namespace Empiria.Banobras.Procurement.UseCases {
       var builder = new OrderBudgetTransactionBuilder(bdgTxnType, order, updateOrderItems);
 
       BudgetTransaction transaction = builder.Build();
-
-      transaction.SendToAuthorization();
-
-      transaction.Save();
-
-      if (!updateOrderItems) {
-        return transaction;
-      }
-
-      foreach (var item in order.GetItems<OrderItem>()
-                                .FindAll(x => x.IsDirty)) {
-        item.Save();
-      }
 
       return transaction;
     }
@@ -227,6 +220,25 @@ namespace Empiria.Banobras.Procurement.UseCases {
         Total = order.Total
       };
     }
+
+
+    internal BudgetTransaction SendBudgetTransaction(BudgetTransaction transaction, Order order) {
+
+      Assertion.Require(transaction.OperationType != BudgetOperationType.Exercise,
+        "Cannot send a budget transaction of type 'Exercise'.");
+
+      transaction.SendToAuthorization();
+
+      transaction.Save();
+
+      foreach (var item in order.GetItems<OrderItem>()
+                                .FindAll(x => x.IsDirty)) {
+        item.Save();
+      }
+
+      return transaction;
+    }
+
 
     #endregion Helpers
 
