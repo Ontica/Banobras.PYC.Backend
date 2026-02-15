@@ -105,6 +105,21 @@ namespace Empiria.Budgeting.Reporting {
       return new DynamicDto<BudgetRequestsJournalEntry>(columns, entries);
     }
 
+
+    public FileDto RequestsJournalToExcel(DateTime fromDate, DateTime toDate) {
+      var templateUID = $"{GetType().Name}.BudgetRequestsJournal";
+
+      var templateConfig = FileTemplateConfig.Parse(templateUID);
+
+      var builder = new BudgetRequestsJournalToExcelBuilder(templateConfig);
+
+      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(fromDate, toDate);
+
+      ExcelFile excelFile = builder.CreateExcelFile(transactions);
+
+      return excelFile.ToFileDto();
+    }
+
     #endregion Services
 
     #region Helpers
