@@ -9,6 +9,7 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
+using System.Linq;
 
 using Empiria.DynamicData;
 using Empiria.Office;
@@ -129,16 +130,27 @@ namespace Empiria.Budgeting.Reporting {
                               .FindAll(x => (x.OperationType == BudgetOperationType.Authorize ||
                                              x.OperationType == BudgetOperationType.Expand ||
                                              x.OperationType == BudgetOperationType.Modify) &&
-                                            (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)));
+                                            (x.InProcess || x.IsClosed) &&
+                                            (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)))
+                              .OrderBy(x => x.BaseParty.Code)
+                              .ThenBy(x => x.ApplicationDate)
+                              .ThenByDescending(x => x.BaseBudget.Name)
+                              .ThenBy(x => x.TransactionNo)
+                              .ToFixedList();
     }
 
 
     static private FixedList<BudgetTransaction> GetExerciseJournalTransactions(DateTime fromDate, DateTime toDate) {
       return BudgetTransaction.GetFullList<BudgetTransaction>()
-                              .FindAll(x => (x.OperationType == BudgetOperationType.Exercise ||
-                                            (x.OperationType == BudgetOperationType.ApprovePayment && x.PayableId <= 0)) &&
+                              .FindAll(x => (x.OperationType == BudgetOperationType.ApprovePayment ||
+                                             x.OperationType == BudgetOperationType.Exercise) &&
                                             (x.InProcess || x.IsClosed) &&
-                                            (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)));
+                                            (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)))
+                              .OrderBy(x => x.BaseParty.Code)
+                              .ThenBy(x => x.ApplicationDate)
+                              .ThenByDescending(x => x.BaseBudget.Name)
+                              .ThenBy(x => x.TransactionNo)
+                              .ToFixedList();
     }
 
 
@@ -149,7 +161,12 @@ namespace Empiria.Budgeting.Reporting {
                                              x.OperationType == BudgetOperationType.ApprovePayment ||
                                              x.OperationType == BudgetOperationType.Exercise) &&
                                             (x.InProcess || x.IsClosed) &&
-                                            (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)));
+                                            (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)))
+                              .OrderBy(x => x.BaseParty.Code)
+                              .ThenBy(x => x.ApplicationDate)
+                              .ThenByDescending(x => x.BaseBudget.Name)
+                              .ThenBy(x => x.TransactionNo)
+                              .ToFixedList();
     }
 
     #endregion Helpers
