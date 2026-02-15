@@ -251,8 +251,7 @@ namespace Empiria.Banobras.Procurement {
 
 
     private DateTime DetermineBudgetRequestDate(OrderItem entry) {
-      DateTime entryStartDate = ExecutionServer.IsMinOrMaxDate(entry.StartDate) ?
-                                                        entry.Order.StartDate : entry.StartDate;
+      DateTime entryStartDate = entry.Order.StartDate;
 
       if (entryStartDate.Year == entry.Budget.Year) {
 
