@@ -80,17 +80,20 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     }
 
 
-    static private BudgetTransaction ExcerciseBudget(PaymentOrder paymentOrder, BudgetTransaction paymentApproval) {
+    static private BudgetTransaction ExcerciseBudget(PaymentOrder paymentOrder,
+                                                     BudgetTransaction paymentApproval) {
 
       var order = Order.Parse(paymentOrder.PayableEntity.UID);
 
       using (var usecase = ProcurementBudgetingUseCases.UseCaseInteractor()) {
 
-        BudgetTransaction budgetTxn = usecase.CreateAnSendBudgetTransaction(order, BudgetOperationType.Exercise);
+        BudgetTransaction budgetTxn = usecase.CreateAndSendBudgetTransaction(order, BudgetOperationType.Exercise);
 
         budgetTxn.Authorize();
 
-        budgetTxn.SetExerciseData(paymentOrder.LastPaymentInstruction.PostingTime, paymentApproval, paymentOrder);
+        budgetTxn.SetExerciseData(paymentOrder.LastPaymentInstruction.LastUpdateTime,
+                                  paymentApproval,
+                                  paymentOrder);
 
         budgetTxn.Close();
 

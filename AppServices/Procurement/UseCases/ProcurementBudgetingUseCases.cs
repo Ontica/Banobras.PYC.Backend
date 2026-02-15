@@ -51,11 +51,20 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       var order = Order.Parse(paymentOrder.PayableEntity.UID);
 
+      Assertion.Require(paymentOrder.Rules.CanApproveBudget(),
+        $"No es posible solicitar la autorización presupuestal de pago para esta solicitud de pago, " +
+        $"ya que su estado actual no permite ejecutar esta operación.");
+
+
+      Assertion.Require(order.HasBudgetableItems,
+        $"La(el) {order.OrderType.DisplayName} asociada(o) a esta solicitud de pago no tiene conceptos " +
+        $"ligados a partidas presupuestales. No es posible solicitar la autorización presupuestal de pago.");
+
       order.Activate();
 
       order.Save();
 
-      BudgetTransaction budgetTxn = CreateAnSendBudgetTransaction(order, BudgetOperationType.ApprovePayment);
+      BudgetTransaction budgetTxn = CreateAndSendBudgetTransaction(order, BudgetOperationType.ApprovePayment);
 
       return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
     }
@@ -68,11 +77,31 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       Order order = Order.Parse(fields.BaseObjectUID);
 
+      Assertion.Require(order.Rules.CanCommitBudget(),
+        $"No es posible solicitar el compromiso presupuestal para esta(e) {order.OrderType.DisplayName}, " +
+        $"ya que su estado actual no permite ejecutar esta operación.");
+
+      Assertion.Require(!order.Requisition.IsEmptyInstance && !(order is Requisition),
+        $"Esta(e) {order.OrderType.DisplayName} no tiene asociada una requisición, por lo que " +
+        $"no es posible solicitar el compromiso presupuestal.");
+
+      Assertion.Require(order.HasBudgetableItems,
+                       $"Esta(e) {order.OrderType.DisplayName} no tiene conceptos asociados " +
+                       $"a partidas presupuestales. No es posible solicitar el compromiso presupuestal.");
+
+      var bdgRequisitions = BudgetTransaction.GetFor(order.Requisition)
+                                             .FindAll(x => x.OperationType == BudgetOperationType.Request &&
+                                                           x.IsClosed);
+
+      Assertion.Require(bdgRequisitions.Count > 0,
+          $"Esta(e) {order.OrderType.DisplayName} no tiene una suficiencia presupuestal cerrada, " +
+          $"por lo que no es posible solicitar el compromiso presupuestal.");
+
       order.Activate();
 
       order.Save();
 
-      BudgetTransaction budgetTxn = CreateAnSendBudgetTransaction(order, BudgetOperationType.Commit);
+      BudgetTransaction budgetTxn = CreateAndSendBudgetTransaction(order, BudgetOperationType.Commit);
 
       return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
     }
@@ -85,6 +114,18 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       Order order = Order.Parse(fields.BaseObjectUID);
 
+      Assertion.Require(order.Rules.CanRequestBudget(),
+        $"No es posible solicitar la suficiencia presupuestal para esta requisición, " +
+        $"ya que su estado actual no permite ejecutar esta operación.");
+
+      Assertion.Require(order.Requisition.IsEmptyInstance && order is Requisition,
+        $"Esta requisición tiene información incorrecta. " +
+        $"No es posible solicitar la suficiencia presupuestal.");
+
+      Assertion.Require(order.HasBudgetableItems,
+        "Esta requisición no tiene conceptos asociados a partidas presupuestales. " +
+        "No es posible solicitar la suficiencia presupuestal.");
+
       var validator = new OrderBudgetTransactionValidator(order);
 
       validator.EnsureOrderHasAvailableBudget();
@@ -93,7 +134,7 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       order.Save();
 
-      BudgetTransaction budgetTxn = CreateAnSendBudgetTransaction(order, BudgetOperationType.Request);
+      BudgetTransaction budgetTxn = CreateAndSendBudgetTransaction(order, BudgetOperationType.Request);
 
       return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
     }
@@ -131,6 +172,7 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       try {
         validator.EnsureOrderHasAvailableBudget();
+
       } catch (AssertionFailsException ex) {
         return new BudgetValidationResultDto {
           Result = ex.Message
@@ -146,7 +188,7 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
     #region Helpers
 
-    internal BudgetTransaction CreateAnSendBudgetTransaction(Order order, BudgetOperationType operationType) {
+    internal BudgetTransaction CreateAndSendBudgetTransaction(Order order, BudgetOperationType operationType) {
 
       var bdgTxnType = BudgetTransactionType.GetFor(order.BudgetType, operationType);
 
