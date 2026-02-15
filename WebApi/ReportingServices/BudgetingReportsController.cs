@@ -76,6 +76,20 @@ namespace Empiria.Banobras.Reporting.WebApi {
       }
     }
 
+
+    [HttpPost]
+    [Route("v2/financial-management/reports/budget-requests-journal")]
+    public SingleObjectModel RequestsJournalDataTable([FromBody] ReportFields fields) {
+
+      using (var service = BudgetingReportingService.ServiceInteractor()) {
+
+        DynamicDto<BudgetRequestsJournalEntry> journal =
+                                    service.RequestsJournalDynamicTable(fields.FromDate, fields.ToDate);
+
+        return new SingleObjectModel(base.Request, journal);
+      }
+    }
+
     #endregion Web apis
 
   }  // class BudgetingReportsController
