@@ -69,7 +69,6 @@
     <PackageReference Include="Empiria.CashFlow.CashLedger" Version="1.0.0" />
     <PackageReference Include="Empiria.CashFlow.Explorer" Version="1.0.0" />
     <PackageReference Include="Empiria.Orders.Core" Version="8.0.0" />
-    <PackageReference Include="Empiria.Procurement.Core" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\extensions\Office\Empiria.Office.csproj" />
@@ -79,6 +78,5 @@
     <ProjectReference Include="..\..\financial.management\CashFlow\CashLedger\Empiria.CashFlow.CashLedger.csproj" />
     <ProjectReference Include="..\..\financial.management\CashFlow\Explorer\Empiria.CashFlow.Explorer.csproj" />
     <ProjectReference Include="..\..\operations.management\Orders\Core\Empiria.Orders.Core.csproj" />
-    <ProjectReference Include="..\..\operations.management\Procurement\Core\Empiria.Procurement.Core.csproj" />
   </ItemGroup>
 </Project>

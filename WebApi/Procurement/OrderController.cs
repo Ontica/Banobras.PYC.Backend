@@ -14,9 +14,9 @@ using Empiria.Json;
 using Empiria.WebApi;
 
 using Empiria.Orders;
-using Empiria.Orders.Adapters;
+using Empiria.Orders.Contracts;
 
-using Empiria.Procurement.Contracts;
+using Empiria.Orders.Adapters;
 
 namespace Empiria.Banobras.Procurement.WebApi {
 
