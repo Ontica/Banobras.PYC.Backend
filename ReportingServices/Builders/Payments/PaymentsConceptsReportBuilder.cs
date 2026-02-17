@@ -90,7 +90,8 @@ namespace Empiria.Payments.Reporting {
 
     internal FixedList<DataTableColumn> BuildColumns() {
       return new List<DataTableColumn>() {
-        new DataTableColumn("paymentOrderNo", "Solicitud de pago", "text-link", linkField: "paymentOrderUID"),
+        new DataTableColumn("paymentOrderNo", "Solicitud de pago", "text-link",
+                            linkField: "paymentOrderUID", action: "PrintPaymentOrder"),
         new DataTableColumn("payToName", "Beneficiario", "text") { Size = "md" },
         new DataTableColumn("payToCode", "RFC", "text"),
         new DataTableColumn("paymentDate", "Fecha de pago", "date"),
