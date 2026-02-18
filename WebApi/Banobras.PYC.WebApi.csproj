@@ -82,7 +82,6 @@
     <PackageReference Include="Empiria.Financial.Core.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.Budgeting.WebApi" Version="2.0.0" />
     <PackageReference Include="Empiria.CashFlow.WebApi" Version="1.0.0" />
-    <PackageReference Include="Empiria.Payments.WebApi" Version="1.0.0" />
     <PackageReference Include="Empiria.Orders.WebApi" Version="8.0.0" />
     <PackageReference Include="Empiria.Inventory.WebApi" Version="8.0.0" />
     <PackageReference Include="Banobras.PYC.AppServices" Version="1.0.0" />
@@ -100,7 +99,6 @@
     <ProjectReference Include="..\..\financial.management\Billing\WebApi\Empiria.Billing.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\Budgeting\WebApi\Empiria.Budgeting.WebApi.csproj" />
     <ProjectReference Include="..\..\financial.management\CashFlow\WebApi\Empiria.CashFlow.WebApi.csproj" />
-    <ProjectReference Include="..\..\financial.management\Payments\WebApi\Empiria.Payments.WebApi.csproj" />
     <ProjectReference Include="..\..\operations.management\Orders\WebApi\Empiria.Orders.WebApi.csproj" />
     <ProjectReference Include="..\..\operations.management\Inventory\WebApi\Empiria.Inventory.WebApi.csproj" />
     <ProjectReference Include="..\AppServices\Banobras.PYC.AppServices.csproj" />
