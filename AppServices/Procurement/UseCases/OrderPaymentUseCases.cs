@@ -65,7 +65,9 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       var paymentType = PaymentType.Parse(fields.PaymentTypeUID);
 
-      var paymentOrder = new PaymentOrder(paymentType, order.Provider, order, billsTotals.Total);
+      decimal paymentTotal = billsTotals.Total - order.Taxes.NoPayableTotal;
+
+      var paymentOrder = new PaymentOrder(paymentType, order.Provider, order, paymentTotal);
 
       var paymentMethod = paymentOrder.PaymentMethod;
 
@@ -77,7 +79,7 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       fields.PayToUID = order.Provider.UID;
       fields.CurrencyUID = order.Currency.UID;
-      fields.Total = billsTotals.Total;
+      fields.Total = paymentTotal;
 
       paymentOrder.Update(fields);
 
