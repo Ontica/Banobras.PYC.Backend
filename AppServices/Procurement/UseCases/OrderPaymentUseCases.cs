@@ -57,7 +57,7 @@ namespace Empiria.Banobras.Procurement.UseCases {
       }
 
       decimal orderTotals = order.Subtotal + order.Taxes.ControlConceptsTotal;
-      decimal billed = billsTotals.Subtotal - billsTotals.Discounts + billsTotals.BudgetableTaxesTotal;
+      decimal billed = billsTotals.Subtotal - billsTotals.Discounts + billsTotals.BudgetableTaxesTotal - order.Taxes.NoPayableTotal;
 
       Assertion.Require(orderTotals == billed,
                         $"El importe antes de impuestos de los comprobantes ({billed:C2}), no coincide " +
