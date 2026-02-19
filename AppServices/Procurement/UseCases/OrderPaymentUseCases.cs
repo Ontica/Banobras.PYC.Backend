@@ -57,15 +57,21 @@ namespace Empiria.Banobras.Procurement.UseCases {
       }
 
       decimal orderTotals = order.Subtotal + order.Taxes.ControlConceptsTotal;
-      decimal billed = billsTotals.Subtotal - billsTotals.Discounts + billsTotals.BudgetableTaxesTotal - order.Taxes.NoPayableTotal;
+      decimal billed = billsTotals.Subtotal - billsTotals.Discounts + billsTotals.BudgetableTaxesTotal;
 
-      Assertion.Require(orderTotals == billed,
-                        $"El importe antes de impuestos de los comprobantes ({billed:C2}), no coincide " +
-                        $"con el importe de los conceptos ({orderTotals:C2}).");
+      if (order.Category.PlaysRole("travel-expenses")) {
+        Assertion.Require(billed >= orderTotals,
+                         "El importe de los comprobantes no puede ser menor al de los conceptos.");
+
+      } else {
+        Assertion.Require(orderTotals == billed,
+                          $"El importe de los comprobantes ({billed:C2}) no coincide " +
+                          $"con el importe de los conceptos ({orderTotals:C2}).");
+      }
 
       var paymentType = PaymentType.Parse(fields.PaymentTypeUID);
 
-      decimal paymentTotal = billsTotals.Total - order.Taxes.NoPayableTotal;
+      decimal paymentTotal = order.GetTotal();
 
       var paymentOrder = new PaymentOrder(paymentType, order.Provider, order, paymentTotal);
 
