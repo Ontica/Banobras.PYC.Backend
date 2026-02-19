@@ -13,6 +13,8 @@ using Xunit;
 using Empiria.Financial.Adapters;
 
 using Empiria.BanobrasIntegration.Sic;
+using Empiria.BanobrasIntegration.Sic.Adapters;
+using System.Threading.Tasks;
 
 namespace Empiria.Sic.Tests.BanobrasIntegration {
 
@@ -29,6 +31,22 @@ namespace Empiria.Sic.Tests.BanobrasIntegration {
 
       Assert.NotNull(sut);
     }
+
+
+    [Fact]
+    public async Task Should_Get_AccountingTransacctions_Api() {
+      var services = new SicApiService();
+
+      MovtosEncabezadosDto body = new MovtosEncabezadosDto {
+        idCredito = 13471,
+        fecConsulta = "20181231",
+      };
+
+      FixedList<MovtosDetalleDto> sut = await services.GetMovimientos(body);
+
+      Assert.NotNull(sut);
+    }
+
 
     #endregion Facts
 
