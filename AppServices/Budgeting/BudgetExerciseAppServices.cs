@@ -8,6 +8,8 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using Empiria.Data;
+using Empiria.Parties;
 using Empiria.Services;
 using Empiria.StateEnums;
 
@@ -16,9 +18,6 @@ using Empiria.Payments;
 
 using Empiria.Budgeting;
 using Empiria.Budgeting.Transactions;
-
-using Empiria.Banobras.Procurement.UseCases;
-using Empiria.Data;
 
 namespace Empiria.Banobras.Budgeting.AppServices {
 
@@ -41,7 +40,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     public int ExerciseBudget() {
 
-      const int BATCH_SIZE = 5;
+      const int BATCH_SIZE = 2;
 
       FixedList<PaymentOrder> paymentOrders = GetPayedPaymentOrders();
 
@@ -61,7 +60,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
           continue;
         }
 
-        ExcerciseBudget(paymentOrder, approvePaymentTxn);
+        ExerciseBudget(paymentOrder, approvePaymentTxn);
         counter++;
       }
 
@@ -80,27 +79,32 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     }
 
 
-    static private BudgetTransaction ExcerciseBudget(PaymentOrder paymentOrder,
-                                                     BudgetTransaction paymentApproval) {
+    static private BudgetTransaction ExerciseBudget(PaymentOrder paymentOrder,
+                                                    BudgetTransaction paymentApproval) {
+
+      var GERENCIA_DE_PAGOS = Party.Parse(145);
+      var SISTEMA_DE_PAGOS = OperationSource.ParseNamedKey("SISTEMA_DE_PAGOS");
+
+      var exerciseDate = paymentOrder.LastPaymentInstruction.LastUpdateTime;
+
+      var builder = new BudgetTransactionBuilder(paymentApproval,
+                                                 BudgetOperationType.Exercise,
+                                                 SISTEMA_DE_PAGOS,
+                                                 exerciseDate);
+
+      BudgetTransaction exerciseTxn = builder.Build();
+
+      exerciseTxn.SetExerciseData(paymentOrder, GERENCIA_DE_PAGOS);
+
+      exerciseTxn.Close();
+
+      exerciseTxn.Save();
 
       var order = Order.Parse(paymentOrder.PayableEntity.UID);
 
-      using (var usecase = ProcurementBudgetingUseCases.UseCaseInteractor()) {
+      UpdatePaymentApprovalBudgetTransaction(paymentApproval, paymentOrder);
 
-        BudgetTransaction budgetTxn = usecase.CreateBudgetTransaction(order, BudgetOperationType.Exercise);
-
-        budgetTxn.SetExerciseData(paymentOrder.LastPaymentInstruction.LastUpdateTime,
-                                  paymentApproval,
-                                  paymentOrder);
-
-        budgetTxn.Close();
-
-        budgetTxn.Save();
-
-        UpdatePaymentApprovalBudgetTransaction(paymentApproval, paymentOrder);
-
-        return budgetTxn;
-      }
+      return exerciseTxn;
     }
 
 
