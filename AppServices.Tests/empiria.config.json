@@ -13,6 +13,21 @@
       "type": "",
       "key": "IsTestingModule",
       "value": true
+    },
+    {
+      "type": "",
+      "key": "TESTS_REQUISITION_UID",
+      "value": "{{TESTS_REQUISITION_UID}}"
+    },
+    {
+      "type": "",
+      "key": "TESTS_PAYEE_UID",
+      "value": "{{TESTS_PAYEE_UID}}"
+    },
+    {
+      "type": "",
+      "key": "TESTS_PDF_FILE_PATH",
+      "value": "{{TESTS_PDF_FILE_PATH}}"
     }
   ]
 }

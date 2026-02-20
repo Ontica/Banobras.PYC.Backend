@@ -11,6 +11,10 @@
 using Empiria.Services;
 using Empiria.StateEnums;
 
+using Empiria.Budgeting.Transactions;
+
+using Empiria.Orders;
+
 using Empiria.Payments;
 using Empiria.Payments.Adapters;
 using Empiria.Payments.UseCases;
@@ -50,6 +54,20 @@ namespace Empiria.Banobras.Expenses.AppServices {
       Assertion.Require(fields, nameof(fields));
 
       fields.EnsureValid();
+
+      var travelRequisition = Requisition.Parse(fields.RequisitionUID);
+
+      Assertion.Require(travelRequisition.Category.PlaysRole("travel-expenses"),
+                        "Requisition is not for travel expenses.");
+
+      Assertion.Require(travelRequisition.Rules.CanRequestBudget(),
+                        "Budget cannot be requested for this requisition.");
+
+      if (BudgetTransaction.GetFor(travelRequisition)
+                           .FindAll(x => x.InProcess || x.IsClosed)
+                           .Count > 0) {
+        Assertion.RequireFail("There are already budget transactions in process or closed for this requisition.");
+      }
 
       var paymentOrder = PaymentOrder.Parse(EmpiriaMath.GetRandom(1, 50));
 
