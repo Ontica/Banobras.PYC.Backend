@@ -16,6 +16,9 @@ using Empiria.Parties;
 using Empiria.Services;
 
 using Empiria.Budgeting;
+using Empiria.Budgeting.Explorer;
+using Empiria.Budgeting.Explorer.Adapters;
+using Empiria.Budgeting.Explorer.UseCases;
 
 using Empiria.BanobrasIntegration.Sigevi.Adapters;
 
@@ -38,32 +41,25 @@ namespace Empiria.BanobrasIntegration.Sigevi.Services {
 
     #region Services
 
-    public AvailableBudgetDto AvailableBudget(AvailableBudgetQuery query) {
-      Assertion.Require(query, nameof(query));
-      Assertion.Require(2025 <= query.Year && query.Year <= 2026,
-        $"El año presupuestal solicitado ({query.Year}) no está disponible en el sistema PYC.");
-      Assertion.Require(1 <= query.Month && query.Month <= 12,
-        $"El valor del mes (month) no es válido: {query.Month}");
-      Assertion.Require(query.OrgUnitCode, $"Se requiere el valor de la clave del área (orgUnitCode).");
+    public SigeviAvailableBudgetDto AvailableBudget(SigeviAvailableBudgetQuery sigeviQuery) {
 
-      var orgUnit = Party.TryParseWithID(query.OrgUnitCode);
+      Assertion.Require(sigeviQuery, nameof(sigeviQuery));
 
-      Assertion.Require(orgUnit != null && orgUnit is OrganizationalUnit,
-        $"El área solicitada no está registrada en el sistema PYC: '{query.OrgUnitCode}'");
+      sigeviQuery.EnsureValid();
 
-      Assertion.Require(query.BudgetAccountNo, $"Se requiere el valor de la partida presupuestal (budgetAccountNo).");
+      using (var usecases = BudgetExplorerUseCases.UseCaseInteractor()) {
 
-      var budgetAccount = BudgetAccount.TryParse(query.BudgetAccountNo);
+        var query = new AvailableBudgetQuery {
+          Budget = sigeviQuery.GetBudget(),
+          Year = sigeviQuery.Año,
+          Month = sigeviQuery.Mes,
+          Accounts = sigeviQuery.GetBudgetAccounts(),
+        };
 
-      Assertion.Require(budgetAccount, $"La partida presupuestal '{query.BudgetAccountNo}' no está registrada en el sistema PYC.");
+        FixedList<BudgetDataInColumns> availableBudget = usecases.GetAvailableBudget(query);
 
-      return new AvailableBudgetDto {
-        Year = query.Year,
-        Month = query.Month,
-        OrgUnitCode = query.OrgUnitCode,
-        BudgetAccountNo = query.BudgetAccountNo,
-        Available = EmpiriaMath.GetRandom(1, 30000)
-      };
+        return new SigeviAvailableBudgetDto(sigeviQuery, availableBudget);
+      }
     }
 
 

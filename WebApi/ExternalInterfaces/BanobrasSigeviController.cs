@@ -23,11 +23,11 @@ namespace Empiria.BanobrasIntegration.Sigevi.WebApi {
     #region Web Apis
 
     [HttpPost]
-    [Route("v2/pyc/integration/sigevi/available-budget")]
-    public SingleObjectModel AvailableBudget([FromBody] AvailableBudgetQuery query) {
+    [Route("v2/pyc/integration/sigevi/presupuesto-disponible")]
+    public SingleObjectModel AvailableBudget([FromBody] SigeviAvailableBudgetQuery query) {
 
       using (var usecases = SigeviIntegrationServices.ServiceInteractor()) {
-        AvailableBudgetDto available = usecases.AvailableBudget(query);
+        SigeviAvailableBudgetDto available = usecases.AvailableBudget(query);
 
         return new SingleObjectModel(base.Request, available);
       }
