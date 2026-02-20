@@ -10,10 +10,12 @@
 
 using System.Web.Http;
 
+using Empiria.Storage;
 using Empiria.WebApi;
 
 using Empiria.Payments.Adapters;
 
+using Empiria.Banobras.Expenses.Adapters;
 using Empiria.Banobras.Expenses.AppServices;
 
 namespace Empiria.Banobras.Expenses.WebApi {
@@ -47,6 +49,30 @@ namespace Empiria.Banobras.Expenses.WebApi {
         FixedList<NamedEntityDto> commissioners = usecases.SearchCommissioners(keywords);
 
         return new CollectionModel(base.Request, commissioners);
+      }
+    }
+
+
+    [HttpPost]
+    [Route("v2/expenses-management/travel-expenses/request-payment")]
+    public SingleObjectModel RequestPaymentForTravelExpenses() {
+
+      var fields = GetFormDataFromHttpRequest<TravelExpensesPaymentRequestFields>("request");
+
+      InputFile file = base.GetInputFileFromHttpRequest();
+
+      fields.AuthorizationPdfFile = file;
+
+      using (var usecases = ExpensesAppServices.UseCaseInteractor()) {
+
+        PaymentOrderDto paymentOrder = usecases.RequestPaymentForTravelExpenses(fields);
+
+        var message = new MessageFields() {
+          Message = $"Se solicitó el pago de la comisión {fields.CommissionNo}. " +
+                    $"El número de solicitud de pago correspondiente es: {paymentOrder.PaymentOrderNo}"
+        };
+
+        return new SingleObjectModel(base.Request, message);
       }
     }
 

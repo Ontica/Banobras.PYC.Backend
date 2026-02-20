@@ -15,6 +15,8 @@ using Empiria.Payments;
 using Empiria.Payments.Adapters;
 using Empiria.Payments.UseCases;
 
+using Empiria.Banobras.Expenses.Adapters;
+
 namespace Empiria.Banobras.Expenses.AppServices {
 
   /// <summary>Application services for expenses management.</summary>
@@ -41,6 +43,17 @@ namespace Empiria.Banobras.Expenses.AppServices {
       FixedList<PaymentAccount> accounts = commissioner.GetAccounts();
 
       return PaymentAccountDto.Map(accounts);
+    }
+
+
+    public PaymentOrderDto RequestPaymentForTravelExpenses(TravelExpensesPaymentRequestFields fields) {
+      Assertion.Require(fields, nameof(fields));
+
+      fields.EnsureValid();
+
+      var paymentOrder = PaymentOrder.Parse(EmpiriaMath.GetRandom(1, 50));
+
+      return PaymentOrderMapper.MapToDto(paymentOrder);
     }
 
 
