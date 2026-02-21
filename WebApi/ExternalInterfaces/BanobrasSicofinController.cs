@@ -29,10 +29,9 @@ namespace Empiria.BanobrasIntegration.Sicofin.WebApi {
 
       using (var appServices = BudgetStatusAppServices.UseCaseInteractor()) {
 
-        int adjustmentCount = appServices.LogBudgetCommitStatus();
+        int logCount = appServices.ExecuteLog();
 
-        message = $"Hay {adjustmentCount} transacciones de compromiso por revisar.";
-
+        message = $"El sistema encontró {logCount} transacciones por revisar.";
       }
 
 
