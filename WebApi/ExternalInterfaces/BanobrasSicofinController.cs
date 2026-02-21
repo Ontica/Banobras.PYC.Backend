@@ -25,12 +25,25 @@ namespace Empiria.BanobrasIntegration.Sicofin.WebApi {
     [Route("v2/pyc/integration/sicofin/vouchers/generate")]
     public SingleObjectModel GenerateSicofinVouchers() {
 
+      string message = "";
+
+      using (var appServices = BudgetStatusAppServices.UseCaseInteractor()) {
+
+        int adjustmentCount = appServices.LogBudgetCommitStatus();
+
+        message = $"Hay {adjustmentCount} transacciones de compromiso por revisar.";
+
+      }
+
+
       using (var appServices = BudgetExerciseAppServices.UseCaseInteractor()) {
 
-        int exercisedCount = appServices.ExerciseBudget();
+        int exercisedCount = 0; // appServices.ExerciseBudget();
+
+        message += $"Se generaron {exercisedCount} transacciones de ejercicio .";
 
         return new SingleObjectModel(base.Request, new {
-          Message = $"Se generaron {exercisedCount} transacciones de ejercicio presupuestal y ninguna póliza contable."
+          Message = message + $"No se generaron pólizas contables."
         });
       }
     }
