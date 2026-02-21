@@ -25,13 +25,11 @@ namespace Empiria.Banobras.Procurement {
 
     private readonly BudgetTransactionType _transactionType;
     private readonly Order _order;
-    private readonly bool _updateOrderItems;
 
     private BudgetTransaction _transaction;
 
     public OrderBudgetTransactionBuilder(BudgetTransactionType transactionType,
-                                         Order order,
-                                         bool updateOrderItems) {
+                                         Order order) {
 
       Assertion.Require(transactionType, nameof(transactionType));
       Assertion.Require(order, nameof(order));
@@ -40,7 +38,6 @@ namespace Empiria.Banobras.Procurement {
 
       _transactionType = transactionType;
       _order = order;
-      _updateOrderItems = updateOrderItems;
     }
 
 
@@ -67,9 +64,7 @@ namespace Empiria.Banobras.Procurement {
 
       BudgetEntry depositEntry = _transaction.AddEntry(fields);
 
-      if (_updateOrderItems) {
-        orderEntry.SetBudgetEntry(depositEntry);
-      }
+      orderEntry.SetBudgetEntry(depositEntry);
 
       fields = BuildEntryFields(orderEntry, withdrawalColumn, false);
 
@@ -103,9 +98,6 @@ namespace Empiria.Banobras.Procurement {
 
         } else if (_transaction.OperationType == BudgetOperationType.ApprovePayment) {
           BuildDoubleEntries(item, BalanceColumn.Commited, BalanceColumn.ToPay);
-
-        } else if (_transaction.OperationType == BudgetOperationType.Exercise) {
-          BuildDoubleEntries(item, BalanceColumn.ToPay, BalanceColumn.Exercised);
 
         } else {
           throw Assertion.EnsureNoReachThisCode($"Budget transaction entries rule is undefined: " +
@@ -213,10 +205,6 @@ namespace Empiria.Banobras.Procurement {
 
           return DetermineApprovePaymentRequestDate(orderEntry, isDeposit);
 
-        case BudgetOperationType.Exercise:
-
-          return DetermineExcerciseRequestDate(orderEntry);
-
         default:
           throw Assertion.EnsureNoReachThisCode($"Budget entry budgeting date rule is undefined: " +
                                                 $"{_transaction.TransactionType.DisplayName}");
@@ -262,15 +250,6 @@ namespace Empiria.Banobras.Procurement {
         return new DateTime(entry.Budget.Year, 1, 1);
 
       }
-    }
-
-
-    private DateTime DetermineExcerciseRequestDate(OrderItem entry) {
-
-      DateTime budgetRequisitionDate = !entry.RequisitionItem.BudgetEntry.IsEmptyInstance ?
-                                             entry.RequisitionItem.BudgetEntry.Date : DateTime.Today;
-
-      return new DateTime(budgetRequisitionDate.Year, budgetRequisitionDate.Month, 1);
     }
 
     #endregion Helpers

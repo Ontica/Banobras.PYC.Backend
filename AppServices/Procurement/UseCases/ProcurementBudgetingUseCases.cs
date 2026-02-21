@@ -198,9 +198,7 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       var bdgTxnType = BudgetTransactionType.GetFor(order.BudgetType, operationType);
 
-      bool updateOrderItems = bdgTxnType.OperationType != BudgetOperationType.Exercise;
-
-      var builder = new OrderBudgetTransactionBuilder(bdgTxnType, order, updateOrderItems);
+      var builder = new OrderBudgetTransactionBuilder(bdgTxnType, order);
 
       BudgetTransaction transaction = builder.Build();
 
@@ -224,16 +222,13 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
     internal BudgetTransaction SendBudgetTransaction(BudgetTransaction transaction, Order order) {
 
-      Assertion.Require(transaction.OperationType != BudgetOperationType.Exercise,
-        "Cannot send a budget transaction of type 'Exercise'.");
-
       transaction.SendToAuthorization();
 
       transaction.Save();
 
-      foreach (var item in order.GetItems<OrderItem>()
-                                .FindAll(x => x.IsDirty)) {
-        item.Save();
+      foreach (var orderItem in order.GetItems<OrderItem>()
+                                     .FindAll(x => x.IsDirty)) {
+        orderItem.Save();
       }
 
       return transaction;
