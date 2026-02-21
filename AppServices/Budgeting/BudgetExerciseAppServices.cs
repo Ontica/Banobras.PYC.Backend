@@ -8,6 +8,8 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
+
 using Empiria.Data;
 using Empiria.Parties;
 using Empiria.Services;
@@ -19,10 +21,15 @@ using Empiria.Payments;
 using Empiria.Budgeting;
 using Empiria.Budgeting.Transactions;
 
+
 namespace Empiria.Banobras.Budgeting.AppServices {
 
   /// <summary>Application services for generate budget exercise transactions.</summary>
   public class BudgetExerciseAppServices : UseCase {
+
+    static readonly int BATCH_SIZE = 250;
+    static readonly Party GERENCIA_DE_PAGOS = Party.Parse(145);
+    static readonly OperationSource SISTEMA_DE_PAGOS = OperationSource.ParseNamedKey("SISTEMA_DE_PAGOS");
 
     #region Constructors and parsers
 
@@ -40,8 +47,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     public int ExerciseBudget() {
 
-      const int BATCH_SIZE = 2;
-
       FixedList<PaymentOrder> paymentOrders = GetPayedPaymentOrders();
 
       int counter = 0;
@@ -54,13 +59,18 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
         Order order = (Order) paymentOrder.PayableEntity;
 
+        var exerciseDate = paymentOrder.LastPaymentInstruction.LastUpdateTime;
+
         BudgetTransaction approvePaymentTxn = TryGetUnexercisedApprovePaymentBudgetTransaction(order);
 
         if (approvePaymentTxn == null) {
           continue;
         }
 
-        ExerciseBudget(paymentOrder, approvePaymentTxn);
+        _ = ExerciseBudget(paymentOrder, approvePaymentTxn, exerciseDate);
+
+        UpdatePaymentApprovalBudgetTransaction(approvePaymentTxn, paymentOrder);
+
         counter++;
       }
 
@@ -71,21 +81,9 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Helpers
 
-    static private FixedList<PaymentOrder> GetPayedPaymentOrders() {
-      return PaymentOrder.GetList<PaymentOrder>()
-                         .FindAll(x => x.Status == PaymentOrderStatus.Payed &&
-                                       x.PayableEntity.Budget.UID != BudgetType.None.UID)
-                         .ToFixedList();
-    }
-
-
     static private BudgetTransaction ExerciseBudget(PaymentOrder paymentOrder,
-                                                    BudgetTransaction paymentApproval) {
-
-      var GERENCIA_DE_PAGOS = Party.Parse(145);
-      var SISTEMA_DE_PAGOS = OperationSource.ParseNamedKey("SISTEMA_DE_PAGOS");
-
-      var exerciseDate = paymentOrder.LastPaymentInstruction.LastUpdateTime;
+                                                    BudgetTransaction paymentApproval,
+                                                    DateTime exerciseDate) {
 
       var builder = new BudgetTransactionBuilder(paymentApproval,
                                                  BudgetOperationType.Exercise,
@@ -100,15 +98,21 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       exerciseTxn.Save();
 
-      var order = Order.Parse(paymentOrder.PayableEntity.UID);
-
-      UpdatePaymentApprovalBudgetTransaction(paymentApproval, paymentOrder);
-
       return exerciseTxn;
     }
 
 
-    private BudgetTransaction TryGetUnexercisedApprovePaymentBudgetTransaction(Order order) {
+    static private FixedList<PaymentOrder> GetPayedPaymentOrders() {
+      return PaymentOrder.GetList<PaymentOrder>()
+                         .FindAll(x => x.Status == PaymentOrderStatus.Payed &&
+                                       x.PayableEntity.Budget.UID != BudgetType.None.UID)
+                         .ToFixedList()
+                         .Sort((x, y) => x.LastPaymentInstruction.LastUpdateTime.CompareTo(y.LastPaymentInstruction.LastUpdateTime))
+                         .Reverse();
+    }
+
+
+    static private BudgetTransaction TryGetUnexercisedApprovePaymentBudgetTransaction(Order order) {
       var txns = BudgetTransaction.GetFor(order);
 
       if (txns.Contains(x => x.OperationType == BudgetOperationType.Exercise)) {
