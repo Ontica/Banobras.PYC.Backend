@@ -12,12 +12,16 @@ using System.Web.Http;
 
 using Empiria.WebApi;
 
+using Empiria.Budgeting.Transactions;
 using Empiria.Budgeting.Transactions.Adapters;
 
+using Empiria.Payments;
 using Empiria.Payments.Adapters;
 
 using Empiria.Banobras.Procurement.Adapters;
 using Empiria.Banobras.Procurement.UseCases;
+
+using Empiria.Banobras.Budgeting.AppServices;
 
 namespace Empiria.Banobras.Procurement.WebApi {
 
@@ -30,10 +34,15 @@ namespace Empiria.Banobras.Procurement.WebApi {
     [Route("v2/budgeting/procurement/approve-payment")]
     public SingleObjectModel ApprovePayment([FromBody] BudgetRequestFields fields) {
 
-      using (var usecases = ProcurementBudgetingUseCases.UseCaseInteractor()) {
-        BudgetTransactionDescriptorDto transaction = usecases.ApprovePayment(fields);
+      using (var usecases = BudgetExecutionAppServices.UseCaseInteractor()) {
 
-        return new SingleObjectModel(Request, transaction);
+        var paymentOrder = PaymentOrder.Parse(fields.BaseObjectUID);
+
+        BudgetTransaction transaction = usecases.ApprovePayment(paymentOrder);
+
+        var dto = BudgetTransactionMapper.MapToDescriptor(transaction);
+
+        return new SingleObjectModel(Request, dto);
       }
     }
 

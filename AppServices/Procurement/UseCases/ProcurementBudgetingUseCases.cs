@@ -13,8 +13,6 @@ using Empiria.Parties;
 
 using Empiria.Orders;
 using Empiria.Orders.Data;
-
-using Empiria.Payments;
 using Empiria.Payments.Adapters;
 
 using Empiria.Budgeting.Transactions;
@@ -41,36 +39,6 @@ namespace Empiria.Banobras.Procurement.UseCases {
     #endregion Constructors and parsers
 
     #region Use cases
-
-    public BudgetTransactionDescriptorDto ApprovePayment(BudgetRequestFields fields) {
-      Assertion.Require(fields, nameof(fields));
-
-      fields.EnsureValid();
-
-      var paymentOrder = PaymentOrder.Parse(fields.BaseObjectUID);
-
-      var order = Order.Parse(paymentOrder.PayableEntity.UID);
-
-      Assertion.Require(paymentOrder.Rules.CanApproveBudget(),
-        $"No es posible solicitar la autorización presupuestal de pago para esta solicitud de pago, " +
-        $"ya que su estado actual no permite ejecutar esta operación.");
-
-
-      Assertion.Require(order.HasBudgetableItems,
-        $"La(el) {order.OrderType.DisplayName} asociada(o) a esta solicitud de pago no tiene conceptos " +
-        $"ligados a partidas presupuestales. No es posible solicitar la autorización presupuestal de pago.");
-
-      order.Activate();
-
-      order.Save();
-
-      BudgetTransaction budgetTxn = CreateBudgetTransaction(order, BudgetOperationType.ApprovePayment);
-
-      SendBudgetTransaction(budgetTxn, order);
-
-      return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
-    }
-
 
     public BudgetTransactionDescriptorDto CommitBudget(BudgetRequestFields fields) {
       Assertion.Require(fields, nameof(fields));
@@ -233,7 +201,6 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       return transaction;
     }
-
 
     #endregion Helpers
 

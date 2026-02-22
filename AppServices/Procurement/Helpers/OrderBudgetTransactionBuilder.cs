@@ -96,9 +96,6 @@ namespace Empiria.Banobras.Procurement {
           throw new NotImplementedException("Las transacciones de compromiso presupuestal " +
                                             "sobre requisiciones multiáreas no están disponibles.");
 
-        } else if (_transaction.OperationType == BudgetOperationType.ApprovePayment) {
-          BuildDoubleEntries(item, BalanceColumn.Commited, BalanceColumn.ToPay);
-
         } else {
           throw Assertion.EnsureNoReachThisCode($"Budget transaction entries rule is undefined: " +
                                                 $"{_transaction.TransactionType.DisplayName}");
@@ -163,15 +160,6 @@ namespace Empiria.Banobras.Procurement {
 
     private BudgetTransactionFields BuildTransactionFields() {
 
-      OperationSource operationSource;
-
-      if (_transactionType.OperationType == BudgetOperationType.ApprovePayment ||
-          _transactionType.OperationType == BudgetOperationType.Exercise) {
-        operationSource = CommonData.SISTEMA_DE_PAGOS;
-      } else {
-        operationSource = CommonData.SISTEMA_DE_ADQUISICIONES;
-      }
-
       return new BudgetTransactionFields {
         TransactionTypeUID = _transactionType.UID,
         BaseEntityTypeUID = _order.GetEmpiriaType().UID,
@@ -182,7 +170,7 @@ namespace Empiria.Banobras.Procurement {
         BasePartyUID = _order.RequestedBy.UID,
         CurrencyUID = _order.Currency.UID,
         ExchangeRate = _order.ExchangeRate,
-        OperationSourceUID = operationSource.UID,
+        OperationSourceUID = CommonData.SISTEMA_DE_ADQUISICIONES.UID,
         RequestedByUID = Party.ParseWithContact(ExecutionServer.CurrentContact).UID,
         ApplicationDate = DateTime.Today
       };
@@ -201,26 +189,10 @@ namespace Empiria.Banobras.Procurement {
 
           return DetermineBudgetCommitRequestDate(orderEntry, isDeposit);
 
-        case BudgetOperationType.ApprovePayment:
-
-          return DetermineApprovePaymentRequestDate(orderEntry, isDeposit);
-
         default:
           throw Assertion.EnsureNoReachThisCode($"Budget entry budgeting date rule is undefined: " +
                                                 $"{_transaction.TransactionType.DisplayName}");
       }
-    }
-
-
-    private DateTime DetermineApprovePaymentRequestDate(OrderItem orderEntry, bool isDeposit) {
-      if (isDeposit) {
-        return DateTime.Today.Date;
-      }
-
-      DateTime budgetRequisitionDate = !orderEntry.RequisitionItem.BudgetEntry.IsEmptyInstance ?
-                                             orderEntry.RequisitionItem.BudgetEntry.Date : DateTime.Today;
-
-      return new DateTime(budgetRequisitionDate.Year, budgetRequisitionDate.Month, 1);
     }
 
 
