@@ -19,6 +19,7 @@ using Empiria.Budgeting;
 using Empiria.Budgeting.Transactions;
 
 using Empiria.Orders;
+using Empiria.Financial;
 
 namespace Empiria.Banobras.Budgeting.AppServices {
 
@@ -79,12 +80,12 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                                                     BudgetTransaction paymentApproval,
                                                     DateTime exerciseDate) {
 
-      var builder = new BudgetTransactionBuilder(paymentApproval,
-                                                 BudgetOperationType.Exercise,
-                                                 CommonData.SISTEMA_DE_PAGOS,
-                                                 exerciseDate);
+      var builder = new BudgetTransactionBuilder((IBudgetable) paymentOrder.PayableEntity,
+                                                 CommonData.SISTEMA_DE_CONTROL_PRESUPUESTAL,
+                                                 exerciseDate,
+                                                 paymentOrder.ExchangeRate);
 
-      BudgetTransaction exerciseTxn = builder.Build();
+      BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise, paymentApproval);
 
       exerciseTxn.SetExerciseData(paymentOrder, CommonData.GERENCIA_DE_PAGOS);
 
