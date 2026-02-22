@@ -11,7 +11,6 @@
 using System;
 
 using Empiria.Data;
-using Empiria.Parties;
 using Empiria.Payments;
 using Empiria.Services;
 using Empiria.StateEnums;
@@ -25,10 +24,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
   /// <summary>Application services for generate budget exercise transactions.</summary>
   public class BudgetExerciseAppServices : UseCase {
-
-    static readonly int BATCH_SIZE = 250;
-    static readonly Party GERENCIA_DE_PAGOS = Party.Parse(145);
-    static readonly OperationSource SISTEMA_DE_PAGOS = OperationSource.ParseNamedKey("SISTEMA_DE_PAGOS");
 
     #region Constructors and parsers
 
@@ -52,7 +47,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       foreach (var paymentOrder in paymentOrders) {
 
-        if (counter >= BATCH_SIZE) {
+        if (counter >= CommonData.BATCH_SIZE) {
           break;
         }
 
@@ -86,12 +81,12 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       var builder = new BudgetTransactionBuilder(paymentApproval,
                                                  BudgetOperationType.Exercise,
-                                                 SISTEMA_DE_PAGOS,
+                                                 CommonData.SISTEMA_DE_PAGOS,
                                                  exerciseDate);
 
       BudgetTransaction exerciseTxn = builder.Build();
 
-      exerciseTxn.SetExerciseData(paymentOrder, GERENCIA_DE_PAGOS);
+      exerciseTxn.SetExerciseData(paymentOrder, CommonData.GERENCIA_DE_PAGOS);
 
       exerciseTxn.Close();
 

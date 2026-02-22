@@ -167,9 +167,9 @@ namespace Empiria.Banobras.Procurement {
 
       if (_transactionType.OperationType == BudgetOperationType.ApprovePayment ||
           _transactionType.OperationType == BudgetOperationType.Exercise) {
-        operationSource = OperationSource.ParseNamedKey("SISTEMA_DE_PAGOS");
+        operationSource = CommonData.SISTEMA_DE_PAGOS;
       } else {
-        operationSource = OperationSource.ParseNamedKey("SISTEMA_DE_ADQUISICIONES");
+        operationSource = CommonData.SISTEMA_DE_ADQUISICIONES;
       }
 
       return new BudgetTransactionFields {
