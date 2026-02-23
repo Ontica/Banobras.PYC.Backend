@@ -55,9 +55,9 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         $"La(el) {order.OrderType.DisplayName} asociada(o) a esta solicitud de pago no tiene conceptos " +
         $"ligados a partidas presupuestales. No es posible solicitar la autorización presupuestal de pago.");
 
-      BudgetTransaction baseTransaction = TryGetBaseTransaction(BudgetOperationType.ApprovePayment, order);
+      BudgetTransaction commitTransaction = TryGetBaseTransaction(BudgetOperationType.ApprovePayment, order);
 
-      Assertion.Require(baseTransaction,
+      Assertion.Require(commitTransaction,
         $"No es posible solicitar la autorización presupuestal de pago debido a " +
         $"que no se encontró el compromiso presupuestal asociado a la misma.");
 
@@ -67,8 +67,11 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                               "poder solicitar la autorización presupuestal.");
       }
 
-      BudgetTransaction approvePaymentTxn = BuildApprovePaymentTxn(baseTransaction, order, applicationDate.Value,
-                                                                   paymentOrder.ExchangeRate);
+
+      var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_PAGOS,
+                                                 applicationDate.Value, paymentOrder.ExchangeRate);
+
+      BudgetTransaction approvePaymentTxn = builder.Build(BudgetOperationType.ApprovePayment, commitTransaction);
 
       order.Activate();
 
@@ -77,21 +80,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       approvePaymentTxn.SetPayable(paymentOrder);
 
       SendBudgetTransaction(approvePaymentTxn, order);
-
-      return approvePaymentTxn;
-    }
-
-
-    private BudgetTransaction BuildApprovePaymentTxn(BudgetTransaction baseTransaction,
-                                                     Order order, DateTime applicationDate,
-                                                     decimal exchangeRate) {
-
-      var builder = new BudgetTransactionBuilder(order,
-                                                 CommonData.SISTEMA_DE_PAGOS,
-                                                 applicationDate,
-                                                 exchangeRate);
-
-      BudgetTransaction approvePaymentTxn = builder.Build(BudgetOperationType.ApprovePayment, baseTransaction);
 
       return approvePaymentTxn;
     }
@@ -107,9 +95,13 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       budgetTxn.Save();
 
-      // Update this using an event handler
-      foreach (var orderItem in order.GetItems<OrderItem>()
-                                     .FindAll(x => x.IsDirty)) {
+      var orderItems = order.GetItems<OrderItem>();
+
+      foreach (var entry in budgetTxn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment)) {
+        var orderItem = orderItems.Find(x => x.Id == entry.Id && x.GetEmpiriaType().Id == entry.EntityTypeId);
+
+        orderItem.SetBudgetEntry(entry);
+
         orderItem.Save();
       }
     }
