@@ -11,13 +11,16 @@
 using System;
 
 using Empiria.Financial;
-using Empiria.Payments;
 using Empiria.Services;
 
 using Empiria.Orders;
 using Empiria.Orders.Contracts;
 
+using Empiria.Payments;
+
 using Empiria.Budgeting.Transactions;
+
+using Empiria.Banobras.Procurement;
 
 namespace Empiria.Banobras.Budgeting.AppServices {
 
@@ -84,6 +87,83 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       return approvePaymentTxn;
     }
 
+
+    public BudgetTransaction CommitBudget(Order order, DateTime? applicationDate = null) {
+      Assertion.Require(order, nameof(order));
+
+      applicationDate = applicationDate ?? DateTime.Today.Date;
+
+      Assertion.Require(order.Rules.CanCommitBudget(),
+          $"No es posible solicitar el compromiso presupuestal para esta(e) {order.OrderType.DisplayName}, " +
+          $"ya que su estado actual no permite ejecutar esta operación.");
+
+      Assertion.Require(!order.Requisition.IsEmptyInstance && !(order is Requisition),
+          $"Esta(e) {order.OrderType.DisplayName} no tiene asociada una requisición, por lo que " +
+          $"no es posible solicitar el compromiso presupuestal.");
+
+      Assertion.Require(order.HasBudgetableItems,
+          $"Esta(e) {order.OrderType.DisplayName} no tiene conceptos asociados " +
+          $"a partidas presupuestales. No es posible solicitar el compromiso presupuestal.");
+
+      var bdgRequisitions = BudgetTransaction.GetFor(order.Requisition)
+                                             .FindAll(x => x.OperationType == BudgetOperationType.Request &&
+                                                           x.IsClosed);
+
+      // ToDO: Per item
+      if (bdgRequisitions.Count == 0) {
+        Assertion.RequireFail($"Esta(e) {order.OrderType.DisplayName} no tiene una suficiencia presupuestal cerrada, " +
+                              $"por lo que no es posible solicitar el compromiso presupuestal.");
+
+      } else if (bdgRequisitions.Count > 1) {
+        Assertion.RequireFail($"Se encontraron múltiples solicitudes presupuestales cerradas para la requisición " +
+                              $"asociada a esta(e) {order.OrderType.DisplayName}. No es posible solicitar el compromiso presupuestal.");
+      }
+
+      var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_ADQUISICIONES,
+                                                 applicationDate.Value);
+
+      // Allow multiple requests but only one commit
+      BudgetTransaction commitTxn = builder.Build(BudgetOperationType.Commit, bdgRequisitions[0]);
+
+      order.Activate();
+
+      order.Save();
+
+      SendBudgetTransaction(commitTxn, order);
+
+      return commitTxn;
+    }
+
+
+    public BudgetTransaction RequestBudget(Order order) {
+      Assertion.Require(order.Rules.CanRequestBudget(),
+           $"No es posible solicitar la suficiencia presupuestal para esta requisición, " +
+           $"ya que su estado actual no permite ejecutar esta operación.");
+
+      Assertion.Require(order.Requisition.IsEmptyInstance && order is Requisition,
+          $"Esta requisición tiene información incorrecta. " +
+          $"No es posible solicitar la suficiencia presupuestal.");
+
+      Assertion.Require(order.HasBudgetableItems,
+          "Esta requisición no tiene conceptos asociados a partidas presupuestales. " +
+          "No es posible solicitar la suficiencia presupuestal.");
+
+      var validator = new OrderBudgetTransactionValidator(order);
+
+      validator.EnsureOrderHasAvailableBudget();
+
+      var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_ADQUISICIONES, DateTime.Today);
+
+      BudgetTransaction requestTxn = builder.Build(BudgetOperationType.Request);
+
+      order.Activate();
+
+      order.Save();
+
+      SendBudgetTransaction(requestTxn, order);
+
+      return requestTxn;
+    }
 
     #endregion Application services
 

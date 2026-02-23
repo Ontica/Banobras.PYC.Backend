@@ -8,15 +8,15 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using Empiria.Services;
 using Empiria.Parties;
+using Empiria.Services;
 
 using Empiria.Orders;
 using Empiria.Orders.Data;
-using Empiria.Payments.Adapters;
 
 using Empiria.Budgeting.Transactions;
-using Empiria.Budgeting.Transactions.Adapters;
+
+using Empiria.Payments.Adapters;
 
 using Empiria.Banobras.Procurement.Adapters;
 
@@ -39,80 +39,6 @@ namespace Empiria.Banobras.Procurement.UseCases {
     #endregion Constructors and parsers
 
     #region Use cases
-
-    public BudgetTransactionDescriptorDto CommitBudget(BudgetRequestFields fields) {
-      Assertion.Require(fields, nameof(fields));
-
-      fields.EnsureValid();
-
-      Order order = Order.Parse(fields.BaseObjectUID);
-
-      Assertion.Require(order.Rules.CanCommitBudget(),
-        $"No es posible solicitar el compromiso presupuestal para esta(e) {order.OrderType.DisplayName}, " +
-        $"ya que su estado actual no permite ejecutar esta operación.");
-
-      Assertion.Require(!order.Requisition.IsEmptyInstance && !(order is Requisition),
-        $"Esta(e) {order.OrderType.DisplayName} no tiene asociada una requisición, por lo que " +
-        $"no es posible solicitar el compromiso presupuestal.");
-
-      Assertion.Require(order.HasBudgetableItems,
-        $"Esta(e) {order.OrderType.DisplayName} no tiene conceptos asociados " +
-        $"a partidas presupuestales. No es posible solicitar el compromiso presupuestal.");
-
-      var bdgRequisitions = BudgetTransaction.GetFor(order.Requisition)
-                                             .FindAll(x => x.OperationType == BudgetOperationType.Request &&
-                                                           x.IsClosed);
-
-      Assertion.Require(bdgRequisitions.Count > 0,
-        $"Esta(e) {order.OrderType.DisplayName} no tiene una suficiencia presupuestal cerrada, " +
-        $"por lo que no es posible solicitar el compromiso presupuestal.");
-
-      order.Activate();
-
-      order.Save();
-
-      BudgetTransaction budgetTxn = CreateBudgetTransaction(order, BudgetOperationType.Commit);
-
-      SendBudgetTransaction(budgetTxn, order);
-
-      return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
-    }
-
-
-    public BudgetTransactionDescriptorDto RequestBudget(BudgetRequestFields fields) {
-      Assertion.Require(fields, nameof(fields));
-
-      fields.EnsureValid();
-
-      Order order = Order.Parse(fields.BaseObjectUID);
-
-      Assertion.Require(order.Rules.CanRequestBudget(),
-        $"No es posible solicitar la suficiencia presupuestal para esta requisición, " +
-        $"ya que su estado actual no permite ejecutar esta operación.");
-
-      Assertion.Require(order.Requisition.IsEmptyInstance && order is Requisition,
-        $"Esta requisición tiene información incorrecta. " +
-        $"No es posible solicitar la suficiencia presupuestal.");
-
-      Assertion.Require(order.HasBudgetableItems,
-        "Esta requisición no tiene conceptos asociados a partidas presupuestales. " +
-        "No es posible solicitar la suficiencia presupuestal.");
-
-      var validator = new OrderBudgetTransactionValidator(order);
-
-      validator.EnsureOrderHasAvailableBudget();
-
-      order.Activate();
-
-      order.Save();
-
-      BudgetTransaction budgetTxn = CreateBudgetTransaction(order, BudgetOperationType.Request);
-
-      SendBudgetTransaction(budgetTxn, order);
-
-      return BudgetTransactionMapper.MapToDescriptor(budgetTxn);
-    }
-
 
     public FixedList<PayableEntityDto> SearchRelatedDocumentsForTransactionEdition(RelatedDocumentsQuery query) {
       Assertion.Require(query, nameof(query));
@@ -162,19 +88,8 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
     #region Helpers
 
-    internal BudgetTransaction CreateBudgetTransaction(Order order, BudgetOperationType operationType) {
-
-      var bdgTxnType = BudgetTransactionType.GetFor(order.BudgetType, operationType);
-
-      var builder = new OrderBudgetTransactionBuilder(bdgTxnType, order);
-
-      BudgetTransaction transaction = builder.Build();
-
-      return transaction;
-    }
-
-
     static private PayableEntityDto MapToPayableEntity(Order order) {
+
       return new PayableEntityDto {
         UID = order.UID.ToString(),
         Type = order.OrderType.MapToNamedEntity(),
@@ -185,21 +100,6 @@ namespace Empiria.Banobras.Procurement.UseCases {
         Currency = order.Currency.MapToNamedEntity(),
         Total = order.Total
       };
-    }
-
-
-    internal BudgetTransaction SendBudgetTransaction(BudgetTransaction transaction, Order order) {
-
-      transaction.SendToAuthorization();
-
-      transaction.Save();
-
-      foreach (var orderItem in order.GetItems<OrderItem>()
-                                     .FindAll(x => x.IsDirty)) {
-        orderItem.Save();
-      }
-
-      return transaction;
     }
 
     #endregion Helpers

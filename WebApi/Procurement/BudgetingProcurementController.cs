@@ -15,13 +15,15 @@ using Empiria.WebApi;
 using Empiria.Budgeting.Transactions;
 using Empiria.Budgeting.Transactions.Adapters;
 
+using Empiria.Orders;
+
 using Empiria.Payments;
 using Empiria.Payments.Adapters;
 
+using Empiria.Banobras.Budgeting.AppServices;
+
 using Empiria.Banobras.Procurement.Adapters;
 using Empiria.Banobras.Procurement.UseCases;
-
-using Empiria.Banobras.Budgeting.AppServices;
 
 namespace Empiria.Banobras.Procurement.WebApi {
 
@@ -38,9 +40,9 @@ namespace Empiria.Banobras.Procurement.WebApi {
 
         var paymentOrder = PaymentOrder.Parse(fields.BaseObjectUID);
 
-        BudgetTransaction transaction = usecases.ApprovePayment(paymentOrder);
+        BudgetTransaction approvePaymentTxn = usecases.ApprovePayment(paymentOrder);
 
-        var dto = BudgetTransactionMapper.MapToDescriptor(transaction);
+        var dto = BudgetTransactionMapper.MapToDescriptor(approvePaymentTxn);
 
         return new SingleObjectModel(Request, dto);
       }
@@ -51,10 +53,15 @@ namespace Empiria.Banobras.Procurement.WebApi {
     [Route("v2/budgeting/procurement/commit")]
     public SingleObjectModel CommitBudget([FromBody] BudgetRequestFields fields) {
 
-      using (var usecases = ProcurementBudgetingUseCases.UseCaseInteractor()) {
-        BudgetTransactionDescriptorDto transaction = usecases.CommitBudget(fields);
+      using (var usecases = BudgetExecutionAppServices.UseCaseInteractor()) {
 
-        return new SingleObjectModel(Request, transaction);
+        var order = Order.Parse(fields.BaseObjectUID);
+
+        BudgetTransaction commitTxn = usecases.CommitBudget(order);
+
+        var dto = BudgetTransactionMapper.MapToDescriptor(commitTxn);
+
+        return new SingleObjectModel(Request, dto);
       }
     }
 
@@ -63,10 +70,15 @@ namespace Empiria.Banobras.Procurement.WebApi {
     [Route("v2/budgeting/procurement/request")]
     public SingleObjectModel RequestBudget([FromBody] BudgetRequestFields fields) {
 
-      using (var usecases = ProcurementBudgetingUseCases.UseCaseInteractor()) {
-        BudgetTransactionDescriptorDto transaction = usecases.RequestBudget(fields);
+      using (var usecases = BudgetExecutionAppServices.UseCaseInteractor()) {
 
-        return new SingleObjectModel(Request, transaction);
+        var order = Order.Parse(fields.BaseObjectUID);
+
+        BudgetTransaction requestTxn = usecases.RequestBudget(order);
+
+        var dto = BudgetTransactionMapper.MapToDescriptor(requestTxn);
+
+        return new SingleObjectModel(Request, dto);
       }
     }
 
