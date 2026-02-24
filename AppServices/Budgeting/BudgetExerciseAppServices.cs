@@ -8,15 +8,15 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
-using Empiria.Budgeting;
-using Empiria.Budgeting.Transactions;
 using Empiria.Data;
-using Empiria.Financial;
-using Empiria.Orders;
-using Empiria.Payments;
 using Empiria.Services;
 using Empiria.StateEnums;
+
+using Empiria.Orders;
+using Empiria.Payments;
+
+using Empiria.Budgeting;
+using Empiria.Budgeting.Transactions;
 
 namespace Empiria.Banobras.Budgeting.AppServices {
 
@@ -39,6 +39,8 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     public int ExerciseBudget() {
 
+      var budgetAppServices = BudgetExecutionAppServices.UseCaseInteractor();
+
       FixedList<PaymentOrder> paymentOrders = GetPayedPaymentOrders();
 
       int counter = 0;
@@ -59,7 +61,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
           continue;
         }
 
-        _ = ExerciseBudget(paymentOrder, approvePaymentTxn, exerciseDate);
+        _ = budgetAppServices.ExerciseBudget(paymentOrder, approvePaymentTxn, exerciseDate);
 
         UpdatePaymentApprovalBudgetTransaction(approvePaymentTxn, paymentOrder);
 
@@ -72,27 +74,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     #endregion Application services
 
     #region Helpers
-
-    static private BudgetTransaction ExerciseBudget(PaymentOrder paymentOrder,
-                                                    BudgetTransaction paymentApproval,
-                                                    DateTime exerciseDate) {
-
-      var builder = new BudgetTransactionBuilder((IBudgetable) paymentOrder.PayableEntity,
-                                                 CommonData.SISTEMA_DE_CONTROL_PRESUPUESTAL,
-                                                 exerciseDate,
-                                                 paymentOrder.ExchangeRate);
-
-      BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise, paymentApproval);
-
-      exerciseTxn.SetExerciseData(paymentOrder, CommonData.GERENCIA_DE_PAGOS);
-
-      exerciseTxn.Close();
-
-      exerciseTxn.Save();
-
-      return exerciseTxn;
-    }
-
 
     static private FixedList<PaymentOrder> GetPayedPaymentOrders() {
       return PaymentOrder.GetList<PaymentOrder>()

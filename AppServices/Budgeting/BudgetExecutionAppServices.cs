@@ -135,6 +135,33 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     }
 
 
+    public BudgetTransaction ExerciseBudget(PaymentOrder paymentOrder,
+                                            BudgetTransaction paymentApproval,
+                                            DateTime? exerciseDate = null) {
+
+      Assertion.Require(paymentOrder, nameof(paymentOrder));
+      Assertion.Require(paymentApproval, nameof(paymentApproval));
+
+      exerciseDate = exerciseDate ?? DateTime.Today.Date;
+
+
+      var builder = new BudgetTransactionBuilder((IBudgetable) paymentOrder.PayableEntity,
+                                                 CommonData.SISTEMA_DE_CONTROL_PRESUPUESTAL,
+                                                 exerciseDate.Value,
+                                                 paymentOrder.ExchangeRate);
+
+      BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise, paymentApproval);
+
+      exerciseTxn.SetExerciseData(paymentOrder, CommonData.GERENCIA_DE_PAGOS);
+
+      exerciseTxn.Close();
+
+      exerciseTxn.Save();
+
+      return exerciseTxn;
+    }
+
+
     public BudgetTransaction RequestBudget(Order order) {
       Assertion.Require(order.Rules.CanRequestBudget(),
            $"No es posible solicitar la suficiencia presupuestal para esta requisición, " +
@@ -178,7 +205,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       var orderItems = order.GetItems<OrderItem>();
 
       foreach (var entry in budgetTxn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment)) {
-        var orderItem = orderItems.Find(x => x.Id == entry.Id && x.GetEmpiriaType().Id == entry.EntityTypeId);
+        var orderItem = orderItems.Find(x => x.Id == entry.EntityId && x.GetEmpiriaType().Id == entry.EntityTypeId);
 
         orderItem.SetBudgetEntry(entry);
 
