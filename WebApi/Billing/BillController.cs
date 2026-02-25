@@ -9,10 +9,12 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System.Web.Http;
+
+using Empiria.WebApi;
+
 using Empiria.Banobras.Billing.Adapters;
 using Empiria.Banobras.Billing.AppServices;
-using Empiria.Billing.UseCases;
-using Empiria.WebApi;
+
 
 namespace Empiria.Banobras.Billing.WebApi {
 
@@ -34,16 +36,16 @@ namespace Empiria.Banobras.Billing.WebApi {
     //}
 
 
-    [HttpPost]
-    [Route("v2/billing-management/bills/search")]
-    public CollectionModel SearchBills([FromBody] BillsQuery query) {
+    //[HttpPost]
+    //[Route("v2/billing-management/bills/search")]
+    //public CollectionModel SearchBills([FromBody] BillsQuery query) {
 
-      using (var service = BillAppServices.UseCaseInteractor()) {
-        FixedList<BillDescriptorDto> bills = service.SearchBills(query);
+    //  using (var service = BillAppServices.UseCaseInteractor()) {
+    //    FixedList<BillDescriptorDto> bills = service.SearchBills(query);
 
-        return new CollectionModel(this.Request, bills);
-      }
-    }
+    //    return new CollectionModel(this.Request, bills);
+    //  }
+    //}
 
     #endregion Web apis
 
