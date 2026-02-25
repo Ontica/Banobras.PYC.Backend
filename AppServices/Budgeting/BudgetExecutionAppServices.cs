@@ -74,7 +74,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_PAGOS,
                                                  applicationDate.Value, paymentOrder.ExchangeRate);
 
-      BudgetTransaction approvePaymentTxn = builder.Build(BudgetOperationType.ApprovePayment, commitTransaction);
+      BudgetTransaction approvePaymentTxn = builder.Build(BudgetOperationType.ApprovePayment);
 
       order.Activate();
 
@@ -113,17 +113,13 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       if (bdgRequisitions.Count == 0) {
         Assertion.RequireFail($"Esta(e) {order.OrderType.DisplayName} no tiene una suficiencia presupuestal cerrada, " +
                               $"por lo que no es posible solicitar el compromiso presupuestal.");
-
-      } else if (bdgRequisitions.Count > 1) {
-        Assertion.RequireFail($"Se encontraron múltiples solicitudes presupuestales cerradas para la requisición " +
-                              $"asociada a esta(e) {order.OrderType.DisplayName}. No es posible solicitar el compromiso presupuestal.");
       }
 
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_ADQUISICIONES,
                                                  applicationDate.Value);
 
       // Allow multiple requests but only one commit
-      BudgetTransaction commitTxn = builder.Build(BudgetOperationType.Commit, bdgRequisitions[0]);
+      BudgetTransaction commitTxn = builder.Build(BudgetOperationType.Commit);
 
       order.Activate();
 
@@ -144,13 +140,12 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       exerciseDate = exerciseDate ?? DateTime.Today.Date;
 
-
       var builder = new BudgetTransactionBuilder((IBudgetable) paymentOrder.PayableEntity,
                                                  CommonData.SISTEMA_DE_CONTROL_PRESUPUESTAL,
                                                  exerciseDate.Value,
                                                  paymentOrder.ExchangeRate);
 
-      BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise, paymentApproval);
+      BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise);
 
       exerciseTxn.SetExerciseData(paymentOrder, CommonData.GERENCIA_DE_PAGOS);
 
