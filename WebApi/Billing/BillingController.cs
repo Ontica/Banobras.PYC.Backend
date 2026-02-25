@@ -23,29 +23,16 @@ namespace Empiria.Banobras.Billing.WebApi {
 
     #region Web apis
 
-    //[HttpGet]
-    //[Route("v2/billing-management/bills/{billUID:guid}")]
-    //public SingleObjectModel GetBill([FromUri] string billUID) {
+    [HttpPost]
+    [Route("v2/billing-management/bills/search")]
+    public CollectionModel SearchBills([FromBody] BillsQuery query) {
 
-    //  using (var usecases = BillUseCases.UseCaseInteractor()) {
+      using (var service = BillAppServices.UseCaseInteractor()) {
+        FixedList<BillDescriptorDto> bills = service.SearchBills(query);
 
-    //    BillHolderDto bill = usecases.GetBill(billUID);
-
-    //    return new SingleObjectModel(base.Request, bill);
-    //  }
-    //}
-
-
-    //[HttpPost]
-    //[Route("v2/billing-management/bills/search")]
-    //public CollectionModel SearchBills([FromBody] BillsQuery query) {
-
-    //  using (var service = BillAppServices.UseCaseInteractor()) {
-    //    FixedList<BillDescriptorDto> bills = service.SearchBills(query);
-
-    //    return new CollectionModel(this.Request, bills);
-    //  }
-    //}
+        return new CollectionModel(this.Request, bills);
+      }
+    }
 
     #endregion Web apis
 
