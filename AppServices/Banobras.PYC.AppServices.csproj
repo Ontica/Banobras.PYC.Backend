@@ -85,4 +85,7 @@
     <ProjectReference Include="..\..\financial.accounting\WebApiClient\Empiria.FinancialAccounting.WebApiClient.csproj" />
     <ProjectReference Include="..\ExternalInterfaces\Banobras.PYC.ExternalInterfaces.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\financial.management\Billing\Core\Empiria.Billing.Core.csproj" />
+  </ItemGroup>
 </Project>
