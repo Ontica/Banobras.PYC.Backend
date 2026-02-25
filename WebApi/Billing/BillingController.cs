@@ -19,7 +19,7 @@ using Empiria.Banobras.Billing.AppServices;
 namespace Empiria.Banobras.Billing.WebApi {
 
   /// <summary>Web API used to retrive and update payable bills.</summary>
-  public class BillController : WebApiController {
+  public class BillingController : WebApiController {
 
     #region Web apis
 
