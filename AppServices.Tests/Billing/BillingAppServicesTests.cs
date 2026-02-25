@@ -21,6 +21,21 @@ namespace Empiria.Tests.Banobras.Billing {
     #region Facts
 
     [Fact]
+    public void Get_Bill_By_UID_Test() {
+
+      TestsCommonMethods.Authenticate();
+
+      string billUID = "cb52251f-5e03-424f-9202-2cfc47d33ce2";
+
+      var service = BillAppServices.UseCaseInteractor();
+
+      BillHolderDto sut = service.GetBill(billUID);
+
+      Assert.NotNull(sut);
+    }
+
+
+    [Fact]
     public void Should_Get_Bill_Descriptor() {
 
       TestsCommonMethods.Authenticate();

@@ -33,6 +33,15 @@ namespace Empiria.Banobras.Billing.AppServices {
 
     #region Use cases
 
+    public BillHolderDto GetBill(string billUID) {
+      Assertion.Require(billUID, nameof(billUID));
+
+      Bill bill = Bill.Parse(billUID);
+
+      return BillMapper.Map(bill);
+    }
+
+
     public FixedList<BillDescriptorDto> SearchBills(BillsQuery query) {
       Assertion.Require(query, nameof(query));
 
