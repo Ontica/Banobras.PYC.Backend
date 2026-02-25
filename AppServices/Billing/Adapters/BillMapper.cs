@@ -34,7 +34,7 @@ namespace Empiria.Banobras.Billing.Adapters {
         BudgetTransactions = MapToBudgetTransactions(bill),
         Concepts = MapBillConcepts(bill.Concepts),
         BillRelatedBills = MapBillRelatedBills(bill.BillRelatedBills),
-        //Documents = DocumentServices.GetAllEntityDocuments(bill),
+        Documents = DocumentServices.GetAllEntityDocuments(bill),
         History = HistoryServices.GetEntityHistory(bill),
         Actions = MapActions()
       };
@@ -43,7 +43,7 @@ namespace Empiria.Banobras.Billing.Adapters {
 
     static public BillDto MapToBillDto(Bill bill) {
 
-      //var files = DocumentServices.GetAllEntityDocuments(bill);
+      var files = DocumentServices.GetAllEntityDocuments(bill);
 
       return new BillDto {
         UID = bill.UID,
@@ -63,8 +63,8 @@ namespace Empiria.Banobras.Billing.Adapters {
         PostedBy = bill.PostedBy.MapToNamedEntity(),
         PostingTime = bill.PostingTime,
         Status = bill.Status.MapToDto(),
-        //Files = files.Select(x => x.File)
-        //             .ToFixedList(),
+        Files = files.Select(x => x.File)
+                     .ToFixedList(),
       };
     }
 
