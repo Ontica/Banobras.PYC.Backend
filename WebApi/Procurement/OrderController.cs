@@ -164,7 +164,7 @@ namespace Empiria.Banobras.Procurement.WebApi {
       OrderItemFields orderItemFields = MapToOrderItemFields(orderUID, fields);
 
       OrderItemDto orderItem = OrderUseCaseDispatcher.UpdateOrderItem(orderUID, orderItemUID,
-                                                                    orderItemFields);
+                                                                      orderItemFields);
 
       return new SingleObjectModel(base.Request, orderItem);
     }

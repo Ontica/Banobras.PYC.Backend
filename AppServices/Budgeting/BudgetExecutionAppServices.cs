@@ -70,11 +70,10 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                               "poder solicitar la autorización presupuestal.");
       }
 
-
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_PAGOS,
                                                  applicationDate.Value, paymentOrder.ExchangeRate);
 
-      BudgetTransaction approvePaymentTxn = builder.Build(BudgetOperationType.ApprovePayment);
+      BudgetTransaction approvePaymentTxn = builder.Build(BudgetOperationType.ApprovePayment, commitTransaction.Entries);
 
       order.Activate();
 
@@ -109,17 +108,17 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                                              .FindAll(x => x.OperationType == BudgetOperationType.Request &&
                                                            x.IsClosed);
 
-      // ToDO: Per item
       if (bdgRequisitions.Count == 0) {
         Assertion.RequireFail($"Esta(e) {order.OrderType.DisplayName} no tiene una suficiencia presupuestal cerrada, " +
                               $"por lo que no es posible solicitar el compromiso presupuestal.");
       }
 
-      var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_ADQUISICIONES,
+      IBudgetable budgetable = order;
+
+      var builder = new BudgetTransactionBuilder(budgetable, CommonData.SISTEMA_DE_ADQUISICIONES,
                                                  applicationDate.Value);
 
-      // Allow multiple requests but only one commit
-      BudgetTransaction commitTxn = builder.Build(BudgetOperationType.Commit);
+      BudgetTransaction commitTxn = builder.Build(BudgetOperationType.Commit, bdgRequisitions.SelectFlat(x => x.Entries));
 
       order.Activate();
 
@@ -145,7 +144,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                                                  exerciseDate.Value,
                                                  paymentOrder.ExchangeRate);
 
-      BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise);
+      BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise, paymentApproval.Entries);
 
       exerciseTxn.SetExerciseData(paymentOrder, CommonData.GERENCIA_DE_PAGOS);
 
@@ -176,7 +175,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_ADQUISICIONES, DateTime.Today);
 
-      BudgetTransaction requestTxn = builder.Build(BudgetOperationType.Request);
+      BudgetTransaction requestTxn = builder.Build(BudgetOperationType.Request, FixedList<BudgetEntry>.Empty);
 
       order.Activate();
 
