@@ -24,7 +24,7 @@ namespace Empiria.Banobras.Billing.Adapters {
       get; internal set;
     }
 
-    public PayableEntityBaseDto BaseEntity {
+    public PayableEntityDto BaseEntity {
       get; internal set;
     }
 
@@ -32,7 +32,7 @@ namespace Empiria.Banobras.Billing.Adapters {
       get; internal set;
     }
 
-    public FixedList<BudgetTransactionDto> BudgetTransactions {
+    public FixedList<BudgetTransactionDescriptorDto> BudgetTransactions {
       get; internal set;
     }
 

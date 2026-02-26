@@ -112,16 +112,11 @@ namespace Empiria.Banobras.Billing.Adapters {
     }
 
 
-    static private PayableEntityBaseDto MapToBaseEntityDto(int payableEntityId) {
+    static private PayableEntityDto MapToBaseEntityDto(int payableEntityId) {
 
-      var baseEntity = Order.Parse(payableEntityId);
+      var baseEntity = PayableOrder.Parse(payableEntityId);
 
-      return new PayableEntityBaseDto {
-        UID = baseEntity.UID,
-        EntityNo = baseEntity.OrderNo,
-        Name = baseEntity.Name,
-        Type= baseEntity.OrderType.MapToNamedEntity()
-      };
+      return PayableEntityMapper.Map(baseEntity);
     }
 
 
@@ -191,15 +186,16 @@ namespace Empiria.Banobras.Billing.Adapters {
     }
 
 
-    static private FixedList<BudgetTransactionDto> MapToBudgetTransactions(PayableOrder baseEntity) {
+    static private FixedList<BudgetTransactionDescriptorDto> MapToBudgetTransactions(
+                                                              PayableOrder baseEntity) {
       
       var budgetTransactions = BudgetTransaction.GetFor(baseEntity);
 
       if (budgetTransactions.Count == 0) {
-        return new FixedList<BudgetTransactionDto>();
+        return new FixedList<BudgetTransactionDescriptorDto>();
       }
 
-      return budgetTransactions.Select((x) => BudgetTransactionMapper.MapTransaction(x))
+      return budgetTransactions.Select((x) => BudgetTransactionMapper.MapToDescriptor(x))
                                .ToFixedList();
     }
 
