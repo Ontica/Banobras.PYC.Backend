@@ -37,6 +37,39 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Application services
 
+    public int CleanBudgetCommits() {
+
+      int counter = 0;
+
+      FixedList<BudgetTransaction> commitTxns = BudgetStatusAppServices.BudgetCommitTxnForAdjustment();
+
+      var cleaner = new BudgetTransactionCleaner();
+
+      foreach (var txn in commitTxns) {
+
+        var requestTxns = BudgetTransaction.GetRelatedTo(txn)
+                                           .FindAll(y => y.OperationType == BudgetOperationType.Request);
+
+
+        FixedList<BudgetEntry> entries = cleaner.CreateAdjustMonthsEntries(txn, requestTxns.SelectFlat(x => x.Entries));
+
+        if (entries.Count == 0) {
+          continue;
+        }
+
+        foreach (var entry in entries) {
+          entry.Save();
+        }
+
+        EmpiriaLog.Info($"Created {entries.Count} adjustment entries for commit transaction {txn.TransactionNo} - {txn.Id}.");
+
+        counter++;
+      }
+
+      return counter;
+    }
+
+
     public int ExerciseBudget() {
 
       var budgetAppServices = BudgetExecutionAppServices.UseCaseInteractor();
