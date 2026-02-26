@@ -26,17 +26,19 @@ namespace Empiria.BanobrasIntegration.Sic {
     }
 
 
-    internal async Task<FixedList<MovtosDetalleDto>> GetMovimientos(MovtosEncabezadosDto header) {
+    public async Task<FixedList<AccountingEntriesDto>> GetMovements(AccountingEntriesQuery query) {
 
-      var movimientos = await _apiClient.TryGetMovtosDetalle(header);
+      MovtosEncabezadosDto body = AccountEntriesMapper.MapToAccountEntries(query);
 
-      return movimientos;
+      FixedList<MovtosDetalleDto> movimientos = await _apiClient.TryGetMovtosDetalle(body);
 
+
+      return AccountEntriesMapper.MapToAccountEntriesDetail(movimientos);
     }
 
 
     #endregion Methods
 
-  } // class PaymentService
+  } // class SicApiService
 
-} // namespace Empiria.Payments.BanobrasIntegration.IkosCash
+} // namespace Empiria.BanobrasIntegration.Sic
