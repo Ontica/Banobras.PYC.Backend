@@ -8,6 +8,11 @@
       "type": "",
       "key": "GlobalConfigurationFile",
       "value": "{{GLOBAL-CONFIGURATION-FILE}}"
+    },
+    {
+      "type": "WebApi",
+      "key": "Hsts.Enabled",
+      "value": false
     }
   ]
 }
