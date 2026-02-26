@@ -70,9 +70,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                               "poder solicitar la autorización presupuestal.");
       }
 
-
-      //LoadPreviousBudgetEntries(order, commitTransaction.Entries);
-
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_PAGOS,
                                                  applicationDate.Value, paymentOrder.ExchangeRate);
 
@@ -118,8 +115,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       IBudgetable budgetable = order;
 
-      //GetPreviousBudgetEntries(budgetable, bdgRequisitions.SelectFlat(x => x.Entries));
-
       var builder = new BudgetTransactionBuilder(budgetable, CommonData.SISTEMA_DE_ADQUISICIONES,
                                                  applicationDate.Value);
 
@@ -144,8 +139,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       exerciseDate = exerciseDate ?? DateTime.Today.Date;
 
-      // LoadPreviousBudgetEntries((IBudgetable) paymentOrder.PayableEntity, paymentApproval.Entries);
-
       var builder = new BudgetTransactionBuilder((IBudgetable) paymentOrder.PayableEntity,
                                                  CommonData.SISTEMA_DE_CONTROL_PRESUPUESTAL,
                                                  exerciseDate.Value,
@@ -160,34 +153,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       exerciseTxn.Save();
 
       return exerciseTxn;
-    }
-
-
-    private void LoadPreviousBudgetEntries(IBudgetable budgetable, FixedList<BudgetEntry> previousEntries) {
-
-      foreach (var entry in budgetable.Items) {
-
-        previousEntries = previousEntries.FindAll(x => x.Deposit > 0 && x.NotAdjustment);
-
-        var prevEntry = previousEntries.Find(x => x.EntityId == entry.BudgetableItem.Id &&
-                                                  x.EntityTypeId == entry.BudgetableItem.GetEmpiriaType().Id);
-
-
-        if (prevEntry != null) {
-          entry.PreviousBudgetEntry = prevEntry;
-          continue;
-        }
-
-        prevEntry = previousEntries.Find(x => entry.HasRelatedBudgetableItem &&
-                                              x.EntityId == entry.RelatedBudgetableItem.Id &&
-                                              x.EntityTypeId == entry.RelatedBudgetableItem.GetEmpiriaType().Id);
-
-        if (prevEntry != null) {
-          entry.PreviousBudgetEntry = prevEntry;
-        } else {
-          Assertion.RequireFail($"Previous budget entry not found.");
-        }
-      }
     }
 
 
