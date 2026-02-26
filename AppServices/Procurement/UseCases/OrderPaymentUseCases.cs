@@ -59,12 +59,12 @@ namespace Empiria.Banobras.Procurement.UseCases {
 
       if (order.Category.PlaysRole("travel-expenses")) {
 
-        Assertion.Require(billsTotals.Total >= order.Total,
+        Assertion.Require(billsTotals.GetTotal() >= order.Total,
                  "El importe de los comprobantes no puede ser menor al de los conceptos.");
       } else {
 
-        Assertion.Require(billsTotals.Total == order.Total,
-                          $"El total de los comprobantes ({billsTotals:C2}) no coincide " +
+        Assertion.Require(billsTotals.GetTotal() == order.Total,
+                          $"El total de los comprobantes ({billsTotals.GetTotal():C2}) no coincide " +
                           $"con el total de los conceptos ({order.Total:C2}).");
       }
 
