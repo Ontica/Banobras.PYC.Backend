@@ -38,9 +38,12 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     #region Application services
 
     public int ExecuteLog() {
-      int counter = LogBudgetCommitStatus();
 
-      counter += LogBudgetablePaymentsStatus();
+      int counter = LogBudgetCommitForAdjustmentStatus();
+
+      //counter += LogBudgetCommitStatus();
+
+      //counter += LogBudgetablePaymentsStatus();
 
       return counter;
     }
@@ -104,6 +107,41 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       }
 
       return counter;
+    }
+
+
+    private int LogBudgetCommitForAdjustmentStatus() {
+      int counter = 0;
+
+      FixedList<BudgetTransaction> commitTxns = BudgetCommitTxnForAdjustment();
+
+      foreach (var txn in commitTxns) {
+        var relatedRequests = BudgetTransaction.GetRelatedTo(txn)
+                                               .FindAll(x => x.OperationType == BudgetOperationType.Request && x.AuthorizationDate.Month == 1);
+
+        if (relatedRequests.Count > 0) {
+          EmpiriaLog.Debug($"Transacción {txn.TransactionNo} - Id = {txn.Id} tiene {relatedRequests.Count} suficiencias del mes anterior.");
+          counter++;
+        }
+      }
+
+      return counter;
+    }
+
+
+    static internal FixedList<BudgetTransaction> BudgetCommitTxnForAdjustment() {
+      FixedList<BudgetTransaction> commitTxns = BudgetTransaction.GetFullList<BudgetTransaction>()
+                                                                 .FindAll(x => x.OperationType == BudgetOperationType.Commit &&
+                                                                              (x.InProcess || x.IsClosed));
+
+      commitTxns = commitTxns.FindAll(x => x.AuthorizationDate.Month == 2 &&
+                                           x.Entries.FindAll(y => y.BalanceColumn == BalanceColumn.Reduced ||
+                                                                  y.BalanceColumn == BalanceColumn.Expanded).Count == 0);
+
+      commitTxns.FindAll(x => BudgetTransaction.GetRelatedTo(x)
+                                               .Contains(y => y.OperationType == BudgetOperationType.Request && y.AuthorizationDate.Month == 1));
+
+      return commitTxns;
     }
 
 
