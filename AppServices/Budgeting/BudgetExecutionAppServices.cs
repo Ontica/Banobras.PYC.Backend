@@ -71,10 +71,12 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       }
 
 
+      //LoadPreviousBudgetEntries(order, commitTransaction.Entries);
+
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_PAGOS,
                                                  applicationDate.Value, paymentOrder.ExchangeRate);
 
-      BudgetTransaction approvePaymentTxn = builder.Build(BudgetOperationType.ApprovePayment);
+      BudgetTransaction approvePaymentTxn = builder.Build(BudgetOperationType.ApprovePayment, commitTransaction.Entries);
 
       order.Activate();
 
@@ -109,17 +111,19 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                                              .FindAll(x => x.OperationType == BudgetOperationType.Request &&
                                                            x.IsClosed);
 
-      // ToDO: Per item
       if (bdgRequisitions.Count == 0) {
         Assertion.RequireFail($"Esta(e) {order.OrderType.DisplayName} no tiene una suficiencia presupuestal cerrada, " +
                               $"por lo que no es posible solicitar el compromiso presupuestal.");
       }
 
-      var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_ADQUISICIONES,
+      IBudgetable budgetable = order;
+
+      //GetPreviousBudgetEntries(budgetable, bdgRequisitions.SelectFlat(x => x.Entries));
+
+      var builder = new BudgetTransactionBuilder(budgetable, CommonData.SISTEMA_DE_ADQUISICIONES,
                                                  applicationDate.Value);
 
-      // Allow multiple requests but only one commit
-      BudgetTransaction commitTxn = builder.Build(BudgetOperationType.Commit);
+      BudgetTransaction commitTxn = builder.Build(BudgetOperationType.Commit, bdgRequisitions.SelectFlat(x => x.Entries));
 
       order.Activate();
 
@@ -140,12 +144,14 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       exerciseDate = exerciseDate ?? DateTime.Today.Date;
 
+      // LoadPreviousBudgetEntries((IBudgetable) paymentOrder.PayableEntity, paymentApproval.Entries);
+
       var builder = new BudgetTransactionBuilder((IBudgetable) paymentOrder.PayableEntity,
                                                  CommonData.SISTEMA_DE_CONTROL_PRESUPUESTAL,
                                                  exerciseDate.Value,
                                                  paymentOrder.ExchangeRate);
 
-      BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise);
+      BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise, paymentApproval.Entries);
 
       exerciseTxn.SetExerciseData(paymentOrder, CommonData.GERENCIA_DE_PAGOS);
 
@@ -154,6 +160,34 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       exerciseTxn.Save();
 
       return exerciseTxn;
+    }
+
+
+    private void LoadPreviousBudgetEntries(IBudgetable budgetable, FixedList<BudgetEntry> previousEntries) {
+
+      foreach (var entry in budgetable.Items) {
+
+        previousEntries = previousEntries.FindAll(x => x.Deposit > 0 && x.NotAdjustment);
+
+        var prevEntry = previousEntries.Find(x => x.EntityId == entry.BudgetableItem.Id &&
+                                                  x.EntityTypeId == entry.BudgetableItem.GetEmpiriaType().Id);
+
+
+        if (prevEntry != null) {
+          entry.PreviousBudgetEntry = prevEntry;
+          continue;
+        }
+
+        prevEntry = previousEntries.Find(x => entry.HasRelatedBudgetableItem &&
+                                              x.EntityId == entry.RelatedBudgetableItem.Id &&
+                                              x.EntityTypeId == entry.RelatedBudgetableItem.GetEmpiriaType().Id);
+
+        if (prevEntry != null) {
+          entry.PreviousBudgetEntry = prevEntry;
+        } else {
+          Assertion.RequireFail($"Previous budget entry not found.");
+        }
+      }
     }
 
 
@@ -176,7 +210,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_ADQUISICIONES, DateTime.Today);
 
-      BudgetTransaction requestTxn = builder.Build(BudgetOperationType.Request);
+      BudgetTransaction requestTxn = builder.Build(BudgetOperationType.Request, FixedList<BudgetEntry>.Empty);
 
       order.Activate();
 
