@@ -50,7 +50,7 @@ namespace Empiria.Banobras.Billing.AppServices {
 
       using (var usecases = BillUseCases.UseCaseInteractor()) {
         
-        FixedList<Bill> bills = usecases.SearchBills_(filter, sort);
+        FixedList<Bill> bills = usecases.SearchBills(filter, sort);
 
         return BillMapper.MapToBillListDto(bills);
       }
