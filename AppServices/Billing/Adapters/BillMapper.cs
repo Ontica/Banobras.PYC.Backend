@@ -11,10 +11,15 @@
 using System;
 
 using Empiria.Billing;
+
+using Empiria.Budgeting.Transactions;
 using Empiria.Budgeting.Transactions.Adapters;
+
 using Empiria.Documents;
 using Empiria.History;
+
 using Empiria.Orders;
+using Empiria.Payments;
 using Empiria.Payments.Adapters;
 using Empiria.StateEnums;
 
@@ -27,11 +32,13 @@ namespace Empiria.Banobras.Billing.Adapters {
 
     static internal BillHolderDto Map(Bill bill) {
 
+      var baseEntity = PayableOrder.Parse(bill.PayableEntityId);
+
       return new BillHolderDto() {
         Bill = MapToBillDto(bill),
         BaseEntity = MapToBaseEntityDto(bill.PayableEntityId),
-        PaymentOrder = MapToPaymentOrder(bill),
-        BudgetTransactions = MapToBudgetTransactions(bill),
+        PaymentOrder = MapToPaymentOrder(baseEntity),
+        BudgetTransactions = MapToBudgetTransactions(baseEntity),
         Concepts = MapBillConcepts(bill.Concepts),
         BillRelatedBills = MapBillRelatedBills(bill.BillRelatedBills),
         Documents = DocumentServices.GetAllEntityDocuments(bill),
@@ -105,7 +112,7 @@ namespace Empiria.Banobras.Billing.Adapters {
     }
 
 
-    private static PayableEntityBaseDto MapToBaseEntityDto(int payableEntityId) {
+    static private PayableEntityBaseDto MapToBaseEntityDto(int payableEntityId) {
 
       var baseEntity = Order.Parse(payableEntityId);
 
@@ -184,15 +191,29 @@ namespace Empiria.Banobras.Billing.Adapters {
     }
 
 
-    private static FixedList<BudgetTransactionDto> MapToBudgetTransactions(Bill bill) {
+    static private FixedList<BudgetTransactionDto> MapToBudgetTransactions(PayableOrder baseEntity) {
+      
+      var budgetTransactions = BudgetTransaction.GetFor(baseEntity);
 
-      return new FixedList<BudgetTransactionDto>();
+      if (budgetTransactions.Count == 0) {
+        return new FixedList<BudgetTransactionDto>();
+      }
+
+      return budgetTransactions.Select((x) => BudgetTransactionMapper.MapTransaction(x))
+                               .ToFixedList();
     }
 
 
-    private static PaymentOrderDto MapToPaymentOrder(Bill bill) {
+    static private PaymentOrderDto MapToPaymentOrder(PayableOrder baseEntity) {
 
-      return new PaymentOrderDto { };
+      var paymentOrder = PaymentOrder.GetListFor(baseEntity)
+                                      .FindLast(x=>x.Status == PaymentOrderStatus.Payed);
+
+      if (paymentOrder == null) {
+        return new PaymentOrderDto();
+      }
+
+      return PaymentOrderMapper.MapToDto(paymentOrder);
     }
 
     #endregion Helpers

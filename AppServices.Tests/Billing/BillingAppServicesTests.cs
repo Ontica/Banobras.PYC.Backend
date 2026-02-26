@@ -25,7 +25,7 @@ namespace Empiria.Tests.Banobras.Billing {
 
       TestsCommonMethods.Authenticate();
 
-      string billUID = "cb52251f-5e03-424f-9202-2cfc47d33ce2";
+      string billUID = "9b7afece-b458-4895-a338-0852a4b8a5ab";
 
       var service = BillAppServices.UseCaseInteractor();
 
