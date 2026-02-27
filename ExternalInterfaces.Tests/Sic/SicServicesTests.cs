@@ -15,7 +15,6 @@ using Empiria.Financial.Adapters;
 using Empiria.BanobrasIntegration.Sic;
 using Empiria.BanobrasIntegration.Sic.Adapters;
 using System.Threading.Tasks;
-using System;
 
 namespace Empiria.Sic.Tests.BanobrasIntegration {
 
@@ -36,15 +35,14 @@ namespace Empiria.Sic.Tests.BanobrasIntegration {
 
     [Fact]
     public async Task Should_Get_AccountingTransacctions_Api() {
-      var services = new SicApiService();
+      SicApiClient _apiClient = _apiClient = new SicApiClient();
 
-      AccountingEntriesQuery body = new AccountingEntriesQuery {
-        CreditId = 13471,
-        QueryDate = Convert.ToDateTime("2017-12-31")
+      var body = new MovtosEncabezadosDto {
+        idCredito = 9564,
+        fecConsulta = "20110531"
       };
 
-
-      FixedList<AccountingEntriesDto> sut = await services.GetMovements(body);
+      FixedList<MovtosDetalleDto> sut = await _apiClient.TryGetMovtosDetalle(body);
 
       Assert.NotNull(sut);
     }

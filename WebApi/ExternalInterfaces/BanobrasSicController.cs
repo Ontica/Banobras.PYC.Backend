@@ -14,9 +14,6 @@ using Empiria.WebApi;
 
 using Empiria.Financial.Adapters;
 
-using Empiria.BanobrasIntegration.Sic.Adapters;
-using System.Threading.Tasks;
-
 namespace Empiria.BanobrasIntegration.Sic.WebApi {
 
   /// <summary>Web API for Sic System integration.</summary>
@@ -36,18 +33,6 @@ namespace Empiria.BanobrasIntegration.Sic.WebApi {
 
 
     }  // SicServices
-
-    [HttpPost]
-    [Route("v2/pyc/integration/sic/accounting-entries")]
-    public async Task<CollectionModel> GetAccountingEntriesByConcept([FromBody] AccountingEntriesQuery body) {
-
-      var services = new SicApiService();
-
-      FixedList<AccountingEntriesDto> accountEntries = await services.GetMovements(body);
-     
-      return new CollectionModel(base.Request, accountEntries);
-
-    }
 
 
     #endregion Web Apis

@@ -17,6 +17,7 @@ using Empiria.Financial.Adapters;
 
 using Empiria.CashFlow.Explorer.Adapters;
 using Empiria.CashFlow.Explorer.UseCases;
+using System.Threading.Tasks;
 
 namespace Empiria.Banobras.Reporting.WebApi {
 
@@ -42,12 +43,12 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v1/financial-management/search-services/CreditEntries")]
-    public SingleObjectModel SearchExternalCreditEntries([FromBody] RecordsSearchQuery query) {
+    public async Task<SingleObjectModel> SearchExternalCreditEntries([FromBody] RecordsSearchQuery query) {
 
       query.QueryType = RecordSearchQueryType.CreditEntries;
 
       using (var services = CashFlowSearchServices.ServiceInteractor()) {
-        DynamicDto<ICreditEntryData> entries = services.SearchExternalCreditEntries(query);
+        DynamicDto<ICreditEntryData> entries = await services.SearchExternalCreditEntries(query);
 
         return new SingleObjectModel(base.Request, entries);
       }

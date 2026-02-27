@@ -44,9 +44,12 @@ namespace Empiria.BanobrasIntegration.Sic {
 
       jsonString = jsonString.Trim('"');
 
-      if (!jsonString.Trim().StartsWith("FECHA"))
+      if (!jsonString.Trim().StartsWith("FECHA")) {
         return JsonConvert.DeserializeObject<FixedList<MovtosDetalleDto>>(jsonString);
-      else return new FixedList<MovtosDetalleDto>();
+      } else {
+        return new FixedList<MovtosDetalleDto>();
+      }
+
     }
 
     #endregion Methods

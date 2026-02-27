@@ -10,39 +10,33 @@
 
 namespace Empiria.BanobrasIntegration.Sic.Adapters {
 
-    public class MovtosEncabezadosDto
-    {
+  public class MovtosEncabezadosDto {
 
-        public int idCredito
-        {
-            get; set;
-        }
+    public int idCredito {
+      get; set;
+    }
 
-        public string fecConsulta {
-            get; set;
-        }
+    public string fecConsulta {
+      get; set;
+    }
 
-    } // class MovtosEncabezadosDto
+  } // class MovtosEncabezadosDto
 
 
-    public class MovtosDetalleDto
-    {
+  public class MovtosDetalleDto {
 
-        public string FECHA
-        {
-            get; set;
-        }
+    public string Fecha {
+      get; set;
+    }
 
-        public string CONCEPTO
-        {
-            get; set;
-        }
+    public string Concepto {
+      get; set;
+    }
 
-        public decimal IMPORTE
-        {
-            get; set;
-        }
+    public decimal Importe {
+      get; set;
+    }
 
-    } // class MovtosDetalleDto
+  } // class MovtosDetalleDto
 
 } // namespace Empiria.BanobrasIntegration.Sic.Adapters

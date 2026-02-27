@@ -9,20 +9,27 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
-
-using Empiria.Financial.Adapters;
-
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Empiria.BanobrasIntegration.Sic.Adapters;
 using Empiria.BanobrasIntegration.Sic.Data;
+using Empiria.Financial.Adapters;
 
 namespace Empiria.BanobrasIntegration.Sic {
 
   /// <summary>Implements ICreditAccountService interface using Banobras SIC System services.</summary>
   public class SicServices : ICreditAccountService {
 
+    #region Fields
+
+    private readonly SicApiClient _apiClient;
+
+    #endregion Fields
+
     #region Constructors and parsers
 
     public SicServices() {
+      _apiClient = new SicApiClient();
       // no-op
     }
 
@@ -30,7 +37,7 @@ namespace Empiria.BanobrasIntegration.Sic {
 
     #region Methods
 
-    public FixedList<ICreditEntryData> GetCreditsEntries(FixedList<string> creditIDs,
+    public async Task<FixedList<ICreditEntryData>> GetCreditsEntries(FixedList<string> creditIDs,
                                                          DateTime fromDate, DateTime toDate) {
       Assertion.Require(creditIDs, nameof(creditIDs));
 
@@ -41,8 +48,7 @@ namespace Empiria.BanobrasIntegration.Sic {
                            .ToFixedList()
                            .FindAll(x => EmpiriaString.IsInteger(x));
 
-      FixedList<SicCreditEntry> entries = SicCreditDataService.GetCreditEntries(creditIDs,
-                                                                                fromDate, toDate);
+      FixedList<SicCreditEntry> entries = await GetCreditsEntries(creditIDs, toDate);
 
       return SicMapper.MapToCreditEntries(entries)
                       .Select(x => (ICreditEntryData) x)
@@ -73,8 +79,42 @@ namespace Empiria.BanobrasIntegration.Sic {
       return SicMapper.MapToCredit(credit);
     }
 
-
     #endregion Methods
+
+
+    #region Helpers 
+
+    private async Task<FixedList<SicCreditEntry>> GetCreditsEntries(FixedList<string> creditIDs, DateTime toDate) {
+      List<SicCreditEntry> sicCredits = new List<SicCreditEntry>();
+
+      foreach (var credit in creditIDs) {
+        var sicCreditEntries = await GetCreditEntries(Convert.ToInt32(credit), toDate);
+        sicCredits.AddRange(sicCreditEntries);
+      }
+
+      return sicCredits.ToFixedList();
+    }
+
+
+    private async Task<List<SicCreditEntry>> GetCreditEntries(int creditId, DateTime toDate) {
+      List<SicCreditEntry> sicCreditEntries = new List<SicCreditEntry>();
+
+      var query = new MovtosEncabezadosDto {
+        idCredito = creditId,
+        fecConsulta = toDate.Year.ToString() + toDate.Month.ToString() + toDate.Day.ToString(),
+      };
+
+      FixedList<MovtosDetalleDto> movimientos = await _apiClient.TryGetMovtosDetalle(query);
+
+      foreach (var movimiento in movimientos) {
+        sicCreditEntries.Add(SicCreditEntry.MapToSicCreditEntry(movimiento, creditId));
+      }
+
+      return sicCreditEntries;
+      ;
+    }
+
+    #endregion Helpers
 
   } // class SicServices
 

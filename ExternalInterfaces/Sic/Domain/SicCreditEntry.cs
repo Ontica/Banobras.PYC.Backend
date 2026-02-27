@@ -9,45 +9,52 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
+using Empiria.BanobrasIntegration.Sic.Adapters;
 
 namespace Empiria.BanobrasIntegration.Sic {
 
   /// <summary>Holds information about a Banobras SIC credit entry.</summary>
   public class SicCreditEntry {
 
-    [DataField("NUMERO")]
     public int NoCredito {
       get; private set;
     }
 
 
-    [DataField("AUXILIAR")]
     public string Auxiliar {
       get; private set;
-    }
+    } = string.Empty;
 
 
-    [DataField("FEC_PROCESO")]
     public DateTime FechaProceso {
       get; private set;
     }
 
 
-    [DataField("NUM_CONCEPTO")]
     public string NumConcepto {
       get; private set;
-    }
+    } = String.Empty;
 
 
-    [DataField("CONCEPTO")]
     public string NombreConcepto {
       get; private set;
     }
 
 
-    [DataField("IMPORTE", ConvertFrom = typeof(decimal))]
+    //[DataField("IMPORTE", ConvertFrom = typeof(decimal))]
     public decimal Importe {
       get; private set;
+    }
+
+    static internal SicCreditEntry MapToSicCreditEntry(MovtosDetalleDto movimiento, int idCredito) {
+
+      return new SicCreditEntry {
+        NoCredito = idCredito,
+        FechaProceso = Convert.ToDateTime(movimiento.Fecha),
+        NombreConcepto = movimiento.Concepto,
+        Importe = movimiento.Importe,
+      };
+
     }
 
   } // class SicCreditEntry
