@@ -27,17 +27,21 @@ namespace Empiria.BanobrasIntegration.Sicofin.WebApi {
 
       string message = "";
 
-      using (var appServices = BudgetStatusAppServices.UseCaseInteractor()) {
+      //using (var appServices = BudgetStatusAppServices.UseCaseInteractor()) {
 
-        int logCount = appServices.ExecuteLog();
+      //  int logCount = appServices.ExecuteLog();
 
-        message = $"El sistema encontró {logCount} transacciones por revisar.";
-      }
+      //  message = $"El sistema encontró {logCount} transacciones por revisar.";
+      //}
 
 
       using (var appServices = BudgetExerciseAppServices.UseCaseInteractor()) {
 
-        int exercisedCount = 0; // appServices.ExerciseBudget();
+        int cleanCount = appServices.CleanBudget();
+
+        message += $"Se limpiaron {cleanCount} transacciones de compromiso prespuestal. ";
+
+        int exercisedCount = appServices.ExerciseBudget();
 
         message += $"Se generaron {exercisedCount} transacciones de ejercicio .";
 

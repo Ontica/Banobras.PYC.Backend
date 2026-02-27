@@ -37,8 +37,85 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Application services
 
-    public int CleanBudgetCommits() {
+    public int CleanBudget() {
 
+      CleanBudgetCommitsDates();
+
+      CleanBudgetApprovePaymentDates();
+
+      int counter = CleanBudgetCommits();
+
+      counter += CleanBudgetApprovePayments();
+
+      return counter;
+    }
+
+
+    private int CleanBudgetApprovePayments() {
+      int counter = 0;
+
+      FixedList<BudgetTransaction> paymentTxns = BudgetStatusAppServices.BudgetPaymentTxnForAdjustment();
+
+      var cleaner = new BudgetTransactionCleaner();
+
+      foreach (var txn in paymentTxns) {
+
+        var commitTxns = BudgetTransaction.GetRelatedTo(txn)
+                                          .FindAll(x => x.OperationType == BudgetOperationType.Commit && x.GetEntity().Id == txn.GetEntity().Id);
+
+        if (commitTxns.Count != 1) {
+          continue;
+        }
+
+        var commitEntries = commitTxns[0].Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.Commited);
+
+        var entries = txn.Entries.FindAll(x => x.Withdrawal > 0 && x.BalanceColumn == BalanceColumn.Commited &&
+                                               commitEntries.Contains(y => y.Month != x.Month));
+
+        if (entries.Count == 0) {
+          continue;
+        }
+
+        bool changed = false;
+        foreach (var entry in entries) {
+          var commitEntry = commitEntries.Find(x => x.EntityId == entry.EntityId && x.BudgetAccount.Id == entry.BudgetAccount.Id &&
+                                                    x.Amount == entry.Amount && x.Month != entry.Month);
+
+          if (commitEntry == null) {
+            continue;
+          }
+
+          entry.SetDate(commitEntries[0].Date);
+          entry.Save();
+          changed = true;
+        }
+
+        if (changed) {
+          EmpiriaLog.Info($"Created {entries.Count} date adjustment entries for payment transaction {txn.TransactionNo} - {txn.Id}.");
+        }
+
+        //var commitTxns = BudgetTransaction.GetRelatedTo(txn)
+        //                                  .FindAll(x => x.OperationType == BudgetOperationType.Commit);
+
+        //entries = cleaner.CreateAdjustMonthsEntries(txn, commitTxns.SelectFlat(x => x.Entries));
+
+        //if (entries.Count == 0) {
+        //  continue;
+        //}
+
+        //foreach (var entry in entries) {
+        //  entry.Save();
+        //}
+
+        //EmpiriaLog.Info($"Created {entries.Count} adjustment entries for payment transaction {txn.TransactionNo} - {txn.Id}.");
+
+        counter++;
+      }
+
+      return counter;
+    }
+
+    private int CleanBudgetCommits() {
       int counter = 0;
 
       FixedList<BudgetTransaction> commitTxns = BudgetStatusAppServices.BudgetCommitTxnForAdjustment();
@@ -67,6 +144,65 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       }
 
       return counter;
+    }
+
+
+    private void CleanBudgetApprovePaymentDates() {
+
+      FixedList<BudgetTransaction> paymentTxns = BudgetTransaction.GetFullList<BudgetTransaction>()
+                                                                  .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment &&
+                                                                                (x.InProcess || x.IsClosed));
+
+      foreach (var txn in paymentTxns) {
+
+        var applicationDate = txn.ApplicationDate;
+
+        var toCleanEntries = txn.Entries.FindAll(x => x.Withdrawal > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.Commited &&
+                                                      x.Date != applicationDate && x.Month == applicationDate.Month);
+
+        foreach (var entry in toCleanEntries) {
+          entry.SetDate(applicationDate);
+          entry.Save();
+        }
+
+        toCleanEntries = txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.ToPay &&
+                                                  x.Date != applicationDate && x.Month == applicationDate.Month);
+
+        foreach (var entry in toCleanEntries) {
+          entry.SetDate(applicationDate);
+          entry.Save();
+        }
+
+        toCleanEntries = txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.ToPay &&
+                                                  x.Month != applicationDate.Month);
+
+        if (toCleanEntries.Count > 0) {
+          EmpiriaLog.Info($"La transaction {txn.TransactionNo} {txn.Id} tiene mal el mes de aprobación .");
+        }
+
+      }
+
+    }
+
+    private void CleanBudgetCommitsDates() {
+
+      FixedList<BudgetTransaction> commitTxns = BudgetTransaction.GetFullList<BudgetTransaction>()
+                                                                 .FindAll(x => x.OperationType == BudgetOperationType.Commit &&
+                                                                              (x.InProcess || x.IsClosed));
+
+      foreach (var txn in commitTxns) {
+
+        var applicationDate = txn.ApplicationDate;
+
+        var toCleanEntries = txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.Commited &&
+                                                      x.Date != applicationDate && x.Month == applicationDate.Month);
+
+        foreach (var entry in toCleanEntries) {
+          entry.SetDate(applicationDate);
+          entry.Save();
+        }
+
+      }
     }
 
 
