@@ -40,6 +40,8 @@ namespace Empiria.BanobrasIntegration.Sic {
     public async Task<FixedList<ICreditEntryData>> GetCreditsEntries(FixedList<string> creditIDs,
                                                          DateTime fromDate, DateTime toDate) {
       Assertion.Require(creditIDs, nameof(creditIDs));
+      Assertion.Require(fromDate, nameof(fromDate));
+      Assertion.Require(toDate, nameof(toDate));
 
       fromDate = ExecutionServer.DateMinValue;
       toDate = ExecutionServer.DateMaxValue;
