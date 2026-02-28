@@ -41,13 +41,17 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     public int CleanBudget() {
 
+      int counter = SetPayables();
+
       CleanBudgetCommitsDates();
 
       CleanBudgetApprovePaymentDatesBeforeCommits();
 
-      int counter = CleanBudgetCommits();
+      counter += CleanBudgetCommits();
 
       counter += CleanBudgetApprovePaymentsDatesAfterCommits();
+
+      // counter += CleanBudgetApprovePayments();
 
       return counter;
     }
@@ -275,7 +279,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       var budgetAppServices = BudgetExecutionAppServices.UseCaseInteractor();
 
-      FixedList<PaymentOrder> paymentOrders = GetPayedPaymentOrders();
+      FixedList<PaymentOrder> paymentOrders = GetPaymentOrders(false);
 
       int counter = 0;
 
@@ -293,10 +297,10 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
         _ = budgetAppServices.ExerciseBudget(paymentOrder, approvePaymentTxn, exerciseDate);
 
-        UpdatePaymentApprovalBudgetTransaction(approvePaymentTxn, paymentOrder);
-
         counter++;
       }
+
+      EmpiriaLog.Info($"Se generaron automáticamente {counter} transacciones del ejercicio presupuestal.");
 
       return counter;
     }
@@ -305,13 +309,62 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Helpers
 
-    static private FixedList<PaymentOrder> GetPayedPaymentOrders() {
+    static private FixedList<PaymentOrder> GetPaymentOrders(bool includeUnpaid) {
       return PaymentOrder.GetList<PaymentOrder>()
-                         .FindAll(x => x.Status == PaymentOrderStatus.Payed &&
-                                       x.PayableEntity.Budget.UID != BudgetType.None.UID)
+                         .FindAll(x => (x.Status == PaymentOrderStatus.Payed || (includeUnpaid && !x.IsEmptyInstance)) &&
+                                        x.PayableEntity.Budget.UID != BudgetType.None.UID)
                          .ToFixedList()
                          .Sort((x, y) => x.LastPaymentInstruction.LastUpdateTime.CompareTo(y.LastPaymentInstruction.LastUpdateTime))
                          .Reverse();
+    }
+
+
+    static private int SetPayables() {
+
+      FixedList<PaymentOrder> paymentOrders = GetPaymentOrders(true);
+
+      int counter = 0;
+
+      foreach (var paymentOrder in paymentOrders) {
+
+        Order order = (Order) paymentOrder.PayableEntity;
+
+        var txns = BudgetTransaction.GetFor(order)
+                                    .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment);
+
+        if (txns.Count == 0) {
+
+          EmpiriaLog.Info($"No approve payment transaction found for order for " +
+                          $"payment order {paymentOrder.PaymentOrderNo} linked to {order.OrderNo}.");
+
+          continue;
+        }
+
+        foreach (var txn in txns) {
+          if (txn.GetEntity().Equals(order)) {
+
+            txn.SetPayable(paymentOrder);
+
+            var sql = $"UPDATE FMS_BUDGET_TRANSACTIONS " +
+                      $"SET BDG_TXN_PAYABLE_ID = {paymentOrder.Id} " +
+                      $"WHERE BDG_TXN_ID = {txn.Id}";
+
+            var op = DataOperation.Parse(sql);
+
+            DataWriter.Execute(op);
+
+            EmpiriaLog.Info($"Payable set for {txn.TransactionNo} with {paymentOrder.PaymentOrderNo}.");
+
+            counter++;
+
+          } else {
+            EmpiriaLog.Info($"The entity of the transaction {txn.TransactionNo} " +
+                            $"linked to order {order.OrderNo} is not the order itself.");
+          }
+        }
+      }
+
+      return counter;
     }
 
 
@@ -325,21 +378,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       return txns.FindLast(x => x.OperationType == BudgetOperationType.ApprovePayment &&
                                 x.Status == TransactionStatus.Closed);
 
-    }
-
-
-    static private void UpdatePaymentApprovalBudgetTransaction(BudgetTransaction paymentApproval,
-                                                               PaymentOrder paymentOrder) {
-
-      paymentApproval.SetPayable(paymentOrder);
-
-      var sql = $"UPDATE FMS_BUDGET_TRANSACTIONS " +
-                $"SET BDG_TXN_PAYABLE_ID = {paymentOrder.Id} " +
-                $"WHERE BDG_TXN_ID = {paymentApproval.Id}";
-
-      var op = DataOperation.Parse(sql);
-
-      DataWriter.Execute(op);
     }
 
     #endregion Helpers
