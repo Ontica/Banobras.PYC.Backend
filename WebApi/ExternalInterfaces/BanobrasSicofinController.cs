@@ -21,29 +21,34 @@ namespace Empiria.BanobrasIntegration.Sicofin.WebApi {
 
     #region Web Apis
 
+    [HttpGet]
+    [Route("v2/pyc/analyze-budget-data")]
+    public SingleObjectModel AnalyzeBudgetData() {
+
+      using (var appServices = BudgetStatusAppServices.UseCaseInteractor()) {
+
+        int logCount = appServices.ExecuteAnalysis();
+
+        return new SingleObjectModel(base.Request, new {
+          Message = $"El sistema encontró {logCount} transacciones con uno o más datos por actualizar."
+        });
+      }
+    }
+
+
     [HttpPost]
     [Route("v2/pyc/integration/sicofin/vouchers/generate")]
     public SingleObjectModel GenerateSicofinVouchers() {
-
-      string message = "";
-
-      //using (var appServices = BudgetStatusAppServices.UseCaseInteractor()) {
-
-      //  int logCount = appServices.ExecuteLog();
-
-      //  message = $"El sistema encontró {logCount} transacciones por revisar.";
-      //}
-
 
       using (var appServices = BudgetExerciseAppServices.UseCaseInteractor()) {
 
         int cleanCount = appServices.CleanBudget();
 
-        message += $"Se limpiaron {cleanCount} transacciones de compromiso prespuestal. ";
+        string message = $"Se hicieron {cleanCount} ajustes a transacciones prespuestales. ";
 
         int exercisedCount = appServices.ExerciseBudget();
 
-        message += $"Se generaron {exercisedCount} transacciones de ejercicio .";
+        message += $"Se generaron {exercisedCount} transacciones de ejercicio presupuestal. ";
 
         return new SingleObjectModel(base.Request, new {
           Message = message + $"No se generaron pólizas contables."

@@ -37,7 +37,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Application services
 
-    public int ExecuteLog() {
+    public int ExecuteAnalysis() {
 
       int counter = LogBudgetCommitForAdjustmentStatus();
 
