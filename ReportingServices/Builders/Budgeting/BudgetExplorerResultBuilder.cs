@@ -78,7 +78,7 @@ namespace Empiria.Budgeting.Reporting {
         _excelFile.SetCell($"I{i}", entry.Requested);
         _excelFile.SetCell($"J{i}", entry.Commited);
         _excelFile.SetCell($"K{i}", entry.ToPay);
-        _excelFile.SetCell($"L{i}", entry.Excercised);
+        _excelFile.SetCell($"L{i}", entry.Exercised);
         _excelFile.SetCell($"M{i}", entry.ToExercise);
         _excelFile.SetCell($"N{i}", entry.Available);
 

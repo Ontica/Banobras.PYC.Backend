@@ -72,7 +72,7 @@ namespace Empiria.Budgeting.Reporting {
 
       var entriesHtml = new StringBuilder();
 
-      foreach (var budgetEntry in _txn.Entries.FindAll(x => x.Deposit > 0)) {
+      foreach (var budgetEntry in _txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment)) {
         var entryHtml = new StringBuilder(TEMPLATE);
 
         entryHtml.Replace("{{BUDGET_ACCOUNT_CODE}}", budgetEntry.BudgetAccount.Code);
