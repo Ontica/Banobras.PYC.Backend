@@ -13,6 +13,8 @@ using Empiria.Services;
 using Empiria.StateEnums;
 
 using Empiria.Orders;
+using Empiria.Orders.Contracts;
+
 using Empiria.Payments;
 
 using Empiria.Budgeting;
@@ -41,17 +43,17 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       CleanBudgetCommitsDates();
 
-      CleanBudgetApprovePaymentDates();
+      CleanBudgetApprovePaymentDatesBeforeCommits();
 
       int counter = CleanBudgetCommits();
 
-      counter += CleanBudgetApprovePayments();
+      counter += CleanBudgetApprovePaymentsDatesAfterCommits();
 
       return counter;
     }
 
 
-    private int CleanBudgetApprovePayments() {
+    private int CleanBudgetApprovePaymentsDatesAfterCommits() {
       int counter = 0;
 
       FixedList<BudgetTransaction> paymentTxns = BudgetStatusAppServices.BudgetPaymentTxnForAdjustment();
@@ -61,9 +63,35 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       foreach (var txn in paymentTxns) {
 
         var commitTxns = BudgetTransaction.GetRelatedTo(txn)
-                                          .FindAll(x => x.OperationType == BudgetOperationType.Commit && x.GetEntity().Id == txn.GetEntity().Id);
+                                          .FindAll(x => x.IsClosed && x.OperationType == BudgetOperationType.Commit &&
+                                                         x.GetEntity().Id == txn.GetEntity().Id);
 
-        if (commitTxns.Count != 1) {
+        if (commitTxns.Count > 1) {
+
+          EmpiriaLog.Info($"Expected zero or one commit transactions for payment transaction {txn.TransactionNo} - {txn.Id}, but found {commitTxns.Count}.");
+          continue;
+
+        } else if (commitTxns.Count == 0 && txn.GetEntity() is ContractOrder contractOrder) {
+
+          commitTxns = BudgetTransaction.GetRelatedTo(txn)
+                                        .FindAll(x => x.IsClosed && x.OperationType == BudgetOperationType.Commit &&
+                                                      x.GetEntity().Id == contractOrder.Contract.Id);
+
+          if (commitTxns.Count != 1) {
+
+            EmpiriaLog.Info($"Expected one commit transaction for contract linked payment transaction {txn.TransactionNo} - {txn.Id}, but found {commitTxns.Count}.");
+            continue;
+
+          } else {
+
+            int cleaned = CleanBudgetApprovePaymentsDatesForContractOrders(txn, commitTxns[0]);
+            counter += cleaned;
+            continue;
+
+          }
+
+        } else if (commitTxns.Count == 0 && !(txn.GetEntity() is ContractOrder)) {
+          EmpiriaLog.Info($"No commit transaction found for not contract linked payment transaction {txn.TransactionNo} - {txn.Id}.");
           continue;
         }
 
@@ -77,6 +105,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         }
 
         bool changed = false;
+
         foreach (var entry in entries) {
           var commitEntry = commitEntries.Find(x => x.EntityId == entry.EntityId && x.BudgetAccount.Id == entry.BudgetAccount.Id &&
                                                     x.Amount == entry.Amount && x.Month != entry.Month);
@@ -115,6 +144,41 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       return counter;
     }
 
+
+    private int CleanBudgetApprovePaymentsDatesForContractOrders(BudgetTransaction txn, BudgetTransaction contractCommit) {
+
+      var commitEntries = contractCommit.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment &&
+                                                              x.BalanceColumn == BalanceColumn.Commited);
+
+      var paymentEntries = txn.Entries.FindAll(x => x.Withdrawal > 0 && x.BalanceColumn == BalanceColumn.Commited &&
+                                             commitEntries.Contains(y => y.Month != x.Month));
+
+      bool changed = false;
+
+      foreach (var paymentEntry in paymentEntries) {
+        var contractItem = (ContractItem) ContractOrderItem.Parse(paymentEntry.EntityId).ContractItem;
+
+        var commitEntry = commitEntries.Find(x => x.EntityId == contractItem.Id && paymentEntry.ControlNo.StartsWith(x.ControlNo) &&
+                                                  x.BudgetAccount.Id == paymentEntry.BudgetAccount.Id &&
+                                                  x.Month != paymentEntry.Month);
+        if (commitEntry == null) {
+          continue;
+        }
+
+        paymentEntry.SetDate(commitEntry.Date);
+        paymentEntry.Save();
+        changed = true;
+      }
+
+      if (changed) {
+        EmpiriaLog.Info($"Created {paymentEntries.Count} date adjustment entries for contract order payment transaction" +
+                        $" {txn.TransactionNo} - {txn.Id}. - contract txn {contractCommit.TransactionNo}.");
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+
     private int CleanBudgetCommits() {
       int counter = 0;
 
@@ -147,7 +211,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     }
 
 
-    private void CleanBudgetApprovePaymentDates() {
+    private void CleanBudgetApprovePaymentDatesBeforeCommits() {
 
       FixedList<BudgetTransaction> paymentTxns = BudgetTransaction.GetFullList<BudgetTransaction>()
                                                                   .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment &&
@@ -194,7 +258,8 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
         var applicationDate = txn.ApplicationDate;
 
-        var toCleanEntries = txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.Commited &&
+        var toCleanEntries = txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment &&
+                                                      x.BalanceColumn == BalanceColumn.Commited &&
                                                       x.Date != applicationDate && x.Month == applicationDate.Month);
 
         foreach (var entry in toCleanEntries) {
@@ -215,10 +280,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       int counter = 0;
 
       foreach (var paymentOrder in paymentOrders) {
-
-        if (counter >= CommonData.BATCH_SIZE) {
-          break;
-        }
 
         Order order = (Order) paymentOrder.PayableEntity;
 
