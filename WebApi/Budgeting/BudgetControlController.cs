@@ -10,16 +10,12 @@
 
 using System;
 using System.Web.Http;
-
-using Empiria.WebApi;
-
 using Empiria.Budgeting;
-
 using Empiria.Budgeting.Explorer;
 using Empiria.Budgeting.Explorer.UseCases;
-
 using Empiria.Budgeting.Transactions.Adapters;
 using Empiria.Budgeting.Transactions.UseCases;
+using Empiria.WebApi;
 
 namespace Empiria.Banobras.Budgeting.WebApi {
 
@@ -64,6 +60,20 @@ namespace Empiria.Banobras.Budgeting.WebApi {
     #region Command Web Apis
 
     [HttpPost]
+    [Route("v2/budgeting/budget-control/{budgetUID:guid}/months/{month:int}/close")]
+    public SingleObjectModel CloseMonth([FromUri] int budgetUID, [FromUri] int month) {
+
+      var budget = Budget.Parse(budgetUID);
+
+      var result = new {
+        Message = $"Se cerró {EmpiriaString.MonthName(month)} para el presupuesto {budget.Name}."
+      };
+
+      return new SingleObjectModel(base.Request, result);
+    }
+
+
+    [HttpPost]
     [Route("v2/budgeting/planning/{budgetUID:guid}/close-transactions")]
     public SingleObjectModel ClosePlanningTransactions([FromUri] string budgetUID) {
 
@@ -79,6 +89,21 @@ namespace Empiria.Banobras.Budgeting.WebApi {
 
         return new SingleObjectModel(base.Request, result);
       }
+    }
+
+
+    [HttpPost]
+    [Route("v2/budgeting/budget-control/{budgetUID:guid}/months/{month:int}/generate-balance-transfers")]
+    public SingleObjectModel GenerateBalanceTransferTransactions([FromUri] int budgetUID, [FromUri] int month) {
+
+      var budget = Budget.Parse(budgetUID);
+
+      var result = new {
+        Message = $"Se generaron {0} transacciones presupuestales de cierre mensual correspondientes " +
+                  $"al mes de {EmpiriaString.MonthName(month)} para el presupuesto {budget.Name}."
+      };
+
+      return new SingleObjectModel(base.Request, result);
     }
 
 
@@ -99,6 +124,21 @@ namespace Empiria.Banobras.Budgeting.WebApi {
         return new SingleObjectModel(base.Request, result);
       }
     }
+
+
+    [HttpPost]
+    [Route("v2/budgeting/budget-control/{budgetUID:guid}/months/{month:int}/open")]
+    public SingleObjectModel OpenMonth([FromUri] int budgetUID, [FromUri] int month) {
+
+      var budget = Budget.Parse(budgetUID);
+
+      var result = new {
+        Message = $"Se abrió {EmpiriaString.MonthName(month)} para el presupuesto {budget.Name}."
+      };
+
+      return new SingleObjectModel(base.Request, result);
+    }
+
 
     #endregion Command Web Apis
 
