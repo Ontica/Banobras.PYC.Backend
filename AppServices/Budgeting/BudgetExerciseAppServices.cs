@@ -8,6 +8,8 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
+
 using Empiria.Data;
 using Empiria.Services;
 using Empiria.StateEnums;
@@ -51,7 +53,62 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       counter += CleanBudgetApprovePaymentsDatesAfterCommits();
 
-      // counter += CleanBudgetApprovePayments();
+      counter += CleanBudgetApprovePayments();
+
+      return counter;
+    }
+
+
+    private int CleanBudgetApprovePayments() {
+      int counter = 0;
+
+      FixedList<BudgetTransaction> paymentTxns = BudgetTransaction.GetFullList<BudgetTransaction>()
+                                                                  .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment &&
+                                                                                (x.InProcess || x.IsClosed) &&
+                                                                                !x.Entries.Contains(y => y.IsAdjustment));
+
+      var cleaner = new BudgetTransactionCleaner();
+
+      foreach (var paymentTxn in paymentTxns) {
+
+        Order commitOrder = (Order) paymentTxn.GetEntity();
+
+        if (commitOrder is ContractOrder) {
+          commitOrder = ((ContractOrder) commitOrder).Contract;
+        }
+
+        var commitTxns = BudgetTransaction.GetRelatedTo(paymentTxn)
+                                          .FindAll(x => x.OperationType == BudgetOperationType.Commit &&
+                                                        (x.GetEntity().Equals(commitOrder) ||
+                                                         x.GetEntity().Equals(paymentTxn.GetEntity())));
+
+        if (commitTxns.Count != 1) {
+          EmpiriaLog.Info($"Payment transaction {paymentTxn.TransactionNo} - {paymentTxn.Id} found " +
+                          $"with {commitTxns.Count} commit transactions.");
+          continue;
+        }
+
+        try {
+          FixedList<BudgetEntry> entries = cleaner.CreateAdjustMonthsEntries(paymentTxn, commitTxns.SelectFlat(x => x.Entries));
+
+          if (entries.Count == 0) {
+            continue;
+          }
+
+          foreach (var entry in entries) {
+            entry.Save();
+          }
+
+          EmpiriaLog.Info($"Created {entries.Count} adjustment entries for payment transaction {paymentTxn.TransactionNo} - {paymentTxn.Id}.");
+
+        } catch (Exception e) {
+          EmpiriaLog.Error($"Error creating adjustment entries for payment transaction " +
+                           $"{paymentTxn.TransactionNo} - {paymentTxn.Id}: {e.Message}");
+          continue;
+        }
+
+        counter++;
+      }
 
       return counter;
     }
@@ -126,21 +183,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         if (changed) {
           EmpiriaLog.Info($"Created {entries.Count} date adjustment entries for payment transaction {txn.TransactionNo} - {txn.Id}.");
         }
-
-        //var commitTxns = BudgetTransaction.GetRelatedTo(txn)
-        //                                  .FindAll(x => x.OperationType == BudgetOperationType.Commit);
-
-        //entries = cleaner.CreateAdjustMonthsEntries(txn, commitTxns.SelectFlat(x => x.Entries));
-
-        //if (entries.Count == 0) {
-        //  continue;
-        //}
-
-        //foreach (var entry in entries) {
-        //  entry.Save();
-        //}
-
-        //EmpiriaLog.Info($"Created {entries.Count} adjustment entries for payment transaction {txn.TransactionNo} - {txn.Id}.");
 
         counter++;
       }
@@ -312,7 +354,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     static private FixedList<PaymentOrder> GetPaymentOrders(bool includeUnpaid) {
       return PaymentOrder.GetList<PaymentOrder>()
                          .FindAll(x => (x.Status == PaymentOrderStatus.Payed || (includeUnpaid && !x.IsEmptyInstance)) &&
-                                        x.PayableEntity.Budget.UID != BudgetType.None.UID)
+                                        ((Budget) x.PayableEntity.Budget).BudgetType.UID != BudgetType.None.UID)
                          .ToFixedList()
                          .Sort((x, y) => x.LastPaymentInstruction.LastUpdateTime.CompareTo(y.LastPaymentInstruction.LastUpdateTime))
                          .Reverse();
@@ -332,15 +374,20 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         var txns = BudgetTransaction.GetFor(order)
                                     .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment);
 
-        if (txns.Count == 0) {
+        if (txns.Count == 0 && (paymentOrder.HasActivePaymentInstruction || paymentOrder.Payed)) {
 
-          EmpiriaLog.Info($"No approve payment transaction found for order for " +
+          EmpiriaLog.Info($"No approve payment transaction found for " +
                           $"payment order {paymentOrder.PaymentOrderNo} linked to {order.OrderNo}.");
 
           continue;
         }
 
         foreach (var txn in txns) {
+
+          if (txn.PayableId != -1) {
+            continue;
+          }
+
           if (txn.GetEntity().Equals(order)) {
 
             txn.SetPayable(paymentOrder);
