@@ -80,6 +80,8 @@ namespace Empiria.Budgeting.Reporting {
           return ExportBudgetRequestToPdf(transaction);
 
         case BudgetOperationType.ApprovePayment:
+          return ExportBudgetPaymentAuthorizationVoucherToPdf(transaction);
+
         case BudgetOperationType.Exercise:
           return ExportBudgetRequestToPdf(transaction);
 
@@ -103,6 +105,17 @@ namespace Empiria.Budgeting.Reporting {
       ExcelFile excelFile = exporter.CreateExcelFile(budgetExplorerResult);
 
       return excelFile.ToFileDto();
+    }
+
+
+    private FileDto ExportBudgetPaymentAuthorizationVoucherToPdf(BudgetTransaction transaction) {
+      var templateUID = $"{GetType().Name}.BudgetPaymentAuthorizationToPdf";
+
+      var templateConfig = FileTemplateConfig.Parse(templateUID);
+
+      var builder = new BudgetPaymentAuthorizationVoucherBuilder(transaction, templateConfig);
+
+      return builder.CreatePdf("budgeting.transactions", transaction.TransactionNo);
     }
 
 
