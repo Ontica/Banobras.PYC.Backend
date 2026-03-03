@@ -15,6 +15,7 @@ using Empiria.DynamicData;
 using Empiria.Financial;
 
 using Empiria.Budgeting;
+using Empiria.Budgeting.Transactions;
 
 namespace Empiria.Payments.Reporting {
 
@@ -68,6 +69,14 @@ namespace Empiria.Payments.Reporting {
       get; internal set;
     }
 
+    public string BudgetProgram {
+      get; internal set;
+    }
+
+    public string ControlNo {
+      get; internal set;
+    }
+
     public decimal ConceptAmount {
       get; internal set;
     }
@@ -102,6 +111,8 @@ namespace Empiria.Payments.Reporting {
         new DataTableColumn("conceptCode", "Partida", "text") { TooltipField = "conceptName" },
         new DataTableColumn("conceptName", "Nombre partida", "text") { Size = "lg", Truncate = true },
         new DataTableColumn("conceptDescription", "Descripción", "text")  { Size = "lg", Truncate = true },
+        new DataTableColumn("budgetProgram", "Programa", "text-nowrap"),
+        new DataTableColumn("controlNo", "No Verificación", "text-nowrap"),
         new DataTableColumn("conceptAmount", "Importe partida", "decimal"),
       }.ToFixedList();
     }
@@ -127,6 +138,8 @@ namespace Empiria.Payments.Reporting {
     private PaymentConceptDto CreatePaymentConceptDto(PaymentOrder paymentOrder, IPayableEntityItem concept) {
       BudgetAccount account = (BudgetAccount) concept.BudgetAccount;
 
+      BudgetEntry budgetEntry = (BudgetEntry) concept.BudgetEntry;
+
       return new PaymentConceptDto {
         PaymentOrderUID = paymentOrder.UID,
         PaymentOrderNo = paymentOrder.PaymentOrderNo,
@@ -140,6 +153,8 @@ namespace Empiria.Payments.Reporting {
         ConceptDescription = concept.Description,
         OrgUnitCode = account.OrganizationalUnit.Code,
         OrgUnitName = account.OrganizationalUnit.Name,
+        BudgetProgram = budgetEntry.BudgetProgram.Code,
+        ControlNo = budgetEntry.ControlNo,
         ConceptAmount = concept.Subtotal
       };
     }
