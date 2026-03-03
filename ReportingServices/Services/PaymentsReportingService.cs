@@ -56,6 +56,19 @@ namespace Empiria.Payments.Reporting {
     }
 
 
+    public FileDto ExportPaymentConceptsToExcel(DateTime fromDate, DateTime toDate) {
+
+      var templateUID = $"{GetType().Name}.ExportPaymentConceptsToExcel";
+
+      var templateConfig = FileTemplateConfig.Parse(templateUID);
+
+      var exporter = new PaymentConceptsToExcelBuilder(templateConfig);
+
+      ExcelFile excelFile = exporter.CreateExcelFile(fromDate, toDate);
+
+      return excelFile.ToFileDto();
+    }
+
     public FileDto ExportPaymentOrderToPdf(PaymentOrder paymentOrder) {
       Assertion.Require(paymentOrder, nameof(paymentOrder));
 
