@@ -17,11 +17,12 @@ using Empiria.StateEnums;
 using Empiria.Billing;
 
 using Empiria.Orders;
+using Empiria.Orders.Contracts;
+
 using Empiria.Payments;
 
 using Empiria.Budgeting.Transactions;
 using Empiria.Financial;
-
 
 namespace Empiria.Budgeting.Reporting {
 
@@ -222,6 +223,7 @@ namespace Empiria.Budgeting.Reporting {
       }
 
       SetIf("{{CURRENCY_CODE}}", _budgetTxn.Currency.Equals(Currency.Default), string.Empty, _budgetTxn.Currency.ISOCode);
+      Set("{{EXCHANGE_RATE}}", _budgetTxn.ExchangeRate.ToString("C2"));
 
       BuildBudgetRequests();
 
@@ -310,7 +312,7 @@ namespace Empiria.Budgeting.Reporting {
 
       Set("{{PAYMENT.BUDGET_REQUESTS}}", string.Join(", ", bdgRequests));
 
-      var bdgCommits = BudgetTransaction.GetFor(_order)
+      var bdgCommits = BudgetTransaction.GetFor(_order is ContractOrder ? _order.Contract : _order)
                                         .FindAll(x => x.OperationType == BudgetOperationType.Commit && x.IsClosed)
                                         .Select(x => x.TransactionNo)
                                         .ToFixedList();
