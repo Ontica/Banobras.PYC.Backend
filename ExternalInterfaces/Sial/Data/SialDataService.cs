@@ -8,9 +8,8 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
 using Empiria.Data;
-using Empiria.HumanResources;
+
 using Empiria.StateEnums;
 
 namespace Empiria.BanobrasIntegration.Sial.Data {
@@ -19,6 +18,8 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
   static internal class SialDataService {
 
     static internal NominaEncabezado GetPayroll(int payrollUID) {
+
+      EnsurePayrollsStatusNotNull();
 
       var sql = "SELECT * FROM NOMINA_ENCABEZADOS " +
                 $"WHERE BGME_NUM_VOL = {payrollUID}";
@@ -43,6 +44,8 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
     static internal FixedList<NominaEncabezado> SearchPayrolls(string filter) {
       Assertion.Require(filter, nameof(filter));
+
+      EnsurePayrollsStatusNotNull();
 
       var sql = "SELECT * FROM NOMINA_ENCABEZADOS " +
           $"WHERE {filter} " +
@@ -107,6 +110,19 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
       return DataReader.GetPlainObjectFixedList<SialOrganizationUnitEmployeeEntry>(op);
     }
+
+
+    static private void EnsurePayrollsStatusNotNull() {
+
+      var sql = "UPDATE NOMINA_ENCABEZADOS " +
+               $"SET BGME_STATUS = 'P' " +
+               $"WHERE BGME_STATUS IS NULL";
+
+      var op = DataOperation.Parse(sql);
+
+      DataWriter.Execute(op);
+    }
+
   }  // class SialDataService
 
 }  // namespace Empiria.BanobrasIntegration.Sial.Data
