@@ -25,8 +25,8 @@ namespace Empiria.Banobras.Budgeting.WebApi {
     #region Query Web Apis
 
     [HttpGet]
-    [Route("v2/budgeting/planning/{budgetUID:guid}/control-table")]
-    public CollectionModel GetBudgetPlanningControlTable([FromUri] string budgetUID) {
+    [Route("v2/budgeting/budget-control/{budgetUID:guid}/months")]
+    public CollectionModel GetBudgetControlMonthsTable([FromUri] string budgetUID) {
 
       using (var usecases = BudgetExplorerUseCases.UseCaseInteractor()) {
 
@@ -51,7 +51,7 @@ namespace Empiria.Banobras.Budgeting.WebApi {
           }
         }).ToFixedList();
 
-        return new CollectionModel(base.Request, controlTable, "BudgetPlanningControlTable");
+        return new CollectionModel(base.Request, controlTable, "BudgetControlMonthsTable");
       }
     }
 
