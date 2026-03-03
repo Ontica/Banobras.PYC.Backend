@@ -79,12 +79,17 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
         var commitTxns = BudgetTransaction.GetRelatedTo(paymentTxn)
                                           .FindAll(x => x.OperationType == BudgetOperationType.Commit &&
-                                                        (x.GetEntity().Equals(commitOrder) ||
-                                                         x.GetEntity().Equals(paymentTxn.GetEntity())));
+                                                       (x.InProcess || x.IsClosed) &&
+                                                       (x.GetEntity().Equals(commitOrder) ||
+                                                        x.GetEntity().Equals(paymentTxn.GetEntity())));
 
-        if (commitTxns.Count != 1) {
+        if (commitTxns.Count > 1) {
           EmpiriaLog.Info($"Payment transaction {paymentTxn.TransactionNo} - {paymentTxn.Id} found " +
-                          $"with {commitTxns.Count} commit transactions.");
+                          $"with {commitTxns.Count} commit transactions. Commit order : {commitOrder.OrderNo}");
+
+        } else if (commitTxns.Count == 0) {
+          counter += UpdateWithdrawalColumns(paymentTxn, BalanceColumn.Commited, BalanceColumn.Requested);
+
           continue;
         }
 
@@ -112,7 +117,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       return counter;
     }
-
 
     private int CleanBudgetApprovePaymentsDatesAfterCommits() {
       int counter = 0;
@@ -197,7 +201,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                                                               x.BalanceColumn == BalanceColumn.Commited);
 
       var paymentEntries = txn.Entries.FindAll(x => x.Withdrawal > 0 && x.BalanceColumn == BalanceColumn.Commited &&
-                                             commitEntries.Contains(y => y.Month != x.Month));
+                                                    commitEntries.Contains(y => y.Month != x.Month));
 
       bool changed = false;
 
@@ -205,7 +209,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         var contractItem = (ContractItem) ContractOrderItem.Parse(paymentEntry.EntityId).ContractItem;
 
         var commitEntry = commitEntries.Find(x => x.EntityId == contractItem.Id && paymentEntry.ControlNo.StartsWith(x.ControlNo) &&
-                                                  x.BudgetAccount.Id == paymentEntry.BudgetAccount.Id &&
+                                                  x.BudgetAccount.StandardAccount.Id == paymentEntry.BudgetAccount.StandardAccount.Id &&
                                                   x.Month != paymentEntry.Month);
         if (commitEntry == null) {
           continue;
@@ -377,7 +381,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         if (txns.Count == 0 && (paymentOrder.HasActivePaymentInstruction || paymentOrder.Payed)) {
 
           EmpiriaLog.Info($"No approve payment transaction found for " +
-                          $"payment order {paymentOrder.PaymentOrderNo} linked to {order.OrderNo}.");
+                          $"payment order {paymentOrder.PaymentOrderNo} linked to {order.OrderNo}. PO Status {paymentOrder.Status}");
 
           continue;
         }
@@ -412,6 +416,24 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       }
 
       return counter;
+    }
+
+
+    private int UpdateWithdrawalColumns(BudgetTransaction txn, BalanceColumn fromColumn, BalanceColumn toColumn) {
+      var entries = txn.Entries.FindAll(x => x.Withdrawal > 0 && x.BalanceColumn == fromColumn);
+
+      if (entries.Count == 0) {
+        return 0;
+      }
+
+      foreach (var entry in entries) {
+        entry.SetBalanceColumn(toColumn);
+        entry.Save();
+      }
+
+      EmpiriaLog.Info($"Updated {entries.Count} entries from {fromColumn.Name} to {toColumn.Name} for transaction {txn.TransactionNo} - {txn.Id}.");
+
+      return entries.Count;
     }
 
 
