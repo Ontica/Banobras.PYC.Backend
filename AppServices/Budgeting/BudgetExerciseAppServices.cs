@@ -55,6 +55,8 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       counter += CleanBudgetApprovePayments();
 
+      counter += CleanBudgetCommitsWithCrossedAccounts();
+
       return counter;
     }
 
@@ -260,6 +262,48 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       return counter;
     }
 
+
+    private int CleanBudgetCommitsWithCrossedAccounts() {
+      int counter = 0;
+
+      var orders = Order.GetFullList<Order>().FindAll(x => x.HasCrossedBeneficiaries() && !(x is Requisition));
+
+      foreach (var order in orders) {
+
+        var commits = BudgetTransaction.GetFor(order is ContractOrder ? order.Contract : order)
+                                       .FindAll(x => x.OperationType == BudgetOperationType.Commit &&
+                                                (x.InProcess || x.IsClosed));
+
+        var approvePayment = BudgetTransaction.GetFor(order)
+                                              .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment &&
+                                                            (x.InProcess || x.IsClosed));
+
+        if (commits.Count != 1 || approvePayment.Count != 1) {
+          EmpiriaLog.Info($"Order {order.OrderNo} - {order.Id} has crossed accounts. " +
+                          $"Commits {string.Join(", ", commits.Select(x => x.TransactionNo))} --- " +
+                          $"Approve Payments {string.Join(", ", approvePayment.Select(x => x.TransactionNo))}");
+          continue;
+        }
+
+        var cleaner = new BudgetTransactionCleaner();
+
+        FixedList<BudgetEntry> entries = cleaner.CreateCrossedAccountsAdjustEntries(approvePayment[0], commits[0]);
+
+        if (entries.Count == 0) {
+          continue;
+        }
+
+        foreach (var entry in entries) {
+          entry.Save();
+        }
+
+        EmpiriaLog.Info($"Se agregaron {entries.Count} partidas a la transacción {approvePayment[0].TransactionNo} con cuentas cruzadas multiárea.");
+
+        counter += entries.Count;
+      }
+
+      return counter;
+    }
 
     private void CleanBudgetApprovePaymentDatesBeforeCommits() {
 
