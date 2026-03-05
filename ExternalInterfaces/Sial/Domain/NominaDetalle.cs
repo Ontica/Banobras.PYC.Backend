@@ -92,7 +92,7 @@ namespace Empiria.BanobrasIntegration.Sial {
 
     public string NombreArea {
       get {
-        Party orgUnit = OrganizationalUnit.TryParseWithID(Area);
+        var orgUnit = OrganizationalUnit.TryParseWithID(Area);
 
         return orgUnit != null ? orgUnit.Name : $"El área '{Area}' no está registrada en el sistema PYC.";
       }
