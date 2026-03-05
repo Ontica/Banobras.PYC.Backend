@@ -9,7 +9,11 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
+
+using Empiria.Financial;
+
 using Empiria.BanobrasIntegration.Sic.Adapters;
+
 
 namespace Empiria.BanobrasIntegration.Sic {
 
@@ -19,6 +23,11 @@ namespace Empiria.BanobrasIntegration.Sic {
     public int NoCredito {
       get; private set;
     }
+
+
+    public string NomCredito {
+      get; private set;
+    } = String.Empty;
 
 
     public string Auxiliar {
@@ -31,31 +40,42 @@ namespace Empiria.BanobrasIntegration.Sic {
     }
 
 
-    public string NumConcepto {
-      get; private set;
-    } = String.Empty;
-
-
     public string NombreConcepto {
       get; private set;
     }
 
 
-    //[DataField("IMPORTE", ConvertFrom = typeof(decimal))]
     public decimal Importe {
       get; private set;
     }
 
     static internal SicCreditEntry MapToSicCreditEntry(MovtosDetalleDto movimiento, int idCredito) {
+      FinancialAccount creditAccount = GetCreditAccount(idCredito.ToString());
 
       return new SicCreditEntry {
         NoCredito = idCredito,
+        NomCredito = creditAccount.Description,
         FechaProceso = Convert.ToDateTime(movimiento.Fecha),
         NombreConcepto = movimiento.Concepto,
+        Auxiliar = creditAccount.SubledgerAccountNo,
         Importe = movimiento.Importe,
       };
 
     }
+
+    #region Helpers
+    static FinancialAccount GetCreditAccount(string idCredito) {
+      var financialAccount = FinancialAccount.TryParseWithAccountNo(FinancialAccountType.CreditAccount, idCredito);
+
+      if (financialAccount is null) {
+        return FinancialAccount.Empty;
+      }
+
+      return financialAccount;
+    }
+
+    #endregion Helpers
+
 
   } // class SicCreditEntry
 

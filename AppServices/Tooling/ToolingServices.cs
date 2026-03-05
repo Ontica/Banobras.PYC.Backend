@@ -43,9 +43,9 @@ namespace Empiria.Banobras.Tooling.AppServices {
                                                                       query.ToDate);
       var columns = new DataTableColumn[] {
         new DataTableColumn("accountNo", "No crédito", "text"),
+        new DataTableColumn("accountName", "Acreditado", "text"),
         new DataTableColumn("subledgerAccountNo", "Auxiliar", "text"),
         new DataTableColumn("applicationDate", "Fecha", "date"),
-        new DataTableColumn("operationTypeNo", "Clave", "text"),
         new DataTableColumn("operationName", "Concepto", "text"),
         new DataTableColumn("amount", "Importe", "decimal"),
       }.ToFixedList();

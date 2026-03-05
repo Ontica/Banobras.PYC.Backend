@@ -29,7 +29,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
       get; internal set;
     }
 
-    public string OperationTypeNo {
+    public string AccountName {
       get; internal set;
     }
 

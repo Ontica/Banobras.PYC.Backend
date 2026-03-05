@@ -8,8 +8,6 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
-using System.Globalization;
 using Empiria.Financial;
 using Empiria.Parties;
 
@@ -25,7 +23,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
         AccountNo = x.NoCredito.ToString(),
         SubledgerAccountNo = EmpiriaString.Clean(x.Auxiliar),
         ApplicationDate = x.FechaProceso,
-        OperationTypeNo = x.NumConcepto.ToString(),
+        AccountName = x.NomCredito.ToString(),
         OperationName = EmpiriaString.Clean(x.NombreConcepto),
         Amount = x.Importe
       }).ToFixedList();
