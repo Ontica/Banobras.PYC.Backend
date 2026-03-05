@@ -45,8 +45,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                                             DateTime? applicationDate = null) {
       Assertion.Require(paymentOrder, nameof(paymentOrder));
 
-      applicationDate = applicationDate ?? DateTime.Today.Date;
-
       var order = Order.Parse(paymentOrder.PayableEntity.UID);
 
       Assertion.Require(paymentOrder.Rules.CanApproveBudget(),
@@ -68,6 +66,18 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         Assertion.RequireFail($"La orden de pago es en {paymentOrder.Currency.Name}. " +
                               $"Se requiere se proporcione el tipo de cambio para " +
                               "poder solicitar la autorización presupuestal.");
+      }
+
+      if (!paymentOrder.PaymentMethod.IsElectronic) {
+        Assertion.Require(paymentOrder.HasDueTime,
+          $"Debido a que el método de pago es {paymentOrder.PaymentMethod.Name}, " +
+          $"se requiere se proporcione la fecha en la que se efectuará o efectuó el pago.");
+
+        applicationDate = paymentOrder.DueTime;
+
+      } else {
+
+        applicationDate = applicationDate ?? DateTime.Today.Date;
       }
 
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_PAGOS,
