@@ -13,6 +13,8 @@ using System.Web.Http;
 using Empiria.Storage;
 using Empiria.WebApi;
 
+using Empiria.Budgeting;
+
 using Empiria.Budgeting.Reporting;
 
 using Empiria.Budgeting.Explorer.Adapters;
@@ -53,6 +55,21 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
           return new SingleObjectModel(base.Request, fileDto);
         }
+      }
+    }
+
+
+    [HttpGet]
+    [Route("v2/budgeting/budget-explorer/accounts/{accountUID:guid}/years/{year:int}/available-budget")]
+    public SingleObjectModel GetAccountAvailableBudget([FromUri] string accountUID, [FromUri] int year) {
+
+      using (var usecases = BudgetExplorerUseCases.UseCaseInteractor()) {
+
+        var account = BudgetAccount.Parse(accountUID);
+
+        var result = usecases.GetAvailableBudget(account, year);
+
+        return new SingleObjectModel(base.Request, result);
       }
     }
 
