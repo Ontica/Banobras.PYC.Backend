@@ -49,6 +49,16 @@ namespace Empiria.BanobrasIntegration.Sic {
       get; private set;
     }
 
+
+    #region Methods
+
+
+    static internal FixedList<SicCreditEntry> MapToSicCreditsEntry(FixedList<MovtosDetalleDto> movimientos, int idCredito) {
+      return movimientos.Select(x => MapToSicCreditEntry(x, idCredito))
+                       .ToFixedList();
+    }
+
+
     static internal SicCreditEntry MapToSicCreditEntry(MovtosDetalleDto movimiento, int idCredito) {
       FinancialAccount creditAccount = GetCreditAccount(idCredito.ToString());
 
@@ -62,6 +72,8 @@ namespace Empiria.BanobrasIntegration.Sic {
       };
 
     }
+
+    #endregion Methods
 
     #region Helpers
     static FinancialAccount GetCreditAccount(string idCredito) {

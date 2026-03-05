@@ -40,17 +40,12 @@ namespace Empiria.BanobrasIntegration.Sic {
     public async Task<FixedList<ICreditEntryData>> GetCreditsEntries(FixedList<string> creditIDs,
                                                          DateTime fromDate, DateTime toDate) {
       Assertion.Require(creditIDs, nameof(creditIDs));
-      Assertion.Require(fromDate, nameof(fromDate));
-      Assertion.Require(toDate, nameof(toDate));
-
-      fromDate = ExecutionServer.DateMinValue;
-      toDate = ExecutionServer.DateMaxValue;
 
       creditIDs = creditIDs.Select(x => EmpiriaString.Clean(x))
                            .ToFixedList()
                            .FindAll(x => EmpiriaString.IsInteger(x));
 
-      FixedList<SicCreditEntry> entries = await GetCreditsEntries(creditIDs, toDate);
+      FixedList<SicCreditEntry> entries = await GetCredits(creditIDs, fromDate, toDate);
 
       return SicMapper.MapToCreditEntries(entries)
                       .Select(x => (ICreditEntryData) x)
@@ -86,34 +81,38 @@ namespace Empiria.BanobrasIntegration.Sic {
 
     #region Helpers 
 
-    private async Task<FixedList<SicCreditEntry>> GetCreditsEntries(FixedList<string> creditIDs, DateTime toDate) {
+    private async Task<FixedList<SicCreditEntry>> GetCredits(FixedList<string> creditIDs, DateTime fromDate, DateTime toDate) {
       List<SicCreditEntry> sicCredits = new List<SicCreditEntry>();
 
       foreach (var credit in creditIDs) {
-        var sicCreditEntries = await GetCreditEntries(Convert.ToInt32(credit), toDate);
-        sicCredits.AddRange(sicCreditEntries);
+        var sicMovemnts = await GetCreditEntries(Convert.ToInt32(credit), fromDate, toDate);
+
+        var slipMovmentsList = SlipCreditMovments(sicMovemnts, fromDate, toDate);
+        var entries = SicCreditEntry.MapToSicCreditsEntry(slipMovmentsList, Convert.ToInt32(credit));
+
+        sicCredits.AddRange(entries);
       }
 
       return sicCredits.ToFixedList();
     }
 
 
-    private async Task<List<SicCreditEntry>> GetCreditEntries(int creditId, DateTime toDate) {
+    private async Task<FixedList<MovtosDetalleDto>> GetCreditEntries(int creditId, DateTime fromDate, DateTime toDate) {
       List<SicCreditEntry> sicCreditEntries = new List<SicCreditEntry>();
 
       var query = new MovtosEncabezadosDto {
         idCredito = creditId,
-        fecConsulta = toDate.Year.ToString() + toDate.Month.ToString() + toDate.Day.ToString(),
+        fecConsulta = toDate.Year.ToString() + toDate.Month.ToString("D2") + toDate.Day.ToString("D2"),
       };
 
-      FixedList<MovtosDetalleDto> movimientos = await _apiClient.TryGetMovtosDetalle(query);
+      return await _apiClient.TryGetMovtosDetalle(query);
+    }
 
-      foreach (var movimiento in movimientos) {
-        sicCreditEntries.Add(SicCreditEntry.MapToSicCreditEntry(movimiento, creditId));
-      }
 
-      return sicCreditEntries;
-      ;
+    private FixedList<MovtosDetalleDto> SlipCreditMovments(FixedList<MovtosDetalleDto> movimientos, DateTime fromDate, DateTime toDate) {
+      var slipMovimientos = movimientos.FindAll(x => Convert.ToDateTime(x.Fecha) >= fromDate && Convert.ToDateTime(x.Fecha) <= toDate);
+
+      return slipMovimientos;
     }
 
     #endregion Helpers

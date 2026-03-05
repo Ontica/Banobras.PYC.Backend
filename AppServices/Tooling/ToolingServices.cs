@@ -39,8 +39,7 @@ namespace Empiria.Banobras.Tooling.AppServices {
       var sicServices = new SicServices();
 
       FixedList<ICreditEntryData> entries = await sicServices.GetCreditsEntries(query.Keywords.ToFixedList(),
-                                                                     query.FromDate,
-                                                                      query.ToDate);
+                                                                                query.FromDate, query.ToDate);
       var columns = new DataTableColumn[] {
         new DataTableColumn("accountNo", "No crédito", "text"),
         new DataTableColumn("accountName", "Acreditado", "text"),
