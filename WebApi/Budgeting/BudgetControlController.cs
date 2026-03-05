@@ -8,14 +8,16 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
 using System.Web.Http;
+
+using Empiria.WebApi;
+
 using Empiria.Budgeting;
 using Empiria.Budgeting.Explorer;
 using Empiria.Budgeting.Explorer.UseCases;
+
 using Empiria.Budgeting.Transactions.Adapters;
 using Empiria.Budgeting.Transactions.UseCases;
-using Empiria.WebApi;
 
 namespace Empiria.Banobras.Budgeting.WebApi {
 
@@ -45,9 +47,9 @@ namespace Empiria.Banobras.Budgeting.WebApi {
           x.ToExercise,
           x.Available,
           Actions = new {
-            CanClose = x.Month < DateTime.Today.Month,
-            CanOpen = false,
-            CanGenerate = x.Available > 0 && x.Month < DateTime.Today.Month,
+            CanClose = budget.CanCloseMonth(x.Month),
+            CanOpen = budget.CanOpenMonth(x.Month),
+            CanGenerate = false,
           }
         }).ToFixedList();
 
@@ -61,9 +63,11 @@ namespace Empiria.Banobras.Budgeting.WebApi {
 
     [HttpPost]
     [Route("v2/budgeting/budget-control/{budgetUID:guid}/months/{month:int}/close")]
-    public SingleObjectModel CloseMonth([FromUri] int budgetUID, [FromUri] int month) {
+    public SingleObjectModel CloseMonth([FromUri] string budgetUID, [FromUri] int month) {
 
       var budget = Budget.Parse(budgetUID);
+
+      budget.CloseMonth(month);
 
       var result = new {
         Message = $"Se cerró {EmpiriaString.MonthName(month)} para el presupuesto {budget.Name}."
@@ -94,7 +98,7 @@ namespace Empiria.Banobras.Budgeting.WebApi {
 
     [HttpPost]
     [Route("v2/budgeting/budget-control/{budgetUID:guid}/months/{month:int}/generate-balance-transfers")]
-    public SingleObjectModel GenerateBalanceTransferTransactions([FromUri] int budgetUID, [FromUri] int month) {
+    public SingleObjectModel GenerateBalanceTransferTransactions([FromUri] string budgetUID, [FromUri] int month) {
 
       var budget = Budget.Parse(budgetUID);
 
@@ -128,9 +132,11 @@ namespace Empiria.Banobras.Budgeting.WebApi {
 
     [HttpPost]
     [Route("v2/budgeting/budget-control/{budgetUID:guid}/months/{month:int}/open")]
-    public SingleObjectModel OpenMonth([FromUri] int budgetUID, [FromUri] int month) {
+    public SingleObjectModel OpenMonth([FromUri] string budgetUID, [FromUri] int month) {
 
       var budget = Budget.Parse(budgetUID);
+
+      budget.OpenMonth(month);
 
       var result = new {
         Message = $"Se abrió {EmpiriaString.MonthName(month)} para el presupuesto {budget.Name}."
