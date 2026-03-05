@@ -15,6 +15,8 @@ using Empiria.Financial.Adapters;
 using Empiria.BanobrasIntegration.Sic;
 using Empiria.BanobrasIntegration.Sic.Adapters;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
 
 namespace Empiria.Sic.Tests.BanobrasIntegration {
 
@@ -47,6 +49,19 @@ namespace Empiria.Sic.Tests.BanobrasIntegration {
       Assert.NotNull(sut);
     }
 
+
+    [Fact]
+    public async Task Should_Get_CreditAccountEntries_By_CreditsNo() {
+      var services = new SicServices();
+
+      var credits = new List<string>() { "15300" };
+      DateTime fromDate = Convert.ToDateTime("2024-01-01");
+      DateTime toDate = Convert.ToDateTime("2024-02-02");
+
+      FixedList<ICreditEntryData> sut = await services.GetCreditsEntries(credits.ToFixedList(), fromDate, toDate);
+
+      Assert.NotNull(sut);
+    }
 
     #endregion Facts
 
