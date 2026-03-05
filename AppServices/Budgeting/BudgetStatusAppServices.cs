@@ -37,7 +37,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Application services
 
-    public int ExecuteLog() {
+    public int ExecuteAnalysis() {
 
       int counter = LogBudgetCommitForAdjustmentStatus();
 
@@ -117,7 +117,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       foreach (var txn in commitTxns) {
         var relatedRequests = BudgetTransaction.GetRelatedTo(txn)
-                                               .FindAll(x => x.OperationType == BudgetOperationType.Request && x.AuthorizationDate.Month == 1);
+                                               .FindAll(x => x.OperationType == BudgetOperationType.Request && x.ApplicationDate.Month == 1);
 
         if (relatedRequests.Count > 0) {
           EmpiriaLog.Debug($"Transacción {txn.TransactionNo} - Id = {txn.Id} tiene {relatedRequests.Count} suficiencias del mes anterior.");
@@ -134,14 +134,26 @@ namespace Empiria.Banobras.Budgeting.AppServices {
                                                                  .FindAll(x => x.OperationType == BudgetOperationType.Commit &&
                                                                               (x.InProcess || x.IsClosed));
 
-      commitTxns = commitTxns.FindAll(x => x.AuthorizationDate.Month == 2 &&
+      commitTxns = commitTxns.FindAll(x => x.ApplicationDate.Month == 2 &&
                                            x.Entries.FindAll(y => y.BalanceColumn == BalanceColumn.Reduced ||
                                                                   y.BalanceColumn == BalanceColumn.Expanded).Count == 0);
 
       commitTxns.FindAll(x => BudgetTransaction.GetRelatedTo(x)
-                                               .Contains(y => y.OperationType == BudgetOperationType.Request && y.AuthorizationDate.Month == 1));
+                                               .Contains(y => y.OperationType == BudgetOperationType.Request && y.ApplicationDate.Month == 1));
 
       return commitTxns;
+    }
+
+
+    static internal FixedList<BudgetTransaction> BudgetPaymentTxnForAdjustment() {
+      return BudgetTransaction.GetFullList<BudgetTransaction>()
+                              .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment &&
+                                           (x.InProcess || x.IsClosed) &&
+                                            x.ApplicationDate.Month == 2 &&
+                                            x.Entries.FindAll(y => y.BalanceColumn == BalanceColumn.Reduced ||
+                                                                   y.BalanceColumn == BalanceColumn.Expanded).Count == 0 &&
+                                                                   BudgetTransaction.GetRelatedTo(x)
+                                                                                    .Contains(y => y.OperationType == BudgetOperationType.Commit));
     }
 
 

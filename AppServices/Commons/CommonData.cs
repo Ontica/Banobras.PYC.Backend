@@ -15,8 +15,6 @@ namespace Empiria.Banobras {
   /// <summary>Holds constants and variables common to Banobras PYC application services.</summary>
   static internal class CommonData {
 
-    static public readonly int BATCH_SIZE = 250;
-
     static public readonly OrganizationalUnit GERENCIA_DE_CONTROL_PRESUPUESTAL =
                                                           OrganizationalUnit.Parse(102);
 

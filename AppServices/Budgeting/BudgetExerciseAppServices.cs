@@ -8,11 +8,15 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
+
 using Empiria.Data;
 using Empiria.Services;
 using Empiria.StateEnums;
 
 using Empiria.Orders;
+using Empiria.Orders.Contracts;
+
 using Empiria.Payments;
 
 using Empiria.Budgeting;
@@ -37,8 +41,197 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Application services
 
-    public int CleanBudgetCommits() {
+    public int CleanBudget() {
 
+      int counter = SetPayables();
+
+      CleanBudgetCommitsDates();
+
+      CleanBudgetApprovePaymentDatesBeforeCommits();
+
+      counter += CleanBudgetCommits();
+
+      counter += CleanBudgetApprovePaymentsDatesAfterCommits();
+
+      counter += CleanBudgetApprovePayments();
+
+      counter += CleanBudgetCommitsWithCrossedAccounts();
+
+      return counter;
+    }
+
+
+    private int CleanBudgetApprovePayments() {
+      int counter = 0;
+
+      FixedList<BudgetTransaction> paymentTxns = BudgetTransaction.GetFullList<BudgetTransaction>()
+                                                                  .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment &&
+                                                                                (x.InProcess || x.IsClosed) &&
+                                                                                !x.Entries.Contains(y => y.IsAdjustment));
+
+      var cleaner = new BudgetTransactionCleaner();
+
+      foreach (var paymentTxn in paymentTxns) {
+
+        Order commitOrder = (Order) paymentTxn.GetEntity();
+
+        if (commitOrder is ContractOrder) {
+          commitOrder = ((ContractOrder) commitOrder).Contract;
+        }
+
+        var commitTxns = BudgetTransaction.GetRelatedTo(paymentTxn)
+                                          .FindAll(x => x.OperationType == BudgetOperationType.Commit &&
+                                                       (x.InProcess || x.IsClosed) &&
+                                                       (x.GetEntity().Equals(commitOrder) ||
+                                                        x.GetEntity().Equals(paymentTxn.GetEntity())));
+
+        if (commitTxns.Count > 1) {
+          EmpiriaLog.Info($"Payment transaction {paymentTxn.TransactionNo} - {paymentTxn.Id} found " +
+                          $"with {commitTxns.Count} commit transactions. Commit order : {commitOrder.OrderNo}");
+
+        } else if (commitTxns.Count == 0) {
+          counter += UpdateWithdrawalColumns(paymentTxn, BalanceColumn.Commited, BalanceColumn.Requested);
+
+          continue;
+        }
+
+        try {
+          FixedList<BudgetEntry> entries = cleaner.CreateAdjustMonthsEntries(paymentTxn, commitTxns.SelectFlat(x => x.Entries));
+
+          if (entries.Count == 0) {
+            continue;
+          }
+
+          foreach (var entry in entries) {
+            entry.Save();
+          }
+
+          EmpiriaLog.Info($"Created {entries.Count} adjustment entries for payment transaction {paymentTxn.TransactionNo} - {paymentTxn.Id}.");
+
+        } catch (Exception e) {
+          EmpiriaLog.Error($"Error creating adjustment entries for payment transaction " +
+                           $"{paymentTxn.TransactionNo} - {paymentTxn.Id}: {e.Message}");
+          continue;
+        }
+
+        counter++;
+      }
+
+      return counter;
+    }
+
+    private int CleanBudgetApprovePaymentsDatesAfterCommits() {
+      int counter = 0;
+
+      FixedList<BudgetTransaction> paymentTxns = BudgetStatusAppServices.BudgetPaymentTxnForAdjustment();
+
+      var cleaner = new BudgetTransactionCleaner();
+
+      foreach (var txn in paymentTxns) {
+
+        var commitTxns = BudgetTransaction.GetRelatedTo(txn)
+                                          .FindAll(x => x.IsClosed && x.OperationType == BudgetOperationType.Commit &&
+                                                         x.GetEntity().Id == txn.GetEntity().Id);
+
+        if (commitTxns.Count > 1) {
+
+          EmpiriaLog.Info($"Expected zero or one commit transactions for payment transaction {txn.TransactionNo} - {txn.Id}, but found {commitTxns.Count}.");
+          continue;
+
+        } else if (commitTxns.Count == 0 && txn.GetEntity() is ContractOrder contractOrder) {
+
+          commitTxns = BudgetTransaction.GetRelatedTo(txn)
+                                        .FindAll(x => x.IsClosed && x.OperationType == BudgetOperationType.Commit &&
+                                                      x.GetEntity().Id == contractOrder.Contract.Id);
+
+          if (commitTxns.Count != 1) {
+
+            EmpiriaLog.Info($"Expected one commit transaction for contract linked payment transaction {txn.TransactionNo} - {txn.Id}, but found {commitTxns.Count}.");
+            continue;
+
+          } else {
+
+            int cleaned = CleanBudgetApprovePaymentsDatesForContractOrders(txn, commitTxns[0]);
+            counter += cleaned;
+            continue;
+
+          }
+
+        } else if (commitTxns.Count == 0 && !(txn.GetEntity() is ContractOrder)) {
+          EmpiriaLog.Info($"No commit transaction found for not contract linked payment transaction {txn.TransactionNo} - {txn.Id}.");
+          continue;
+        }
+
+        var commitEntries = commitTxns[0].Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.Commited);
+
+        var entries = txn.Entries.FindAll(x => x.Withdrawal > 0 && x.BalanceColumn == BalanceColumn.Commited &&
+                                               commitEntries.Contains(y => y.Month != x.Month));
+
+        if (entries.Count == 0) {
+          continue;
+        }
+
+        bool changed = false;
+
+        foreach (var entry in entries) {
+          var commitEntry = commitEntries.Find(x => x.EntityId == entry.EntityId && x.BudgetAccount.Id == entry.BudgetAccount.Id &&
+                                                    x.Amount == entry.Amount && x.Month != entry.Month);
+
+          if (commitEntry == null) {
+            continue;
+          }
+
+          entry.SetDate(commitEntries[0].Date);
+          entry.Save();
+          changed = true;
+        }
+
+        if (changed) {
+          EmpiriaLog.Info($"Created {entries.Count} date adjustment entries for payment transaction {txn.TransactionNo} - {txn.Id}.");
+        }
+
+        counter++;
+      }
+
+      return counter;
+    }
+
+
+    private int CleanBudgetApprovePaymentsDatesForContractOrders(BudgetTransaction txn, BudgetTransaction contractCommit) {
+
+      var commitEntries = contractCommit.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment &&
+                                                              x.BalanceColumn == BalanceColumn.Commited);
+
+      var paymentEntries = txn.Entries.FindAll(x => x.Withdrawal > 0 && x.BalanceColumn == BalanceColumn.Commited &&
+                                                    commitEntries.Contains(y => y.Month != x.Month));
+
+      bool changed = false;
+
+      foreach (var paymentEntry in paymentEntries) {
+        var contractItem = (ContractItem) ContractOrderItem.Parse(paymentEntry.EntityId).ContractItem;
+
+        var commitEntry = commitEntries.Find(x => x.EntityId == contractItem.Id && paymentEntry.ControlNo.StartsWith(x.ControlNo) &&
+                                                  x.BudgetAccount.StandardAccount.Id == paymentEntry.BudgetAccount.StandardAccount.Id &&
+                                                  x.Month != paymentEntry.Month);
+        if (commitEntry == null) {
+          continue;
+        }
+
+        paymentEntry.SetDate(commitEntry.Date);
+        paymentEntry.Save();
+        changed = true;
+      }
+
+      if (changed) {
+        EmpiriaLog.Info($"Created {paymentEntries.Count} date adjustment entries for contract order payment transaction" +
+                        $" {txn.TransactionNo} - {txn.Id}. - contract txn {contractCommit.TransactionNo}.");
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+
+    private int CleanBudgetCommits() {
       int counter = 0;
 
       FixedList<BudgetTransaction> commitTxns = BudgetStatusAppServices.BudgetCommitTxnForAdjustment();
@@ -70,19 +263,117 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     }
 
 
+    private int CleanBudgetCommitsWithCrossedAccounts() {
+      int counter = 0;
+
+      var orders = Order.GetFullList<Order>().FindAll(x => x.HasCrossedBeneficiaries() && !(x is Requisition));
+
+      foreach (var order in orders) {
+
+        var commits = BudgetTransaction.GetFor(order is ContractOrder ? order.Contract : order)
+                                       .FindAll(x => x.OperationType == BudgetOperationType.Commit &&
+                                                (x.InProcess || x.IsClosed));
+
+        var approvePayment = BudgetTransaction.GetFor(order)
+                                              .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment &&
+                                                            (x.InProcess || x.IsClosed));
+
+        if (commits.Count != 1 || approvePayment.Count != 1) {
+          EmpiriaLog.Info($"Order {order.OrderNo} - {order.Id} has crossed accounts. " +
+                          $"Commits {string.Join(", ", commits.Select(x => x.TransactionNo))} --- " +
+                          $"Approve Payments {string.Join(", ", approvePayment.Select(x => x.TransactionNo))}");
+          continue;
+        }
+
+        var cleaner = new BudgetTransactionCleaner();
+
+        FixedList<BudgetEntry> entries = cleaner.CreateCrossedAccountsAdjustEntries(approvePayment[0], commits[0]);
+
+        if (entries.Count == 0) {
+          continue;
+        }
+
+        foreach (var entry in entries) {
+          entry.Save();
+        }
+
+        EmpiriaLog.Info($"Se agregaron {entries.Count} partidas a la transacción {approvePayment[0].TransactionNo} con cuentas cruzadas multiárea.");
+
+        counter += entries.Count;
+      }
+
+      return counter;
+    }
+
+    private void CleanBudgetApprovePaymentDatesBeforeCommits() {
+
+      FixedList<BudgetTransaction> paymentTxns = BudgetTransaction.GetFullList<BudgetTransaction>()
+                                                                  .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment &&
+                                                                                (x.InProcess || x.IsClosed));
+
+      foreach (var txn in paymentTxns) {
+
+        var applicationDate = txn.ApplicationDate;
+
+        var toCleanEntries = txn.Entries.FindAll(x => x.Withdrawal > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.Commited &&
+                                                      x.Date != applicationDate && x.Month == applicationDate.Month);
+
+        foreach (var entry in toCleanEntries) {
+          entry.SetDate(applicationDate);
+          entry.Save();
+        }
+
+        toCleanEntries = txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.ToPay &&
+                                                  x.Date != applicationDate && x.Month == applicationDate.Month);
+
+        foreach (var entry in toCleanEntries) {
+          entry.SetDate(applicationDate);
+          entry.Save();
+        }
+
+        toCleanEntries = txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment && x.BalanceColumn == BalanceColumn.ToPay &&
+                                                  x.Month != applicationDate.Month);
+
+        if (toCleanEntries.Count > 0) {
+          EmpiriaLog.Info($"La transaction {txn.TransactionNo} {txn.Id} tiene mal el mes de aprobación .");
+        }
+
+      }
+
+    }
+
+    private void CleanBudgetCommitsDates() {
+
+      FixedList<BudgetTransaction> commitTxns = BudgetTransaction.GetFullList<BudgetTransaction>()
+                                                                 .FindAll(x => x.OperationType == BudgetOperationType.Commit &&
+                                                                              (x.InProcess || x.IsClosed));
+
+      foreach (var txn in commitTxns) {
+
+        var applicationDate = txn.ApplicationDate;
+
+        var toCleanEntries = txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment &&
+                                                      x.BalanceColumn == BalanceColumn.Commited &&
+                                                      x.Date != applicationDate && x.Month == applicationDate.Month);
+
+        foreach (var entry in toCleanEntries) {
+          entry.SetDate(applicationDate);
+          entry.Save();
+        }
+
+      }
+    }
+
+
     public int ExerciseBudget() {
 
       var budgetAppServices = BudgetExecutionAppServices.UseCaseInteractor();
 
-      FixedList<PaymentOrder> paymentOrders = GetPayedPaymentOrders();
+      FixedList<PaymentOrder> paymentOrders = GetPaymentOrders(false);
 
       int counter = 0;
 
       foreach (var paymentOrder in paymentOrders) {
-
-        if (counter >= CommonData.BATCH_SIZE) {
-          break;
-        }
 
         Order order = (Order) paymentOrder.PayableEntity;
 
@@ -96,10 +387,10 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
         _ = budgetAppServices.ExerciseBudget(paymentOrder, approvePaymentTxn, exerciseDate);
 
-        UpdatePaymentApprovalBudgetTransaction(approvePaymentTxn, paymentOrder);
-
         counter++;
       }
+
+      EmpiriaLog.Info($"Se generaron automáticamente {counter} transacciones del ejercicio presupuestal.");
 
       return counter;
     }
@@ -108,13 +399,85 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
     #region Helpers
 
-    static private FixedList<PaymentOrder> GetPayedPaymentOrders() {
+    static private FixedList<PaymentOrder> GetPaymentOrders(bool includeUnpaid) {
       return PaymentOrder.GetList<PaymentOrder>()
-                         .FindAll(x => x.Status == PaymentOrderStatus.Payed &&
-                                       x.PayableEntity.Budget.UID != BudgetType.None.UID)
+                         .FindAll(x => (x.Status == PaymentOrderStatus.Payed || (includeUnpaid && !x.IsEmptyInstance)) &&
+                                        ((Budget) x.PayableEntity.Budget).BudgetType.UID != BudgetType.None.UID)
                          .ToFixedList()
                          .Sort((x, y) => x.LastPaymentInstruction.LastUpdateTime.CompareTo(y.LastPaymentInstruction.LastUpdateTime))
                          .Reverse();
+    }
+
+
+    static private int SetPayables() {
+
+      FixedList<PaymentOrder> paymentOrders = GetPaymentOrders(true);
+
+      int counter = 0;
+
+      foreach (var paymentOrder in paymentOrders) {
+
+        Order order = (Order) paymentOrder.PayableEntity;
+
+        var txns = BudgetTransaction.GetFor(order)
+                                    .FindAll(x => x.OperationType == BudgetOperationType.ApprovePayment);
+
+        if (txns.Count == 0 && (paymentOrder.HasActivePaymentInstruction || paymentOrder.Payed)) {
+
+          EmpiriaLog.Info($"No approve payment transaction found for " +
+                          $"payment order {paymentOrder.PaymentOrderNo} linked to {order.OrderNo}. PO Status {paymentOrder.Status}");
+
+          continue;
+        }
+
+        foreach (var txn in txns) {
+
+          if (txn.PayableId != -1) {
+            continue;
+          }
+
+          if (txn.GetEntity().Equals(order)) {
+
+            txn.SetPayable(paymentOrder);
+
+            var sql = $"UPDATE FMS_BUDGET_TRANSACTIONS " +
+                      $"SET BDG_TXN_PAYABLE_ID = {paymentOrder.Id} " +
+                      $"WHERE BDG_TXN_ID = {txn.Id}";
+
+            var op = DataOperation.Parse(sql);
+
+            DataWriter.Execute(op);
+
+            EmpiriaLog.Info($"Payable set for {txn.TransactionNo} with {paymentOrder.PaymentOrderNo}.");
+
+            counter++;
+
+          } else {
+            EmpiriaLog.Info($"The entity of the transaction {txn.TransactionNo} " +
+                            $"linked to order {order.OrderNo} is not the order itself.");
+          }
+        }
+      }
+
+      return counter;
+    }
+
+
+    private int UpdateWithdrawalColumns(BudgetTransaction txn, BalanceColumn fromColumn, BalanceColumn toColumn) {
+      var entries = txn.Entries.FindAll(x => x.Withdrawal > 0 && x.BalanceColumn == fromColumn);
+
+      if (entries.Count == 0) {
+        return 0;
+      }
+
+      foreach (var entry in entries) {
+        entry.SetBalanceColumn(toColumn);
+        entry.Save();
+      }
+
+      EmpiriaLog.Info($"Updated {entries.Count} entries from {fromColumn.Name} to {toColumn.Name} for transaction {txn.TransactionNo} - {txn.Id}.");
+
+      return entries.Count;
     }
 
 
@@ -128,21 +491,6 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       return txns.FindLast(x => x.OperationType == BudgetOperationType.ApprovePayment &&
                                 x.Status == TransactionStatus.Closed);
 
-    }
-
-
-    static private void UpdatePaymentApprovalBudgetTransaction(BudgetTransaction paymentApproval,
-                                                               PaymentOrder paymentOrder) {
-
-      paymentApproval.SetPayable(paymentOrder);
-
-      var sql = $"UPDATE FMS_BUDGET_TRANSACTIONS " +
-                $"SET BDG_TXN_PAYABLE_ID = {paymentOrder.Id} " +
-                $"WHERE BDG_TXN_ID = {paymentApproval.Id}";
-
-      var op = DataOperation.Parse(sql);
-
-      DataWriter.Execute(op);
     }
 
     #endregion Helpers

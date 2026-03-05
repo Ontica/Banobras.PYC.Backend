@@ -146,9 +146,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
 
       BudgetTransaction exerciseTxn = builder.Build(BudgetOperationType.Exercise, paymentApproval.Entries);
 
-      exerciseTxn.SetExerciseData(paymentOrder, CommonData.GERENCIA_DE_PAGOS);
-
-      exerciseTxn.Close();
+      exerciseTxn.Close(paymentOrder, CommonData.GERENCIA_DE_PAGOS);
 
       exerciseTxn.Save();
 

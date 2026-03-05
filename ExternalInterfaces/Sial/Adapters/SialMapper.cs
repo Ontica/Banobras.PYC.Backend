@@ -93,6 +93,6 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
     #endregion Mappers
 
-    } // class SialMapper
+  } // class SialMapper
 
-  }  //namespace Empiria.BanobrasIntegration.Sial.Adapters
+}  //namespace Empiria.BanobrasIntegration.Sial.Adapters
