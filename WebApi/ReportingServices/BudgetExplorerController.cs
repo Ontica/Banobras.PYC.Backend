@@ -30,7 +30,7 @@ namespace Empiria.Banobras.Reporting.WebApi {
     public SingleObjectModel Breakdown([FromBody] ExplorerBreakdownQuery query) {
 
       using (var usecases = BudgetExplorerUseCases.UseCaseInteractor()) {
-        BudgetExplorerResultDto result = usecases.BreakdownBudget(query.Query, query.Entry.UID);
+        var result = usecases.BreakdownBudget(query);
 
         return new SingleObjectModel(base.Request, result);
       }
@@ -71,26 +71,5 @@ namespace Empiria.Banobras.Reporting.WebApi {
     #endregion Web Apis
 
   }  // class BudgetExplorerController
-
-
-  public class ExplorerBreakdownQuery {
-
-    public BudgetExplorerQuery Query {
-      get; set;
-    }
-
-    public BreakdownEntry Entry {
-      get; set;
-    }
-  }
-
-
-  public class BreakdownEntry {
-
-    public string UID {
-      get; set;
-    }
-
-  }
 
 }  // namespace Empiria.Banobras.Reporting.WebApi
