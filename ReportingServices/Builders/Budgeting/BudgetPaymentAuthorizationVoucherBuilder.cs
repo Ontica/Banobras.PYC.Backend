@@ -223,7 +223,7 @@ namespace Empiria.Budgeting.Reporting {
       }
 
       SetIf("{{CURRENCY_CODE}}", _budgetTxn.Currency.Equals(Currency.Default), string.Empty, _budgetTxn.Currency.ISOCode);
-      Set("{{EXCHANGE_RATE}}", _budgetTxn.ExchangeRate.ToString("C2"));
+      Set("{{EXCHANGE_RATE}}", _budgetTxn.ExchangeRate.ToString("C4"));
 
       BuildBudgetRequests();
 

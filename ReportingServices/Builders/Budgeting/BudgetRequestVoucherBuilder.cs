@@ -164,7 +164,7 @@ namespace Empiria.Budgeting.Reporting {
       if (_txn.ExchangeRate != decimal.One) {
         html.Replace("{{ESTIMATED_MONTHS}}", $"{_order.EstimatedMonths:00} meses " +
                       $" &nbsp; &nbsp; &nbsp; &nbsp; <span class='normal'>Tipo de cambio estimado:</span> &nbsp;" +
-                      $"{_txn.ExchangeRate:C2}");
+                      $"{_txn.ExchangeRate:C4}");
       } else {
         html.Replace("{{ESTIMATED_MONTHS}}", $"{_order.EstimatedMonths:00} meses ");
       }
