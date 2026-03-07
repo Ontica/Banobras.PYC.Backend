@@ -63,7 +63,7 @@ namespace Empiria.Budgeting.Reporting {
 
       foreach (var txn in transactions) {
 
-        foreach (var entry in txn.Entries) {
+        foreach (var entry in txn.Entries.FindAll(x => x.Deposit > 0)) {
 
           decimal amount = entry.Deposit > 0 ? entry.Deposit : entry.Withdrawal * -1;
 

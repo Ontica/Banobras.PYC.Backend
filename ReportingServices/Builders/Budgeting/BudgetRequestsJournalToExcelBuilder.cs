@@ -63,7 +63,7 @@ namespace Empiria.Budgeting.Reporting {
 
       foreach (var txn in transactions) {
 
-        foreach (var entry in txn.Entries) {
+        foreach (var entry in txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment)) {
 
           _excelFile.SetCell($"A{i}", entry.BudgetAccount.OrganizationalUnit.Code);
           _excelFile.SetCell($"B{i}", entry.BudgetAccount.Code);

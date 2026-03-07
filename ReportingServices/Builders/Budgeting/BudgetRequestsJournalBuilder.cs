@@ -135,7 +135,7 @@ namespace Empiria.Budgeting.Reporting {
 
       foreach (var txn in _transactions) {
 
-        foreach (var entry in txn.Entries.FindAll(x => x.Deposit > 0)) {
+        foreach (var entry in txn.Entries.FindAll(x => x.Deposit > 0 && x.NotAdjustment)) {
 
           BudgetRequestsJournalEntry journalEntry = CreateJournalEntry(txn, entry);
 
