@@ -11,8 +11,11 @@
 using System;
 
 using Empiria.Data;
+using Empiria.Financial;
 using Empiria.Services;
 using Empiria.StateEnums;
+
+using Empiria.Billing;
 
 using Empiria.Orders;
 using Empiria.Orders.Contracts;
@@ -60,6 +63,44 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       return counter;
     }
 
+
+    public int ExerciseBudget() {
+
+      var budgetAppServices = BudgetExecutionAppServices.UseCaseInteractor();
+
+      FixedList<PaymentOrder> paymentOrders = GetPaymentOrders(false);
+
+      int counter = 0;
+
+      foreach (var paymentOrder in paymentOrders) {
+
+        Order order = (Order) paymentOrder.PayableEntity;
+
+        var exerciseDate = paymentOrder.LastPaymentInstruction.LastUpdateTime;
+
+        BudgetTransaction approvePaymentTxn = TryGetUnexercisedApprovePaymentBudgetTransaction(order);
+
+        if (approvePaymentTxn == null) {
+          continue;
+        }
+
+        _ = budgetAppServices.ExerciseBudget(paymentOrder, approvePaymentTxn, exerciseDate);
+
+        CloseOrder(order);
+
+        CloseBills(order);
+
+        counter++;
+      }
+
+      EmpiriaLog.Info($"Se generaron automáticamente {counter} transacciones del ejercicio presupuestal.");
+
+      return counter;
+    }
+
+    #endregion Application services
+
+    #region Budget cleaners
 
     private int CleanBudgetApprovePayments() {
       int counter = 0;
@@ -305,6 +346,7 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       return counter;
     }
 
+
     private void CleanBudgetApprovePaymentDatesBeforeCommits() {
 
       FixedList<BudgetTransaction> paymentTxns = BudgetTransaction.GetFullList<BudgetTransaction>()
@@ -364,40 +406,58 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       }
     }
 
+    #endregion Budget cleaners
 
-    public int ExerciseBudget() {
+    #region Helpers
 
-      var budgetAppServices = BudgetExecutionAppServices.UseCaseInteractor();
+    static private void CloseBills(Order order) {
+      FixedList<Bill> bills = Bill.GetListFor((IPayableEntity) order);
 
-      FixedList<PaymentOrder> paymentOrders = GetPaymentOrders(false);
-
-      int counter = 0;
-
-      foreach (var paymentOrder in paymentOrders) {
-
-        Order order = (Order) paymentOrder.PayableEntity;
-
-        var exerciseDate = paymentOrder.LastPaymentInstruction.LastUpdateTime;
-
-        BudgetTransaction approvePaymentTxn = TryGetUnexercisedApprovePaymentBudgetTransaction(order);
-
-        if (approvePaymentTxn == null) {
+      foreach (var bill in bills) {
+        if (bill.Status == BillStatus.Payed) {
           continue;
         }
 
-        _ = budgetAppServices.ExerciseBudget(paymentOrder, approvePaymentTxn, exerciseDate);
-
-        counter++;
+        try {
+          bill.SetAsPayed();
+          bill.Save();
+          EmpiriaLog.Info($"Bill {bill.BillNo} linked to order {order.OrderNo} was marked as payed.");
+        } catch (Exception e) {
+          EmpiriaLog.Error($"Error marking bill {bill.BillNo} linked to order {order.OrderNo} as payed: {e.Message}");
+        }
       }
-
-      EmpiriaLog.Info($"Se generaron automáticamente {counter} transacciones del ejercicio presupuestal.");
-
-      return counter;
     }
 
-    #endregion Application services
 
-    #region Helpers
+    static private void CloseOrder(Order order) {
+      if (order.Status != EntityStatus.Closed) {
+        try {
+          order.Close(CommonData.GERENCIA_DE_PAGOS);
+          order.Save();
+
+          EmpiriaLog.Info($"Order {order.OrderNo} was auto-closed.");
+        } catch (Exception e) {
+          EmpiriaLog.Error($"Error auto-closing order {order.OrderNo}: {e.Message}");
+        }
+      }
+
+      if (order.Requisition.GetTotal() <= order.GetTotal() && order.Requisition.Status != EntityStatus.Closed) {
+
+        try {
+          order.Requisition.Close(CommonData.GERENCIA_DE_CONTROL_PRESUPUESTAL);
+          order.Requisition.Save();
+
+          EmpiriaLog.Info($"Requisition {order.Requisition.OrderNo} was auto-closed, linked to order {order.OrderNo}.");
+
+          if (order.Requisition.GetTotal() < order.GetTotal()) {
+            EmpiriaLog.Critical($"WARNING !! Requisition {order.Requisition.OrderNo} total is {order.Requisition.GetTotal()} less than order {order.OrderNo} {order.GetTotal()} .");
+          }
+        } catch (Exception e) {
+          EmpiriaLog.Error($"Error auto-closing requisition {order.Requisition.OrderNo}: {e.Message}");
+        }
+      }
+    }
+
 
     static private FixedList<PaymentOrder> GetPaymentOrders(bool includeUnpaid) {
       return PaymentOrder.GetList<PaymentOrder>()
