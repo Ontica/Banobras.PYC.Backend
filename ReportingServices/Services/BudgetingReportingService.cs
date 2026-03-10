@@ -94,6 +94,23 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
+    public DynamicDto<BudgetRequestsAnalyticsEntryDto> RequestsAnalyticsDynamicTable(DateTime toDate) {
+
+      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(new DateTime(toDate.Year, 1, 1), toDate);
+
+      var builder = new BudgetRequestsAnalyticsBuilder(transactions);
+
+      var entries = builder.BuildEntries();
+
+      var mapper = new BudgetRequestsAnalyticsDynamicTableMapper(entries);
+
+      var columns = mapper.BuildColumns();
+      var mappedEntries = mapper.BuildEntries();
+
+      return new DynamicDto<BudgetRequestsAnalyticsEntryDto>(columns, mappedEntries);
+    }
+
+
     public DynamicDto<BudgetRequestsJournalEntry> RequestsJournalDynamicTable(DateTime fromDate, DateTime toDate) {
 
       FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(fromDate, toDate);
@@ -168,6 +185,7 @@ namespace Empiria.Budgeting.Reporting {
                               .ThenBy(x => x.TransactionNo)
                               .ToFixedList();
     }
+
 
     #endregion Helpers
 

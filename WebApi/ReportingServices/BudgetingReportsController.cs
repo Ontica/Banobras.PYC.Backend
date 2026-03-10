@@ -78,6 +78,20 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
 
     [HttpPost]
+    [Route("v2/financial-management/reports/budget-requests-analytics")]
+    public SingleObjectModel RequestsAnalyticsDataTable([FromBody] ReportFields fields) {
+
+      using (var service = BudgetingReportingService.ServiceInteractor()) {
+
+        DynamicDto<BudgetRequestsAnalyticsEntryDto> entries =
+                                    service.RequestsAnalyticsDynamicTable(fields.ToDate);
+
+        return new SingleObjectModel(base.Request, entries);
+      }
+    }
+
+
+    [HttpPost]
     [Route("v2/financial-management/reports/budget-requests-journal")]
     public SingleObjectModel RequestsJournalDataTable([FromBody] ReportFields fields) {
 
