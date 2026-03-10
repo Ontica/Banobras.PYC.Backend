@@ -35,13 +35,13 @@ namespace Empiria.BanobrasIntegration.Sigevi.WebApi {
 
 
     [HttpGet]
-    [Route("v2/pyc/integration/sigevi/organizational-units")]
+    [Route("v2/pyc/integration/sigevi/areas-presupuestales")]
     public CollectionModel GetBudgetingOrganizationalUnits() {
 
       using (var usecases = SigeviIntegrationServices.ServiceInteractor()) {
-        FixedList<OrgUnitDto> orgUnits = usecases.GetBudgetingOrganizationalUnits();
+        FixedList<AreaDto> areas = usecases.GetBudgetingOrganizationalUnits();
 
-        return new CollectionModel(base.Request, orgUnits);
+        return new CollectionModel(base.Request, areas);
       }
     }
 

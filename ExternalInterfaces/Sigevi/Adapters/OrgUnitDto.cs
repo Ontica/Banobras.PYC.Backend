@@ -11,13 +11,13 @@
 namespace Empiria.BanobrasIntegration.Sigevi.Adapters {
 
   /// <summary>Output DTO for organizational units.</summary>
-  public class OrgUnitDto {
+  public class AreaDto {
 
-    public string Code {
+    public string Clave {
       get; internal set;
     }
 
-    public string Name {
+    public string Nombre {
       get; internal set;
     }
 
