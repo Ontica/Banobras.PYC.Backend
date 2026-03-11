@@ -8,12 +8,22 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
+using Empiria.BanobrasIntegration.Sial.Data;
 
 namespace Empiria.BanobrasIntegration.Sial {
 
   /// <summary>Holds information about a Banobras Sial organization unit entry.</summary>
   public class SialOrganizationUnitEntry {
+
+    #region Constructors and parsers
+
+    protected SialOrganizationUnitEntry() {
+      // Require by Empiria FrameWork
+    }
+
+    #endregion Constructors and parsers
+
+    #region Properties
 
     [DataField("CLAVE_AREA")]
     public string NoArea {
@@ -38,11 +48,24 @@ namespace Empiria.BanobrasIntegration.Sial {
       get; private set;
     }
 
+    #endregion Properties
 
-    [DataField("NIVEL_CLAVE", ConvertFrom = typeof(int))]
-    public int noNivel {
-      get; private set;
+    #region Methods
+    static public SialOrganizationUnitEntry GetOrganizationParent(string orgUnitId) {
+
+      SialOrganizationUnitEntry orgUnit = SialDataService.GetOrganizationParent(orgUnitId);
+
+      Assertion.Require(orgUnit, $"El área proporcionada {orgUnitId}, no existe");
+
+      if (orgUnit.NoArea != string.Empty && orgUnit.NoAreaSupervision == string.Empty) {
+        orgUnit.NoAreaSupervision = "Empty";
+        orgUnit.AreaSupervision = "Empty";
+      }
+
+      return orgUnit;
     }
+
+    #endregion Methods
 
 
   } // class SialOrganizationUnitEntry

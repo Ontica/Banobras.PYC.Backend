@@ -57,12 +57,20 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
     static internal FixedList<SialOrganizationUnitEntryDto> MapToOrganizationUnitEntries(FixedList<SialOrganizationUnitEntry> entries) {
       return entries.Select(x => new SialOrganizationUnitEntryDto {
-        OrganizationUnitNo = x.NoArea,
-        OrganizationUnitName = EmpiriaString.Clean(x.Descripcion),
-        SupervisingUnitNo = x.NoAreaSupervision,
-        SupervisingUnitName = EmpiriaString.Clean(x.AreaSupervision),
-        HierarchicalLevel = x.noNivel
+        Code = x.NoArea,
+        Name = EmpiriaString.Clean(x.Descripcion),
+        ParentCode = x.NoAreaSupervision,
+        ParentName = EmpiriaString.Clean(x.AreaSupervision)
       }).ToFixedList();
+    }
+
+    static internal SialOrganizationUnitEntryDto MapToOrganizationUnitEntry(SialOrganizationUnitEntry entry) {
+      return new SialOrganizationUnitEntryDto {
+        Code = entry.NoArea,
+        Name = EmpiriaString.Clean(entry.Descripcion),
+        ParentCode = entry.NoAreaSupervision,
+        ParentName = EmpiriaString.Clean(entry.AreaSupervision)
+      };
     }
 
 

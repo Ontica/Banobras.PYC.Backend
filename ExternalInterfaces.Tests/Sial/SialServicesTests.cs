@@ -75,6 +75,16 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
 
 
     [Fact]
+    public void Should_Get_OrganizationUnit_Parent() {
+      var services = SialServices.ServiceInteractor();
+
+      ISialOrganizationUnitData sut = services.GetOrganizationUnitParent("100000");
+
+      Assert.NotNull(sut);
+    }
+
+
+    [Fact]
     public void Should_Get_OrganizationUnitData_Employees() {
       var services = SialServices.ServiceInteractor();
 

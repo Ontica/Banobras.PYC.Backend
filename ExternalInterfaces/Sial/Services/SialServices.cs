@@ -96,6 +96,16 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
     }
 
 
+    public ISialOrganizationUnitData GetOrganizationUnitParent(string orgUnitId) {
+
+      Assertion.Require(orgUnitId, "Requiero un número de área");
+
+      SialOrganizationUnitEntry orgUnit = SialOrganizationUnitEntry.GetOrganizationParent(orgUnitId);
+
+      return SialMapper.MapToOrganizationUnitEntry(orgUnit);
+    }
+
+
     public FixedList<ISialOrganizationUnitEmployeesData> GetOrganizationUnitEmployeesEntries() {
 
       FixedList<SialOrganizationUnitEmployeeEntry> entries = SialDataService.GetOrganizationUnitEmployeesEntries();
