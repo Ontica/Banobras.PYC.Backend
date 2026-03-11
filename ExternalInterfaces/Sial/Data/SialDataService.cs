@@ -74,7 +74,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
     static internal FixedList<SialOrganizationUnitEntry> GetOrganizationUnitEntries() {
 
-      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_PYC@INTRAN " +
+      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
                 $"ORDER BY CLAVE_AREA, NIVEL_CLAVE";
 
       var op = DataOperation.Parse(sql);
