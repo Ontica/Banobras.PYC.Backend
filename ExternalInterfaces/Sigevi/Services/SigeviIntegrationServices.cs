@@ -63,7 +63,7 @@ namespace Empiria.BanobrasIntegration.Sigevi.Services {
     }
 
 
-    public FixedList<OrgUnitDto> GetBudgetingOrganizationalUnits() {
+    public FixedList<AreaDto> GetBudgetingOrganizationalUnits() {
       var orgUnits = BaseObject.GetFullList<BudgetAccount>()
                                .SelectDistinct(x => x.OrganizationalUnit)
                                .OrderBy(x => x.Code);
@@ -171,10 +171,10 @@ namespace Empiria.BanobrasIntegration.Sigevi.Services {
 
     #region Helpers
 
-    private OrgUnitDto ToOrgUnitDto(OrganizationalUnit x) {
-      return new OrgUnitDto {
-        Code = x.Code,
-        Name = x.Name
+    private AreaDto ToOrgUnitDto(OrganizationalUnit x) {
+      return new AreaDto {
+        Clave = x.Code,
+        Nombre = x.Name
       };
     }
 
