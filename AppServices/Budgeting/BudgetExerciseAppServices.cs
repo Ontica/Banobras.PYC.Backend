@@ -441,7 +441,9 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         }
       }
 
-      if (order.Requisition.GetTotal() <= order.GetTotal() && order.Requisition.Status != EntityStatus.Closed) {
+      if (!(order is ContractOrder) &&
+          order.Requisition.GetTotal() <= order.GetTotal() &&
+          order.Requisition.Status != EntityStatus.Closed) {
 
         try {
           order.Requisition.Close(CommonData.GERENCIA_DE_CONTROL_PRESUPUESTAL);
