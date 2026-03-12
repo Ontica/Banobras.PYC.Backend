@@ -71,7 +71,7 @@ namespace Empiria.Banobras.Budgeting.Exporters {
           _excelFile.SetCell($"H{i}", entry.OrgUnit.Name);
         } else {
           _excelFile.SetCell($"D{i}", entry.OrgUnitCode);
-          _excelFile.SetCell($"H{i}", $"El área {entry.OrgUnitCode} no existe en el sistema PYC");
+          _excelFile.SetCell($"H{i}", $"El área {entry.OrgUnitCode} no existe en el sistema SIAL ni en PYC.");
         }
 
         if (entry.BudgetAccount.IsEmptyInstance) {
@@ -85,7 +85,7 @@ namespace Empiria.Banobras.Budgeting.Exporters {
         _excelFile.SetCell($"J{i}", entry.AccountingAcctNo);
         _excelFile.SetCell($"K{i}", entry.AccountingAcctName);
 
-        _excelFile.SetCell($"L{i}", $"Área original en el archivo SIAL: ({entry.OrgUnitCode}) {entry.OrgUnitName}");
+        _excelFile.SetCell($"L{i}", $"Área original en el archivo SIAL: '{entry.OrgUnitCode}'");
 
         i++;
       }

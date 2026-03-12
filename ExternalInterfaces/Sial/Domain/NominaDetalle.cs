@@ -94,7 +94,7 @@ namespace Empiria.BanobrasIntegration.Sial {
       get {
         var orgUnit = OrganizationalUnit.TryParseWithID(Area);
 
-        return orgUnit != null ? orgUnit.Name : $"El área '{Area}' no está registrada en el sistema PYC.";
+        return orgUnit != null ? orgUnit.Name : $"El área '{Area}' no está registrada en el sistema SIAL ni en PYC.";
       }
     }
 
