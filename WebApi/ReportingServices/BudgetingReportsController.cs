@@ -91,6 +91,20 @@ namespace Empiria.Banobras.Reporting.WebApi {
     }
 
 
+
+    [HttpPost]
+    [Route("v2/financial-management/reports/budget-requests-analytics/export")]
+    public SingleObjectModel RequestsAnalyticsToExcel([FromBody] ReportFields fields) {
+
+      using (var service = BudgetingReportingService.ServiceInteractor()) {
+
+        FileDto excelFile = service.RequestsAnalyticsToExcel(fields.ToDate);
+
+        return new SingleObjectModel(base.Request, excelFile);
+      }
+    }
+
+
     [HttpPost]
     [Route("v2/financial-management/reports/budget-requests-journal")]
     public SingleObjectModel RequestsJournalDataTable([FromBody] ReportFields fields) {

@@ -111,6 +111,26 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
+
+    public FileDto RequestsAnalyticsToExcel(DateTime toDate) {
+      var templateUID = $"{GetType().Name}.BudgetRequestsAnalytics";
+
+      var templateConfig = FileTemplateConfig.Parse(templateUID);
+
+      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(new DateTime(toDate.Year, 1, 1), toDate);
+
+      var analyticsBuilder = new BudgetRequestsAnalyticsBuilder(transactions);
+
+      var entries = analyticsBuilder.BuildEntries();
+
+      var excelBuilder = new BudgetRequestsAnalyticsToExcelBuilder(templateConfig);
+
+      ExcelFile excelFile = excelBuilder.CreateExcelFile(entries);
+
+      return excelFile.ToFileDto();
+    }
+
+
     public DynamicDto<BudgetRequestsJournalEntry> RequestsJournalDynamicTable(DateTime fromDate, DateTime toDate) {
 
       FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(fromDate, toDate);
@@ -185,7 +205,6 @@ namespace Empiria.Budgeting.Reporting {
                               .ThenBy(x => x.TransactionNo)
                               .ToFixedList();
     }
-
 
     #endregion Helpers
 
