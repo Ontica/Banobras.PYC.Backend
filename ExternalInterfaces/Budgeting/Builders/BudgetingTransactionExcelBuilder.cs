@@ -60,15 +60,32 @@ namespace Empiria.Banobras.Budgeting.Exporters {
         _excelFile.SetCell($"A{i}", entry.Year);
         _excelFile.SetCell($"B{i}", entry.Month);
         _excelFile.SetCell($"C{i}", entry.Day);
-        _excelFile.SetCell($"D{i}", entry.OrgUnitCode);
-        _excelFile.SetCell($"E{i}", entry.BudgetAccountNo);
+
+        if (!entry.BudgetAccount.IsEmptyInstance) {
+          _excelFile.SetCell($"D{i}", entry.BudgetAccount.OrganizationalUnit.Code);
+          _excelFile.SetCell($"H{i}", entry.BudgetAccount.OrganizationalUnit.Name);
+          _excelFile.SetCell($"E{i}", entry.BudgetAccount.Code);
+          _excelFile.SetCell($"I{i}", entry.BudgetAccount.Name);
+        } else if (!entry.OrgUnit.IsEmptyInstance) {
+          _excelFile.SetCell($"D{i}", entry.OrgUnit.Code);
+          _excelFile.SetCell($"H{i}", entry.OrgUnit.Name);
+        } else {
+          _excelFile.SetCell($"D{i}", entry.OrgUnitCode);
+          _excelFile.SetCell($"H{i}", $"El área {entry.OrgUnitCode} no existe en el sistema PYC");
+        }
+
+        if (entry.BudgetAccount.IsEmptyInstance) {
+          _excelFile.SetCell($"E{i}", entry.BudgetAccountNo);
+          _excelFile.SetCell($"I{i}", $"La relación área/partida o " +
+                                      $"la partida {entry.BudgetAccountNo} no existe en el sistema PYC.");
+        }
+
         _excelFile.SetCell($"F{i}", entry.Amount);
         _excelFile.SetCell($"G{i}", entry.OperationNo);
-        _excelFile.SetCell($"H{i}", entry.OrgUnitName);
-        _excelFile.SetCell($"I{i}", entry.BudgetAccountName);
         _excelFile.SetCell($"J{i}", entry.AccountingAcctNo);
         _excelFile.SetCell($"K{i}", entry.AccountingAcctName);
-        _excelFile.SetCell($"L{i}", entry.Observations);
+
+        _excelFile.SetCell($"L{i}", $"Área original en el archivo SIAL: ({entry.OrgUnitCode}) {entry.OrgUnitName}");
 
         i++;
       }

@@ -83,7 +83,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
     }
 
 
-    static internal SialOrganizationUnitEntry GetOrganizationParent(string orgUnitId) {
+    static internal SialOrganizationUnitEntry TryGetOrganization(string orgUnitId) {
 
       var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
                 $"WHERE CLAVE_AREA = '{orgUnitId}'";

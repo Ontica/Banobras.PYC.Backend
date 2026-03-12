@@ -51,18 +51,14 @@ namespace Empiria.BanobrasIntegration.Sial {
     #endregion Properties
 
     #region Methods
-    static public SialOrganizationUnitEntry GetOrganizationParent(string orgUnitId) {
 
-      SialOrganizationUnitEntry orgUnit = SialDataService.GetOrganizationParent(orgUnitId);
+    static public SialOrganizationUnitEntry TryGetOrganization(string noArea) {
 
-      Assertion.Require(orgUnit, $"El área proporcionada {orgUnitId}, no existe");
-
-      if (orgUnit.NoArea != string.Empty && orgUnit.NoAreaSupervision == string.Empty) {
-        orgUnit.NoAreaSupervision = "Empty";
-        orgUnit.AreaSupervision = "Empty";
+      if (string.IsNullOrWhiteSpace(noArea)) {
+        return null;
       }
 
-      return orgUnit;
+      return SialDataService.TryGetOrganization(noArea);
     }
 
     #endregion Methods

@@ -51,6 +51,7 @@ namespace Empiria.BanobrasIntegration.Sial.WebApi {
     public CollectionModel SearchPayrolls([FromBody] SialPayrollsQuery query) {
 
       using (var services = SialServices.ServiceInteractor()) {
+
         FixedList<SialPayrollDto> payrolls = services.SearchPayrolls(query);
 
         return new CollectionModel(base.Request, payrolls);
@@ -86,6 +87,7 @@ namespace Empiria.BanobrasIntegration.Sial.WebApi {
     [HttpGet]
     [Route("v2/pyc/integration/sial/employeesrfc/{employeeRfc}/export")]
     public SingleObjectModel EmployeePayrollRfc([FromUri] string employeeRfc) {
+
       var services = SialServices.ServiceInteractor();
 
       SialOrganizationUnitEmployeeEntryDto payrollNo = services.TryGetEmployeeRfc(employeeRfc);

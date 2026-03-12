@@ -8,15 +8,18 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using Empiria.Parties;
 using Empiria.Services;
 using Empiria.StateEnums;
+
+using Empiria.Financial.Adapters;
+
+using Empiria.Budgeting;
 
 using Empiria.Banobras.Budgeting.Adapters;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Data;
-using Empiria.Financial.Adapters;
-
 
 namespace Empiria.BanobrasIntegration.Sial.Services {
 
@@ -57,10 +60,70 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
           AccountingAcctName = x.NombreCuentaContable,
           OrgUnitName = x.NombreArea,
           BudgetAccountName = x.NombreCuentaPresupuestal,
-          Observations = x.GetObservations()
+          Observations = x.GetObservations(),
+          OrgUnit = GetFirstRegisteredOrgUnit(x.Area),
+          BudgetAccount = GetBudgetAccount(x.Area, x.CuentaPresupuestal),
+
         }).ToFixedList()
       };
     }
+
+    private BudgetAccount GetBudgetAccount(string area, string cuentaPresupuestal) {
+      if (string.IsNullOrWhiteSpace(area) || string.IsNullOrWhiteSpace(cuentaPresupuestal)) {
+        return BudgetAccount.Empty;
+      }
+
+      while (true) {
+        OrganizationalUnit orgUnit = GetFirstRegisteredOrgUnit(area);
+
+        var account = BudgetAccount.TryParse(orgUnit, cuentaPresupuestal);
+
+        if (account != null) {
+          return account;
+        }
+
+        SialOrganizationUnitEntry parent = SialOrganizationUnitEntry.TryGetOrganization(area);
+
+        if (parent == null) {
+          return BudgetAccount.Empty;
+        }
+
+        area = parent.NoAreaSupervision;
+      }
+    }
+
+
+    public OrganizationalUnit GetFirstRegisteredOrgUnit(string area) {
+      if (string.IsNullOrWhiteSpace(area)) {
+        return OrganizationalUnit.Empty;
+      }
+
+      OrganizationalUnit orgUnit = null;
+
+      while (true) {
+
+        orgUnit = OrganizationalUnit.TryParseWithID(area);
+
+        if (orgUnit != null) {
+          return orgUnit;
+        }
+
+        SialOrganizationUnitEntry areaSIAL = SialOrganizationUnitEntry.TryGetOrganization(area);
+
+        if (areaSIAL == null) {
+          return OrganizationalUnit.Empty;
+        }
+
+        areaSIAL = SialOrganizationUnitEntry.TryGetOrganization(areaSIAL.NoAreaSupervision);
+
+        if (areaSIAL == null) {
+          return OrganizationalUnit.Empty;
+        }
+
+        area = areaSIAL.NoArea;
+      }
+    }
+
 
     public FixedList<SialPayrollDto> SearchPayrolls(SialPayrollsQuery query) {
       Assertion.Require(query, nameof(query));
@@ -99,7 +162,9 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
 
       Assertion.Require(orgUnitId, "Requiero un número de área");
 
-      SialOrganizationUnitEntry orgUnit = SialOrganizationUnitEntry.GetOrganizationParent(orgUnitId);
+      SialOrganizationUnitEntry orgUnit = SialOrganizationUnitEntry.TryGetOrganization(orgUnitId);
+
+      Assertion.Require(orgUnit, $"El área proporcionada {orgUnitId} no existe.");
 
       return SialMapper.MapToOrganizationUnitEntry(orgUnit);
     }
