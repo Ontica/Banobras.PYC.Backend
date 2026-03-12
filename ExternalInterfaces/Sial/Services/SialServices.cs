@@ -21,7 +21,7 @@ using Empiria.Financial.Adapters;
 namespace Empiria.BanobrasIntegration.Sial.Services {
 
   /// <summary>Implements Banobras SIAL System services.</summary>
-  public class SialServices : Service, ISialOrganizationUnitService {
+  public class SialServices : Service {
 
     #region Constructors and parsers
 
@@ -86,12 +86,11 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
     }
 
 
-    public FixedList<ISialOrganizationUnitData> GetOrganizationUnitEntries() {
+    public FixedList<SialOrganizationUnitEntryDto> GetOrganizationUnitEntries() {
 
       FixedList<SialOrganizationUnitEntry> entries = SialDataService.GetOrganizationUnitEntries();
 
       return SialMapper.MapToOrganizationUnitEntries(entries)
-                      .Select(x => (ISialOrganizationUnitData) x)
                       .ToFixedList();
     }
 
@@ -106,17 +105,16 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
     }
 
 
-    public FixedList<ISialOrganizationUnitEmployeesData> GetOrganizationUnitEmployeesEntries() {
+    public FixedList<SialOrganizationUnitEmployeeEntryDto> GetOrganizationUnitEmployeesEntries() {
 
       FixedList<SialOrganizationUnitEmployeeEntry> entries = SialDataService.GetOrganizationUnitEmployeesEntries();
 
       return SialMapper.MapToOrganizationUnitEmployeesEntries(entries)
-                      .Select(x => (ISialOrganizationUnitEmployeesData) x)
                       .ToFixedList();
     }
 
 
-    public ISialOrganizationUnitEmployeesData TryGetEmployeeNo(string employeeNo) {
+    public SialOrganizationUnitEmployeeEntryDto TryGetEmployeeNo(string employeeNo) {
       Assertion.Require(employeeNo, nameof(employeeNo));
 
       SialOrganizationUnitEmployeeEntry employee = SialDataService.TryGetEmployeeNo(employeeNo);
@@ -129,7 +127,7 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
     }
 
 
-    public ISialOrganizationUnitEmployeesData TryGetEmployeeRfc(string employeeRfc) {
+    public SialOrganizationUnitEmployeeEntryDto TryGetEmployeeRfc(string employeeRfc) {
       Assertion.Require(employeeRfc, nameof(employeeRfc));
 
       SialOrganizationUnitEmployeeEntry employee = SialDataService.TryGetEmployeeRfc(employeeRfc);

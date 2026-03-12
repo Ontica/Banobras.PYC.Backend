@@ -8,12 +8,10 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using Empiria.Financial.Adapters;
-
 namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
   /// <summary>Output DTO used to return a SIAL organization unit employee.</summary>
-  public class SialOrganizationUnitEmployeeEntryDto : ISialOrganizationUnitEmployeesData {
+  public class SialOrganizationUnitEmployeeEntryDto {
 
     public string EmployeeNo {
       get; internal set;
@@ -32,7 +30,7 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
     }
 
     public string OrganizationUnitNo {
-         get; internal set;
+      get; internal set;
     }
 
     public string JobNo {

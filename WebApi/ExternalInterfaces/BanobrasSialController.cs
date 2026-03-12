@@ -14,8 +14,6 @@ using Empiria.StateEnums;
 using Empiria.Storage;
 using Empiria.WebApi;
 
-using Empiria.Financial.Adapters;
-
 using Empiria.Banobras.Budgeting.Adapters;
 using Empiria.Banobras.Budgeting.Services;
 
@@ -79,7 +77,7 @@ namespace Empiria.BanobrasIntegration.Sial.WebApi {
 
       var services = SialServices.ServiceInteractor();
 
-      ISialOrganizationUnitEmployeesData payrollNo = services.TryGetEmployeeNo(employeeNo);
+      SialOrganizationUnitEmployeeEntryDto payrollNo = services.TryGetEmployeeNo(employeeNo);
 
       return new SingleObjectModel(base.Request, payrollNo);
     }
@@ -90,7 +88,7 @@ namespace Empiria.BanobrasIntegration.Sial.WebApi {
     public SingleObjectModel EmployeePayrollRfc([FromUri] string employeeRfc) {
       var services = SialServices.ServiceInteractor();
 
-      ISialOrganizationUnitEmployeesData payrollNo = services.TryGetEmployeeRfc(employeeRfc);
+      SialOrganizationUnitEmployeeEntryDto payrollNo = services.TryGetEmployeeRfc(employeeRfc);
 
       return new SingleObjectModel(base.Request, payrollNo);
     }

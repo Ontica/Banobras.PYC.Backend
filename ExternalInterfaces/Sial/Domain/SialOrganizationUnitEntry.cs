@@ -67,7 +67,6 @@ namespace Empiria.BanobrasIntegration.Sial {
 
     #endregion Methods
 
-
   } // class SialOrganizationUnitEntry
 
 } // namespace Empiria.BanobrasIntegration.Sial

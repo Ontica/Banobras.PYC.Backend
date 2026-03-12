@@ -18,7 +18,6 @@ using Empiria.Banobras.Budgeting.Adapters;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Services;
-using Empiria.Financial.Adapters;
 
 namespace Empiria.Tests.BanobrasIntegration.Sial {
 
@@ -68,7 +67,7 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
     public void Should_Get_OrganizationUnitData_OrgUnit() {
       var services = SialServices.ServiceInteractor();
 
-      FixedList<ISialOrganizationUnitData> sut = services.GetOrganizationUnitEntries();
+      FixedList<SialOrganizationUnitEntryDto> sut = services.GetOrganizationUnitEntries();
 
       Assert.NotNull(sut);
     }
@@ -88,7 +87,7 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
     public void Should_Get_OrganizationUnitData_Employees() {
       var services = SialServices.ServiceInteractor();
 
-      FixedList<ISialOrganizationUnitEmployeesData> sut = services.GetOrganizationUnitEmployeesEntries();
+      FixedList<SialOrganizationUnitEmployeeEntryDto> sut = services.GetOrganizationUnitEmployeesEntries();
 
       Assert.NotNull(sut);
     }
@@ -98,7 +97,7 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
     public void Should_Get_OrganizationUnitData_By_EmployeeNo() {
       var services = SialServices.ServiceInteractor();
 
-      ISialOrganizationUnitEmployeesData sut = services.TryGetEmployeeNo("111295");
+      SialOrganizationUnitEmployeeEntryDto sut = services.TryGetEmployeeNo("111295");
 
       Assert.NotNull(sut);
     }
@@ -108,7 +107,7 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
     public void Should_Get_OrganizationUnitData_By_EmployeeRfc() {
       var services = SialServices.ServiceInteractor();
 
-      ISialOrganizationUnitEmployeesData sut = services.TryGetEmployeeRfc("LOTR810504GT2");
+      SialOrganizationUnitEmployeeEntryDto sut = services.TryGetEmployeeRfc("LOTR810504GT2");
 
       Assert.NotNull(sut);
     }
