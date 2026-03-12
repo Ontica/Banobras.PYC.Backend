@@ -76,44 +76,50 @@ namespace Empiria.Budgeting.Reporting {
         _excelFile.SetCell($"J{i}", entry.ToPay);
         _excelFile.SetCell($"K{i}", entry.Exercised);
         _excelFile.SetCell($"L{i}", entry.ToExercise);
-        _excelFile.SetCell($"M{i}", entry.Description);
+        _excelFile.SetCell($"M{i}", entry.Month);
+        _excelFile.SetCell($"N{i}", EmpiriaString.MonthName(entry.Month));
+        _excelFile.SetCell($"O{i}", entry.Description);
+
         if (!entry.CommitTxn.IsEmptyInstance) {
-          _excelFile.SetCell($"N{i}", entry.CommitTxn.TransactionNo);
+          _excelFile.SetCell($"P{i}", entry.CommitTxn.TransactionNo);
         }
         if (!entry.ApprovePaymentTxn.IsEmptyInstance) {
-          _excelFile.SetCell($"O{i}", entry.ApprovePaymentTxn.TransactionNo);
+          _excelFile.SetCell($"Q{i}", entry.ApprovePaymentTxn.TransactionNo);
         }
         if (!entry.ExerciseTxn.IsEmptyInstance) {
-          _excelFile.SetCell($"P{i}", entry.ExerciseTxn.TransactionNo);
+          _excelFile.SetCell($"R{i}", entry.ExerciseTxn.TransactionNo);
         }
-        _excelFile.SetCell($"Q{i}", entry.Requisition.OrderNo);
+
+        _excelFile.SetCell($"S{i}", entry.Requisition.OrderNo);
         if (!entry.Contract.IsEmptyInstance) {
-          _excelFile.SetCell($"R{i}", entry.Contract.ContractNo);
+          _excelFile.SetCell($"T{i}", entry.Contract.ContractNo);
         }
         if (!entry.PayableOrder.IsEmptyInstance) {
-          _excelFile.SetCell($"S{i}", entry.PayableOrder.OrderNo);
+          _excelFile.SetCell($"U{i}", entry.PayableOrder.OrderNo);
         }
         if (!entry.Contract.IsEmptyInstance) {
-          _excelFile.SetCell($"T{i}", entry.Contract.Category.Name);
+          _excelFile.SetCell($"V{i}", entry.Contract.Category.Name);
         } else if (!entry.PayableOrder.IsEmptyInstance) {
-          _excelFile.SetCell($"T{i}", entry.PayableOrder.Category.Name);
+          _excelFile.SetCell($"V{i}", entry.PayableOrder.Category.Name);
         } else {
-          _excelFile.SetCell($"T{i}", entry.Requisition.Category.Name);
+          _excelFile.SetCell($"V{i}", entry.Requisition.Category.Name);
         }
 
         if (!entry.PaymentOrder.IsEmptyInstance) {
-          _excelFile.SetCell($"U{i}", entry.PaymentOrder.PaymentOrderNo);
-          _excelFile.SetCell($"V{i}", entry.PaymentOrder.PayTo.Name);
-          _excelFile.SetCell($"W{i}", entry.PaymentOrder.PaymentMethod.Name);
-          _excelFile.SetCell($"X{i}", entry.PaymentOrder.PaymentAccount.AccountNo);
-          _excelFile.SetCell($"Y{i}", entry.PaymentOrder.PaymentAccount.Institution.Name);
-          _excelFile.SetCell($"Z{i}", entry.Debtor.Name);
-          _excelFile.SetCell($"AA{i}", entry.AccountingVoucher);
+          _excelFile.SetCell($"W{i}", entry.PaymentOrder.PaymentOrderNo);
+          _excelFile.SetCell($"X{i}", entry.PaymentOrder.PayTo.Name);
+          _excelFile.SetCell($"Y{i}", entry.PaymentOrder.PaymentMethod.Name);
+          _excelFile.SetCell($"Z{i}", entry.PaymentOrder.PaymentAccount.AccountNo);
+          _excelFile.SetCell($"AA{i}", entry.PaymentOrder.PaymentAccount.Institution.Name);
+          _excelFile.SetCell($"AB{i}", entry.PaymentOrder.Payed ?
+                  entry.PaymentOrder.LastPaymentInstruction.LastUpdateTime.ToString("dd/MMM/yyyy HH:mm") : string.Empty);
+          _excelFile.SetCell($"AC{i}", entry.Debtor.Name);
+          _excelFile.SetCell($"AD{i}", entry.AccountingVoucher);
         }
 
-        _excelFile.SetCell($"AB{i}", entry.BudgetAccount.OrganizationalUnit.Name);
-        _excelFile.SetCell($"AC{i}", entry.BudgetAccount.Name);
-        _excelFile.SetCell($"AD{i}", entry.Budget.Name);
+        _excelFile.SetCell($"AE{i}", entry.BudgetAccount.OrganizationalUnit.Name);
+        _excelFile.SetCell($"AF{i}", entry.BudgetAccount.Name);
+        _excelFile.SetCell($"AG{i}", entry.Budget.Name);
 
         i++;
 

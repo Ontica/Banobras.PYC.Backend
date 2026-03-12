@@ -8,6 +8,7 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
 using System.Collections.Generic;
 
 using Empiria.DynamicData;
@@ -98,6 +99,10 @@ namespace Empiria.Budgeting.Reporting {
       }
     }
 
+    public string Month {
+      get; internal set;
+    }
+
     public string Description {
       get; internal set;
     }
@@ -138,6 +143,10 @@ namespace Empiria.Budgeting.Reporting {
       get; internal set;
     }
 
+    public DateTime? PaymentDate {
+      get; internal set;
+    }
+
     public string Debtor {
       get; internal set;
     }
@@ -145,6 +154,7 @@ namespace Empiria.Budgeting.Reporting {
     public string AccountingVoucher {
       get; internal set;
     }
+
 
   }  // class BudgetRequestsAnalyticsEntryDto
 
@@ -181,6 +191,7 @@ namespace Empiria.Budgeting.Reporting {
                             linkField: "approvePaymentTxnUID", action: "ViewBudgetTransaction"),
         new DataTableColumn("exerciseTxnNo", "Ejercicio", "text-link",
                             linkField: "exerciseTxnUID", action: "ViewBudgetTransaction"),
+        new DataTableColumn("month", "Mes", "text"),
         new DataTableColumn("description", "Descripción", "text"),
         new DataTableColumn("requisitionNo", "Requisición", "text-nowrap"),
         new DataTableColumn("contractNo", "Contrato", "text"),
@@ -191,6 +202,7 @@ namespace Empiria.Budgeting.Reporting {
         new DataTableColumn("paymentMethod", "Método de pago", "text"),
         new DataTableColumn("paymentAccount", "Cuenta de pago", "text-nowrap"),
         new DataTableColumn("paymentInstitution", "Institución", "text"),
+        new DataTableColumn("paymentDate", "Fecha de pago", "date"),
         new DataTableColumn("debtor", "Deudor", "text"),
         new DataTableColumn("accountingVoucher", "Póliza contable", "text-nowrap"),
         new DataTableColumn("budget", "Presupuesto", "text"),
@@ -220,7 +232,7 @@ namespace Empiria.Budgeting.Reporting {
         ExerciseTxnUID = entry.ExerciseTxn.IsEmptyInstance ? string.Empty : entry.ExerciseTxn.UID,
         ExerciseTxnNo = entry.ExerciseTxn.IsEmptyInstance ? string.Empty : entry.ExerciseTxn.TransactionNo,
         ControlNo = entry.ControlNo,
-
+        Month = EmpiriaString.MonthName(entry.Month),
         RequisitionNo = entry.RequestTxn.GetEntity().Data.BudgetableNo,
         ContractNo = entry.Contract.IsEmptyInstance ? string.Empty : entry.Contract.ContractNo,
         OrderNo = entry.PayableOrder.OrderNo,
@@ -230,6 +242,7 @@ namespace Empiria.Budgeting.Reporting {
         PaymentMethod = entry.PaymentOrder.PaymentMethod.Name,
         PaymentAccount = entry.PaymentOrder.PaymentMethod.AccountRelated ? entry.PaymentOrder.PaymentAccount.AccountNo : "No aplica",
         PaymentInstitution = entry.PaymentOrder.PaymentMethod.AccountRelated ? entry.PaymentOrder.PaymentAccount.Institution.Name : "No aplica",
+        PaymentDate = entry.PaymentOrder.Payed ? entry.PaymentOrder.LastPaymentInstruction.LastUpdateTime : DateTime.MinValue,
         Debtor = entry.Debtor.IsEmptyInstance ? string.Empty : entry.Debtor.Name,
         AccountingVoucher = entry.AccountingVoucher,
         Description = entry.Description,
@@ -256,6 +269,7 @@ namespace Empiria.Budgeting.Reporting {
         ApprovePaymentTxnNo = string.Empty,
         ExerciseTxnUID = string.Empty,
         ExerciseTxnNo = string.Empty,
+        Month = EmpiriaString.MonthName(entry.Month),
         RequisitionNo = entry.Requisition.OrderNo,
         ContractNo = entry.Contract.IsEmptyInstance ? string.Empty : entry.Contract.ContractNo,
         OrderNo = string.Empty,

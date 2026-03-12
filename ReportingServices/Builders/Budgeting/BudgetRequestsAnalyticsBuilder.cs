@@ -8,6 +8,7 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -78,6 +79,10 @@ namespace Empiria.Budgeting.Reporting {
       get {
         return Requested + Committed + ToPay;
       }
+    }
+
+    public int Month {
+      get; internal set;
     }
 
     public string Description {
@@ -180,9 +185,16 @@ namespace Empiria.Budgeting.Reporting {
       foreach (var groupedEntries in controlNoGroups) {
 
         if (!groupedEntries.Key.ControlNo.Contains("/")) {
-          entries.Add(BuildRequestEntry(requestTxn, relatedEntries.FindAll(x => x.ControlNo.StartsWith(groupedEntries.Key.ControlNo))));
+          entries.Add(BuildRequestEntry(requestTxn,
+                                        relatedEntries.FindAll(x => x.ControlNo.StartsWith(groupedEntries.Key.ControlNo))));
         } else {
-          entries.Add(BuildExerciseEntry(requestTxn, relatedEntries.ToFixedList().SelectDistinct(x => x.Transaction), groupedEntries.ToFixedList()));
+          var entry = TryBuildExerciseEntry(requestTxn,
+                                            relatedEntries.ToFixedList().SelectDistinct(x => x.Transaction),
+                                            groupedEntries.ToFixedList());
+
+          if (entry != null) {
+            entries.Add(entry);
+          }
         }
       }
 
@@ -208,6 +220,7 @@ namespace Empiria.Budgeting.Reporting {
         PayableOrder = PayableOrder.Empty,
         PaymentOrder = PaymentOrder.Empty,
         AccountingVoucher = string.Empty,
+        Month = requestEntry.Month,
         Description = EmpiriaString.FirstWithValue(requestEntry.Description, requestEntry.Transaction.Description,
                                                    requestEntry.Transaction.Justification),
         Budget = requestEntry.Budget,
@@ -244,20 +257,30 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    static private BudgetRequestsAnalyticsEntry BuildExerciseEntry(BudgetTransaction requestTxn,
-                                                                   FixedList<BudgetTransaction> relatedTxns,
-                                                                   FixedList<BudgetEntry> entries) {
+    static private BudgetRequestsAnalyticsEntry TryBuildExerciseEntry(BudgetTransaction requestTxn,
+                                                                      FixedList<BudgetTransaction> relatedTxns,
+                                                                      FixedList<BudgetEntry> entries) {
 
 
-      var approvePaymentEntry = entries.Last(x => x.Transaction.OperationType == BudgetOperationType.ApprovePayment);
+      var approvePaymentEntry = entries.FindLast(x => x.Transaction.OperationType == BudgetOperationType.ApprovePayment);
+
+      if (approvePaymentEntry == null) {
+        approvePaymentEntry = entries.FindLast(x => x.Transaction.OperationType == BudgetOperationType.Exercise);
+      }
+
+      if (approvePaymentEntry == null) {
+        return null;
+      }
 
       var commitTxn = relatedTxns.FindLast(x => x.OperationType == BudgetOperationType.Commit) ?? BudgetTransaction.Empty;
 
-      var exerciseTxn = relatedTxns.FindLast(x => x.OperationType == BudgetOperationType.Exercise) ?? BudgetTransaction.Empty;
+      var payableOrder = approvePaymentEntry.Transaction.GetEntity() as PayableOrder;
 
       var paymentOrder = PaymentOrder.Parse(approvePaymentEntry.Transaction.PayableId);
 
-      var payableOrder = approvePaymentEntry.Transaction.GetEntity() as PayableOrder;
+      var exerciseTxn = relatedTxns.Find(x => x.PayableId == paymentOrder.Id &&
+                                              x.OperationType == BudgetOperationType.Exercise) ?? BudgetTransaction.Empty;
+
 
       var journalEntry = new BudgetRequestsAnalyticsEntry {
         BudgetAccount = approvePaymentEntry.BudgetAccount,
@@ -269,6 +292,7 @@ namespace Empiria.Budgeting.Reporting {
         ControlNo = approvePaymentEntry.ControlNo,
         PayableOrder = payableOrder,
         PaymentOrder = paymentOrder,
+        Month = Math.Max(approvePaymentEntry.Month, exerciseTxn.ApplicationDate.Month),
         AccountingVoucher = !exerciseTxn.IsEmptyInstance ? "Por determinar" : string.Empty,
         Description = EmpiriaString.FirstWithValue(approvePaymentEntry.Description,
                                                    approvePaymentEntry.Transaction.Description,
