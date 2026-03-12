@@ -208,7 +208,8 @@ namespace Empiria.Budgeting.Reporting {
       return new BudgetRequestsAnalyticsEntryDto {
         OrgUnit = entry.BudgetAccount.OrganizationalUnit.FullName,
         BudgetAccount = ((INamedEntity) entry.BudgetAccount).Name,
-        BudgetBaseAccount = entry.BudgetAccount.StandardAccount.BaseAccount.StdAcctNo,
+        BudgetBaseAccount = entry.BudgetAccount.StandardAccount.IsBaseAccount ? string.Empty :
+                                                entry.BudgetAccount.StandardAccount.BaseAccount.StdAcctNo,
         BudgetProgram = entry.BudgetProgram.Code,
         RequestTxnUID = entry.RequestTxn.UID,
         RequestTxnNo = entry.RequestTxn.TransactionNo,
@@ -243,7 +244,8 @@ namespace Empiria.Budgeting.Reporting {
       return new BudgetRequestsAnalyticsEntryDto {
         OrgUnit = entry.BudgetAccount.OrganizationalUnit.FullName,
         BudgetAccount = ((INamedEntity) entry.BudgetAccount).Name,
-        BudgetBaseAccount = entry.BudgetAccount.StandardAccount.BaseAccount.StdAcctNo,
+        BudgetBaseAccount = entry.BudgetAccount.StandardAccount.IsBaseAccount ? string.Empty :
+                                                entry.BudgetAccount.StandardAccount.BaseAccount.StdAcctNo,
         BudgetProgram = entry.BudgetProgram.Code,
         ControlNo = entry.ControlNo,
         RequestTxnUID = entry.RequestTxn.UID,
