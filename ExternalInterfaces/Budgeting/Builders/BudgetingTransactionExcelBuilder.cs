@@ -9,6 +9,7 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
+using System.Linq;
 
 using Empiria.Office;
 using Empiria.Storage;
@@ -56,36 +57,48 @@ namespace Empiria.Banobras.Budgeting.Exporters {
     private void FillOut(BudgetingTransactionDto txn) {
       int i = _templateConfig.FirstRowIndex;
 
-      foreach (var entry in txn.Entries) {
+      var entries = txn.Entries.OrderBy(x => x.BudgetAccount.OrganizationalUnit.Code)
+                               .ThenBy(x => x.BudgetAccount.Code)
+                               .ThenBy(x => x.OrgUnitCode);
+
+      foreach (var entry in entries) {
         _excelFile.SetCell($"A{i}", entry.Year);
         _excelFile.SetCell($"B{i}", entry.Month);
         _excelFile.SetCell($"C{i}", entry.Day);
 
         if (!entry.BudgetAccount.IsEmptyInstance) {
           _excelFile.SetCell($"D{i}", entry.BudgetAccount.OrganizationalUnit.Code);
-          _excelFile.SetCell($"H{i}", entry.BudgetAccount.OrganizationalUnit.Name);
           _excelFile.SetCell($"E{i}", entry.BudgetAccount.Code);
-          _excelFile.SetCell($"I{i}", entry.BudgetAccount.Name);
-        } else if (!entry.OrgUnit.IsEmptyInstance) {
-          _excelFile.SetCell($"D{i}", entry.OrgUnit.Code);
-          _excelFile.SetCell($"H{i}", entry.OrgUnit.Name);
+          _excelFile.SetCell($"K{i}", entry.BudgetAccount.OrganizationalUnit.Name);
+          _excelFile.SetCell($"L{i}", entry.BudgetAccount.Name);
+
         } else {
           _excelFile.SetCell($"D{i}", entry.OrgUnitCode);
-          _excelFile.SetCell($"H{i}", $"El área {entry.OrgUnitCode} no existe en el sistema SIAL ni en PYC.");
-        }
-
-        if (entry.BudgetAccount.IsEmptyInstance) {
           _excelFile.SetCell($"E{i}", entry.BudgetAccountNo);
-          _excelFile.SetCell($"I{i}", $"La relación área/partida o " +
-                                      $"la partida {entry.BudgetAccountNo} no existe en el sistema PYC.");
+          _excelFile.SetCell($"K{i}", entry.OrgUnitName);
+          _excelFile.SetCell($"L{i}", entry.BudgetAccountName);
         }
 
-        _excelFile.SetCell($"F{i}", entry.Amount);
-        _excelFile.SetCell($"G{i}", entry.OperationNo);
-        _excelFile.SetCell($"J{i}", entry.AccountingAcctNo);
-        _excelFile.SetCell($"K{i}", entry.AccountingAcctName);
+        _excelFile.SetCell($"F{i}", "Ejercido");
 
-        _excelFile.SetCell($"L{i}", $"Área original en el archivo SIAL: '{entry.OrgUnitCode}'");
+        if (entry.Amount > 0) {
+          _excelFile.SetCell($"G{i}", entry.Amount);
+        } else {
+          _excelFile.SetCell($"H{i}", Math.Abs(entry.Amount));
+        }
+
+        _excelFile.SetCell($"I{i}", string.Empty);  // isAdjustment
+        _excelFile.SetCell($"J{i}", string.Empty);  // NumVerificacion
+
+        _excelFile.SetCell($"M{i}", entry.OrgUnitCode);
+        _excelFile.SetCell($"N{i}", entry.OrgUnitName);
+
+        _excelFile.SetCell($"O{i}", entry.OperationNo);
+
+        _excelFile.SetCell($"P{i}", entry.AccountingAcctNo);
+        _excelFile.SetCell($"Q{i}", entry.AccountingAcctName);
+
+        _excelFile.SetCell($"R{i}", $"Nómina correspondiente al área ({entry.OrgUnitCode}) {entry.OrgUnitName}");
 
         i++;
       }
