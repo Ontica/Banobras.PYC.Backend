@@ -8,13 +8,10 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using Empiria.Parties;
 using Empiria.Services;
 using Empiria.StateEnums;
 
 using Empiria.Financial.Adapters;
-
-using Empiria.Budgeting;
 
 using Empiria.Banobras.Budgeting.Adapters;
 
@@ -40,90 +37,13 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
 
     #region Methods
 
-    public BudgetingTransactionDto ConvertPayrollToBudgetingInterface(int payrollUID) {
+    public BudgetingTransactionDto ConvertPayrollToBudgetTransaction(int payrollUID) {
 
-      NominaEncabezado payroll = SialDataService.GetPayroll(payrollUID);
+      var converter = new SialPayrollToBudgetTxnConverter(payrollUID);
 
-      FixedList<NominaDetalle> entries = SialDataService.GetPayrollEntries(payrollUID);
+      return converter.Convert();
 
-      return new BudgetingTransactionDto {
-        Description = $"{payroll.NoNomina} - {payroll.Descripcion}",
-        Entries = entries.Select(x => new BudgetingEntryDto {
-          Year = payroll.Fecha.Year,
-          Month = payroll.Fecha.Month,
-          Day = payroll.Fecha.Day,
-          OrgUnitCode = x.Area,
-          OperationNo = x.NoOperacion,
-          BudgetAccountNo = x.CuentaPresupuestal,
-          Amount = x.Importe,
-          AccountingAcctNo = x.CuentaContable,
-          AccountingAcctName = x.NombreCuentaContable,
-          OrgUnitName = x.NombreArea,
-          BudgetAccountName = x.NombreCuentaPresupuestal,
-          Observations = x.GetObservations(),
-          OrgUnit = GetFirstRegisteredOrgUnit(x.Area),
-          BudgetAccount = GetBudgetAccount(x.Area, x.CuentaPresupuestal),
-
-        }).ToFixedList()
-      };
     }
-
-    private BudgetAccount GetBudgetAccount(string area, string cuentaPresupuestal) {
-      if (string.IsNullOrWhiteSpace(area) || string.IsNullOrWhiteSpace(cuentaPresupuestal)) {
-        return BudgetAccount.Empty;
-      }
-
-      while (true) {
-        OrganizationalUnit orgUnit = GetFirstRegisteredOrgUnit(area);
-
-        var account = BudgetAccount.TryParse(orgUnit, cuentaPresupuestal);
-
-        if (account != null) {
-          return account;
-        }
-
-        SialOrganizationUnitEntry parent = SialOrganizationUnitEntry.TryGetOrganization(area);
-
-        if (parent == null) {
-          return BudgetAccount.Empty;
-        }
-
-        area = parent.NoAreaSupervision;
-      }
-    }
-
-
-    public OrganizationalUnit GetFirstRegisteredOrgUnit(string area) {
-      if (string.IsNullOrWhiteSpace(area)) {
-        return OrganizationalUnit.Empty;
-      }
-
-      OrganizationalUnit orgUnit = null;
-
-      while (true) {
-
-        orgUnit = OrganizationalUnit.TryParseWithID(area);
-
-        if (orgUnit != null) {
-          return orgUnit;
-        }
-
-        SialOrganizationUnitEntry areaSIAL = SialOrganizationUnitEntry.TryGetOrganization(area);
-
-        if (areaSIAL == null) {
-          return OrganizationalUnit.Empty;
-        }
-
-        areaSIAL = SialOrganizationUnitEntry.TryGetOrganization(areaSIAL.NoAreaSupervision);
-
-        if (areaSIAL == null) {
-          return OrganizationalUnit.Empty;
-        }
-
-        area = areaSIAL.NoArea;
-      }
-    }
-
 
     public FixedList<SialPayrollDto> SearchPayrolls(SialPayrollsQuery query) {
       Assertion.Require(query, nameof(query));
@@ -203,8 +123,6 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
 
       return SialMapper.MapToOrganizationUnitEmployeeEntries(employee);
     }
-
-
 
     #endregion Methods
 

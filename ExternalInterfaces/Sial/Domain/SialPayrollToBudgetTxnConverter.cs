@@ -1,0 +1,179 @@
+﻿/* Empiria Financial *****************************************************************************************
+*                                                                                                            *
+*  Module   : Banobras SIAL Integration                  Component : Integration Layer                       *
+*  Assembly : Banobras.PYC.ExternalInterfaces.dll        Pattern   : Service provider                        *
+*  Type     : SialPayrollToBudgetTxnConverter            License   : Please read LICENSE.txt file            *
+*                                                                                                            *
+*  Summary  : Implements Banobras SIAL System services.                                                      *
+*                                                                                                            *
+************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
+
+using Empiria.Parties;
+
+using Empiria.Financial;
+using Empiria.Financial.Rules;
+
+using Empiria.Budgeting;
+
+using Empiria.Banobras.Budgeting.Adapters;
+
+using Empiria.BanobrasIntegration.Sial.Data;
+
+namespace Empiria.BanobrasIntegration.Sial {
+
+  internal class SialPayrollToBudgetTxnConverter {
+
+    static private readonly FixedList<FinancialRule> _budgetingRules =
+                                          FinancialRuleCategory.ParseNamedKey("BUDGETING_ACCOUNTS")
+                                                               .GetFinancialRules();
+
+    private readonly int _payrollID;
+
+    internal SialPayrollToBudgetTxnConverter(int payrollID) {
+      _payrollID = payrollID;
+    }
+
+    internal BudgetingTransactionDto Convert() {
+      NominaEncabezado payroll = SialDataService.GetPayroll(_payrollID);
+
+      FixedList<NominaDetalle> entries = SialDataService.GetPayrollEntries(_payrollID);
+
+      return new BudgetingTransactionDto {
+        Description = $"{payroll.NoNomina} - {payroll.Descripcion}",
+        Entries = entries.Select(x => Convert(payroll, x)).ToFixedList()
+      };
+    }
+
+    #region Helpers
+
+    private BudgetingEntryDto Convert(NominaEncabezado payroll, NominaDetalle entry) {
+
+      var dto = new BudgetingEntryDto {
+        Year = payroll.Fecha.Year,
+        Month = payroll.Fecha.Month,
+        Day = payroll.Fecha.Day,
+        OrgUnitCode = entry.Area,
+        OperationNo = entry.NoOperacion,
+        Amount = entry.Importe,
+        AccountingAcctNo = entry.CuentaContable,
+        AccountingAcctName = string.Empty
+      };
+
+      dto.BudgetAccountNo = GetCuentaPresupuestal(entry.CuentaContable);
+      dto.BudgetAccount = GetBudgetAccount(entry.Area, dto.BudgetAccountNo);
+      dto.BudgetAccountName = GetNombreCuentaPresupuestal(dto.BudgetAccount, dto.BudgetAccountNo);
+
+      var areaSial = SialOrganizationUnitEntry.TryGetOrganization(entry.Area);
+
+      if (areaSial == null) {
+        dto.OrgUnitCode = "No registrada";
+        dto.OrgUnitName = $"El área {entry.Area} no está registrada en el sistema SIAL.";
+        dto.Observations = "Favor de revisar el área origen";
+
+        return dto;
+      } else {
+        dto.OrgUnitName = areaSial.Descripcion;
+
+
+      }
+      return dto;
+    }
+
+
+    static private string GetNombreCuentaPresupuestal(BudgetAccount budgetAccount, string noCuentaPresupuestal) {
+      if (!budgetAccount.IsEmptyInstance) {
+        return budgetAccount.Name;
+      }
+
+      if (string.IsNullOrWhiteSpace(noCuentaPresupuestal)) {
+        return "Cuenta presupuestal no proporcionada";
+      }
+
+      var budgetType = BudgetType.GetList().Find(x => x.Name.Contains("GastoCorriente"));
+
+      if (budgetType == null) {
+        return "Catálogo de cuentas prespuestales no registrado";
+      }
+
+      var stdAccount = StandardAccount.TryParseAccountNo(budgetType.StandardAccountType, noCuentaPresupuestal);
+
+      if (stdAccount == null) {
+        return $"La cuenta presupuestal '{noCuentaPresupuestal}' no está registrada en el sistema.";
+      }
+
+      return $"El área no maneja la cuenta presupuestal '{noCuentaPresupuestal}'.";
+    }
+
+
+    static private string GetCuentaPresupuestal(string cuentaContable) {
+      var rule = _budgetingRules.Find(x => x.DebitAccount == cuentaContable);
+
+      if (rule == null) {
+        return string.Empty;
+      }
+
+      return rule.CreditConcept;
+    }
+
+
+    static private BudgetAccount GetBudgetAccount(string area, string cuentaPresupuestal) {
+      if (string.IsNullOrWhiteSpace(area) || string.IsNullOrWhiteSpace(cuentaPresupuestal)) {
+        return BudgetAccount.Empty;
+      }
+
+      while (true) {
+        OrganizationalUnit orgUnit = GetFirstRegisteredOrgUnit(area);
+
+        var account = BudgetAccount.TryParse(orgUnit, cuentaPresupuestal);
+
+        if (account != null) {
+          return account;
+        }
+
+        SialOrganizationUnitEntry parent = SialOrganizationUnitEntry.TryGetOrganization(area);
+
+        if (parent == null) {
+          return BudgetAccount.Empty;
+        }
+
+        area = parent.NoAreaSupervision;
+      }
+    }
+
+
+    static private OrganizationalUnit GetFirstRegisteredOrgUnit(string area) {
+      if (string.IsNullOrWhiteSpace(area)) {
+        return OrganizationalUnit.Empty;
+      }
+
+      OrganizationalUnit orgUnit = null;
+
+      while (true) {
+
+        orgUnit = OrganizationalUnit.TryParseWithID(area);
+
+        if (orgUnit != null) {
+          return orgUnit;
+        }
+
+        SialOrganizationUnitEntry areaSIAL = SialOrganizationUnitEntry.TryGetOrganization(area);
+
+        if (areaSIAL == null) {
+          return OrganizationalUnit.Empty;
+        }
+
+        areaSIAL = SialOrganizationUnitEntry.TryGetOrganization(areaSIAL.NoAreaSupervision);
+
+        if (areaSIAL == null) {
+          return OrganizationalUnit.Empty;
+        }
+
+        area = areaSIAL.NoArea;
+      }
+    }
+
+    #endregion Helpers
+
+  }  // class SialPayrollToBudgetTxnConverter
+
+}  // namespace Empiria.BanobrasIntegration.Sial
