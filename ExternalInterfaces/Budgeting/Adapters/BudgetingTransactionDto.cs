@@ -8,8 +8,6 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using Empiria.Parties;
-
 using Empiria.Budgeting;
 
 namespace Empiria.Banobras.Budgeting.Adapters {
@@ -78,10 +76,6 @@ namespace Empiria.Banobras.Budgeting.Adapters {
 
     public string Observations {
       get; internal set;
-    }
-
-    internal OrganizationalUnit OrgUnit {
-      get; set;
     }
 
     internal BudgetAccount BudgetAccount {

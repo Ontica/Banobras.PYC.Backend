@@ -83,17 +83,6 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
     }
 
 
-    static internal SialOrganizationUnitEntry TryGetOrganization(string orgUnitId) {
-
-      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
-                $"WHERE CLAVE_AREA = '{orgUnitId}'";
-
-      var op = DataOperation.Parse(sql);
-
-      return DataReader.GetPlainObject<SialOrganizationUnitEntry>(op, null);
-    }
-
-
     static internal SialOrganizationUnitEmployeeEntry TryGetEmployeeNo(string employeeNo) {
 
       var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_PYC@INTRAN " +

@@ -34,7 +34,7 @@ namespace Empiria.BanobrasIntegration.Sial.WebApi {
 
       using (var payrollServices = SialServices.ServiceInteractor()) {
         BudgetingTransactionDto payrollTxn =
-                         payrollServices.ConvertPayrollToBudgetingInterface(payrollUID);
+                         payrollServices.ConvertPayrollToBudgetTransaction(payrollUID);
 
         using (var budgetingServices = BudgetingServices.ServiceInteractor()) {
           FileDto excelFile = budgetingServices.ExportToExcel(payrollTxn);

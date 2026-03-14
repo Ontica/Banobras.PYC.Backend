@@ -8,19 +8,13 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using Empiria.Parties;
 
 using Empiria.Financial.Integration;
-using Empiria.Financial.Rules;
 
 namespace Empiria.BanobrasIntegration.Sial {
 
   /// <summary>Holds payroll data movements.</summary>
   public class NominaDetalle {
-
-    static private readonly FixedList<FinancialRule> _budgetingRules =
-                                              FinancialRuleCategory.ParseNamedKey("BUDGETING_ACCOUNTS")
-                                                                   .GetFinancialRules();
 
     [DataField("BGM_NUM_VOL")]
     public int NoNomina {
@@ -62,51 +56,10 @@ namespace Empiria.BanobrasIntegration.Sial {
     }
 
 
-    public string CuentaPresupuestal {
-      get {
-
-        var rule = _budgetingRules.Find(x => x.DebitAccount == CuentaContable);
-
-        Assertion.Require(rule,
-                          $"No budgeting account rule found for payroll entry account '{CuentaContable}'.");
-
-        return rule.CreditConcept;
-      }
-    }
-
-
     public string NoOperacion {
       get {
         return $"{NoNomina:D8}-{Folio:D4}";
       }
-    }
-
-
-    public string NombreCuentaContable {
-      get {
-        return "No determinado";
-        // return IntegrationLibrary.GetAccountingAcctName(CuentaContable);
-      }
-    }
-
-
-    public string NombreArea {
-      get {
-        var orgUnit = OrganizationalUnit.TryParseWithID(Area);
-
-        return orgUnit != null ? orgUnit.Name : $"El área '{Area}' no está registrada en el sistema SIAL ni en PYC.";
-      }
-    }
-
-
-    public string NombreCuentaPresupuestal {
-      get {
-        return "No determinado";
-      }
-    }
-
-    internal string GetObservations() {
-      return string.Empty;
     }
 
   } // class NominaDetalle

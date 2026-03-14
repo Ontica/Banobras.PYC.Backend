@@ -30,7 +30,7 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
     public void Should_ConvertPayrollToBudgetingInterface() {
       var services = SialServices.ServiceInteractor();
 
-      BudgetingTransactionDto sut = services.ConvertPayrollToBudgetingInterface(9903995);
+      BudgetingTransactionDto sut = services.ConvertPayrollToBudgetTransaction(9903995);
 
       Assert.NotNull(sut);
       Assert.NotNull(sut.Entries);

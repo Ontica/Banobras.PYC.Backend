@@ -8,12 +8,17 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
+
 using Empiria.BanobrasIntegration.Sial.Data;
 
 namespace Empiria.BanobrasIntegration.Sial {
 
   /// <summary>Holds information about a Banobras Sial organization unit entry.</summary>
   public class SialOrganizationUnitEntry {
+
+    static private Lazy<FixedList<SialOrganizationUnitEntry>> _entries =
+                new Lazy<FixedList<SialOrganizationUnitEntry>>(() => SialDataService.GetOrganizationUnitEntries());
 
     #region Constructors and parsers
 
@@ -53,12 +58,13 @@ namespace Empiria.BanobrasIntegration.Sial {
     #region Methods
 
     static public SialOrganizationUnitEntry TryGetOrganization(string noArea) {
+      noArea = EmpiriaString.Clean(noArea);
 
       if (string.IsNullOrWhiteSpace(noArea)) {
         return null;
       }
 
-      return SialDataService.TryGetOrganization(noArea);
+      return _entries.Value.Find(x => x.NoArea == noArea);
     }
 
     #endregion Methods
