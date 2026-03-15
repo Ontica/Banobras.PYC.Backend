@@ -19,11 +19,14 @@ using Empiria.Billing;
 
 using Empiria.Orders;
 using Empiria.Orders.Contracts;
+using Empiria.Orders.Data;
 
 using Empiria.Payments;
+using Empiria.Payments.Data;
 
 using Empiria.Budgeting;
 using Empiria.Budgeting.Transactions;
+using Empiria.Budgeting.Transactions.Data;
 
 namespace Empiria.Banobras.Budgeting.AppServices {
 
@@ -47,6 +50,12 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     public int CleanBudget() {
 
       int counter = SetPayables();
+
+      CleanOrders();
+
+      CleanPaymentOrders();
+
+      CleanTransactions();
 
       CleanBudgetCommitsDates();
 
@@ -409,6 +418,34 @@ namespace Empiria.Banobras.Budgeting.AppServices {
     #endregion Budget cleaners
 
     #region Helpers
+
+    static private void CleanOrders() {
+      var orders = Order.GetFullList<Order>();
+
+      foreach (var order in orders) {
+        OrdersData.CleanOrder(order);
+      }
+    }
+
+
+    static private void CleanPaymentOrders() {
+      var paymentOrders = PaymentOrder.GetFullList<PaymentOrder>();
+
+      foreach (var paymentOrder in paymentOrders) {
+        PaymentOrderData.CleanPaymentOrder(paymentOrder);
+      }
+    }
+
+
+    static private void CleanTransactions() {
+      var transactions = BudgetTransaction.GetFullList<BudgetTransaction>()
+                                          .FindAll(x => x.HasEntity);
+
+      foreach (var txn in transactions) {
+        BudgetTransactionDataService.CleanTransaction(txn);
+      }
+    }
+
 
     static private void CloseBills(Order order) {
       FixedList<Bill> bills = Bill.GetListFor((IPayableEntity) order);
