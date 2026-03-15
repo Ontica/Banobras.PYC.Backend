@@ -63,7 +63,7 @@ namespace Empiria.BanobrasIntegration.Sial {
       dto.BudgetAccount = GetBudgetAccount(entry.Area, dto.BudgetAccountNo);
       dto.BudgetAccountName = GetNombreCuentaPresupuestal(dto.BudgetAccount, dto.BudgetAccountNo);
 
-      var areaSial = SialOrganizationUnitEntry.TryGetOrganization(entry.Area);
+      var areaSial = AreaSIAL.TryGetArea(entry.Area);
 
       if (areaSial == null) {
         dto.OrgUnitCode = "No registrada";
@@ -72,10 +72,9 @@ namespace Empiria.BanobrasIntegration.Sial {
 
         return dto;
       } else {
-        dto.OrgUnitName = areaSial.Descripcion;
-
-
+        dto.OrgUnitName = areaSial.Nombre;
       }
+
       return dto;
     }
 
@@ -116,13 +115,13 @@ namespace Empiria.BanobrasIntegration.Sial {
     }
 
 
-    static private BudgetAccount GetBudgetAccount(string area, string cuentaPresupuestal) {
-      if (string.IsNullOrWhiteSpace(area) || string.IsNullOrWhiteSpace(cuentaPresupuestal)) {
+    static private BudgetAccount GetBudgetAccount(string claveArea, string cuentaPresupuestal) {
+      if (string.IsNullOrWhiteSpace(claveArea) || string.IsNullOrWhiteSpace(cuentaPresupuestal)) {
         return BudgetAccount.Empty;
       }
 
       while (true) {
-        OrganizationalUnit orgUnit = GetFirstRegisteredOrgUnit(area);
+        OrganizationalUnit orgUnit = GetFirstRegisteredOrgUnit(claveArea);
 
         var account = BudgetAccount.TryParse(orgUnit, cuentaPresupuestal);
 
@@ -130,19 +129,19 @@ namespace Empiria.BanobrasIntegration.Sial {
           return account;
         }
 
-        SialOrganizationUnitEntry parent = SialOrganizationUnitEntry.TryGetOrganization(area);
+        AreaSIAL parent = AreaSIAL.TryGetArea(claveArea);
 
         if (parent == null) {
           return BudgetAccount.Empty;
         }
 
-        area = parent.NoAreaSupervision;
+        claveArea = parent.ClaveAreaSuperior;
       }
     }
 
 
-    static private OrganizationalUnit GetFirstRegisteredOrgUnit(string area) {
-      if (string.IsNullOrWhiteSpace(area)) {
+    static private OrganizationalUnit GetFirstRegisteredOrgUnit(string claveArea) {
+      if (string.IsNullOrWhiteSpace(claveArea)) {
         return OrganizationalUnit.Empty;
       }
 
@@ -150,25 +149,25 @@ namespace Empiria.BanobrasIntegration.Sial {
 
       while (true) {
 
-        orgUnit = OrganizationalUnit.TryParseWithID(area);
+        orgUnit = OrganizationalUnit.TryParseWithID(claveArea);
 
         if (orgUnit != null) {
           return orgUnit;
         }
 
-        SialOrganizationUnitEntry areaSIAL = SialOrganizationUnitEntry.TryGetOrganization(area);
+        AreaSIAL areaSIAL = AreaSIAL.TryGetArea(claveArea);
 
         if (areaSIAL == null) {
           return OrganizationalUnit.Empty;
         }
 
-        areaSIAL = SialOrganizationUnitEntry.TryGetOrganization(areaSIAL.NoAreaSupervision);
+        areaSIAL = AreaSIAL.TryGetArea(areaSIAL.ClaveAreaSuperior);
 
         if (areaSIAL == null) {
           return OrganizationalUnit.Empty;
         }
 
-        area = areaSIAL.NoArea;
+        claveArea = areaSIAL.Clave;
       }
     }
 

@@ -8,14 +8,15 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using Xunit;
-
 using System;
+
+using Xunit;
 
 using Empiria.StateEnums;
 
 using Empiria.Banobras.Budgeting.Adapters;
 
+using Empiria.BanobrasIntegration.Sial;
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Services;
 
@@ -64,20 +65,16 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
 
 
     [Fact]
-    public void Should_Get_OrganizationUnitData_OrgUnit() {
-      var services = SialServices.ServiceInteractor();
-
-      FixedList<SialOrganizationUnitEntryDto> sut = services.GetOrganizationUnitEntries();
+    public void Should_Get_Lista_Areas_SIAL() {
+      var sut = AreaSIAL.GetListaAreas();
 
       Assert.NotNull(sut);
     }
 
 
     [Fact]
-    public void Should_Get_OrganizationUnit_Parent() {
-      var services = SialServices.ServiceInteractor();
-
-      var sut = services.GetOrganizationUnitParent("100000");
+    public void Should_Get_Area_Superior_SIAL() {
+      var sut = AreaSIAL.TryGetAreaSuperiorSIAL("100000");
 
       Assert.NotNull(sut);
     }

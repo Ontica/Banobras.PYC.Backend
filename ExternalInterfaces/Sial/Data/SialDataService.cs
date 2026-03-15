@@ -17,6 +17,17 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
   /// <summary>Provides data access for SIAL payroll data.</summary>
   static internal class SialDataService {
 
+    static internal FixedList<AreaSIAL> GetAreasSIAL() {
+
+      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
+                $"ORDER BY CLAVE_AREA";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObjectFixedList<AreaSIAL>(op);
+    }
+
+
     static internal NominaEncabezado GetPayroll(int payrollUID) {
 
       EnsurePayrollsStatusNotNull();
@@ -69,17 +80,6 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
       var op = DataOperation.Parse(sql);
 
       DataWriter.Execute(op);
-    }
-
-
-    static internal FixedList<SialOrganizationUnitEntry> GetOrganizationUnitEntries() {
-
-      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
-                $"ORDER BY CLAVE_AREA, NIVEL_CLAVE";
-
-      var op = DataOperation.Parse(sql);
-
-      return DataReader.GetPlainObjectFixedList<SialOrganizationUnitEntry>(op);
     }
 
 
