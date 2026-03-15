@@ -2,31 +2,30 @@
 *                                                                                                            *
 *  Module   : Banobras SIAL Services                     Component : Domain Layer                            *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll        Pattern   : Information Holder                      *
-*  Type     : NominaEncabezado                           License   : Please read LICENSE.txt file            *
+*  Type     : NominaSIAL                                 License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : Holds payroll data.                                                                            *
+*  Summary  : Representa una nómina en el sistema SIAL de Banobras.                                          *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
-
+using Empiria.BanobrasIntegration.Sial.Data;
 using Empiria.StateEnums;
 
 namespace Empiria.BanobrasIntegration.Sial {
 
-  /// <summary>Holds payroll data.</summary>
-  public class NominaEncabezado {
-
+  /// <summary>Representa una nómina en el sistema SIAL de Banobras.</summary>
+  public class NominaSIAL {
 
     public string UID {
       get {
-        return NoNomina.ToString();
+        return NumeroNomina.ToString();
       }
     }
 
 
     [DataField("BGME_NUM_VOL")]
-    public int NoNomina {
+    public int NumeroNomina {
       get; set;
     }
 
@@ -47,6 +46,10 @@ namespace Empiria.BanobrasIntegration.Sial {
       get; set;
     }
 
-  } // class NominaEncabezado
+    public FixedList<EntradaNominaSIAL> Entradas() {
+      return SialDataService.GetPayrollEntries(NumeroNomina);
+    }
+
+  } // class NominaSIAL
 
 } // namespace Empiria.BanobrasIntegration.Sial

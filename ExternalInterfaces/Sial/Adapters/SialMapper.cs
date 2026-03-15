@@ -17,16 +17,16 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
     #region Mappers
 
-    static internal FixedList<SialPayrollDto> Map(FixedList<NominaEncabezado> payrolls) {
+    static internal FixedList<SialPayrollDto> Map(FixedList<NominaSIAL> payrolls) {
       return payrolls.Select(x => Map(x))
                      .ToFixedList();
     }
 
 
-    static internal SialPayrollDto Map(NominaEncabezado payroll) {
+    static internal SialPayrollDto Map(NominaSIAL payroll) {
       return new SialPayrollDto {
         UID = payroll.UID,
-        PayrollNo = payroll.NoNomina.ToString(),
+        PayrollNo = payroll.NumeroNomina.ToString(),
         PayrollDate = payroll.Fecha,
         Description = payroll.Descripcion,
         StatusName = payroll.Status.GetName()
@@ -34,7 +34,7 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
     }
 
 
-    static internal SialDetailDto MapToPayrollDetail(NominaDetalle payroll) {
+    static internal SialDetailDto MapToPayrollDetail(EntradaNominaSIAL payroll) {
       return new SialDetailDto {
         PayrollNo = payroll.NoNomina,
         AreaNo = payroll.Area,
@@ -44,7 +44,7 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
       };
     }
 
-    static internal FixedList<SialDetailEntryDto> MapToPayrollDetailEntries(FixedList<NominaDetalle> entries) {
+    static internal FixedList<SialDetailEntryDto> MapToPayrollDetailEntries(FixedList<EntradaNominaSIAL> entries) {
       return entries.Select(x => new SialDetailEntryDto {
         PayrollNo = x.NoNomina.ToString(),
         AreaNo = x.Area,

@@ -28,7 +28,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
     }
 
 
-    static internal NominaEncabezado GetPayroll(int payrollUID) {
+    static internal NominaSIAL GetPayroll(int payrollUID) {
 
       EnsurePayrollsStatusNotNull();
 
@@ -37,11 +37,11 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
       var op = DataOperation.Parse(sql);
 
-      return DataReader.GetPlainObject<NominaEncabezado>(op);
+      return DataReader.GetPlainObject<NominaSIAL>(op);
     }
 
 
-    static internal FixedList<NominaDetalle> GetPayrollEntries(int payrollUID) {
+    static internal FixedList<EntradaNominaSIAL> GetPayrollEntries(int payrollUID) {
       var sql = "SELECT * " +
                 "FROM NOMINA_DETALLE " +
                 $"WHERE BGM_NUM_VOL = {payrollUID} " +
@@ -49,11 +49,11 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
       var op = DataOperation.Parse(sql);
 
-      return DataReader.GetPlainObjectFixedList<NominaDetalle>(op);
+      return DataReader.GetPlainObjectFixedList<EntradaNominaSIAL>(op);
     }
 
 
-    static internal FixedList<NominaEncabezado> SearchPayrolls(string filter) {
+    static internal FixedList<NominaSIAL> SearchPayrolls(string filter) {
       Assertion.Require(filter, nameof(filter));
 
       EnsurePayrollsStatusNotNull();
@@ -64,7 +64,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
       var op = DataOperation.Parse(sql);
 
-      return DataReader.GetPlainObjectFixedList<NominaEncabezado>(op);
+      return DataReader.GetPlainObjectFixedList<NominaSIAL>(op);
     }
 
 

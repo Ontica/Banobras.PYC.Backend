@@ -2,9 +2,9 @@
 *                                                                                                            *
 *  Module   : Banobras SIAL Services                     Component : Domain Layer                            *
 *  Assembly : Banobras.PYC.ExternalInterfaces.dll        Pattern   : Information Holder                      *
-*  Type     : NominaDetalle                              License   : Please read LICENSE.txt file            *
+*  Type     : EntradaNominaSIAL                          License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : Holds payroll data movements.                                                                  *          
+*  Summary  : Contiene información sobre un registro de nómina en SIAL.                                      *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
@@ -13,8 +13,8 @@ using Empiria.Financial.Integration;
 
 namespace Empiria.BanobrasIntegration.Sial {
 
-  /// <summary>Holds payroll data movements.</summary>
-  public class NominaDetalle {
+  /// <summary>Contiene información sobre un registro de nómina en SIAL.</summary>
+  public class EntradaNominaSIAL {
 
     [DataField("BGM_NUM_VOL")]
     public int NoNomina {
@@ -62,6 +62,6 @@ namespace Empiria.BanobrasIntegration.Sial {
       }
     }
 
-  } // class NominaDetalle
+  } // class EntradaNominaSIAL
 
 } // namespace Empiria.BanobrasIntegration.Sial

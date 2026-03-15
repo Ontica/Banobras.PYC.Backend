@@ -48,7 +48,7 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
     public FixedList<SialPayrollDto> SearchPayrolls(SialPayrollsQuery query) {
       Assertion.Require(query, nameof(query));
 
-      FixedList<NominaEncabezado> payrolls = query.Execute();
+      FixedList<NominaSIAL> payrolls = query.Execute();
 
       return SialMapper.Map(payrolls);
     }
@@ -63,7 +63,7 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
 
       SialDataService.UpdatePayrollStatus(payrollUID, newStatus);
 
-      NominaEncabezado payroll = SialDataService.GetPayroll(payrollUID);
+      NominaSIAL payroll = SialDataService.GetPayroll(payrollUID);
 
       return SialMapper.Map(payroll);
     }

@@ -41,7 +41,7 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
   /// <summary>Extension methods for SialPayrollsQuery.</summary>
   static internal class SialPayrollsQueryExtensions {
 
-    static internal FixedList<NominaEncabezado> Execute(this SialPayrollsQuery query) {
+    static internal FixedList<NominaSIAL> Execute(this SialPayrollsQuery query) {
       string dateRangeFilter = BuildDateRangeFilter(query.FromDate, query.ToDate);
       string statusFilter = BuildStatusFilter(query.Status);
 

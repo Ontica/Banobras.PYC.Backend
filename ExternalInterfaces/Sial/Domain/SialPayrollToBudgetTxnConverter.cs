@@ -34,19 +34,17 @@ namespace Empiria.BanobrasIntegration.Sial {
     }
 
     internal BudgetingTransactionDto Convert() {
-      NominaEncabezado payroll = SialDataService.GetPayroll(_payrollID);
-
-      FixedList<NominaDetalle> entries = SialDataService.GetPayrollEntries(_payrollID);
+      NominaSIAL payroll = SialDataService.GetPayroll(_payrollID);
 
       return new BudgetingTransactionDto {
-        Description = $"{payroll.NoNomina} - {payroll.Descripcion}",
-        Entries = entries.Select(x => Convert(payroll, x)).ToFixedList()
+        Description = $"{payroll.NumeroNomina} - {payroll.Descripcion}",
+        Entries = payroll.Entradas().Select(x => Convert(payroll, x)).ToFixedList()
       };
     }
 
     #region Helpers
 
-    private BudgetingEntryDto Convert(NominaEncabezado payroll, NominaDetalle entry) {
+    private BudgetingEntryDto Convert(NominaSIAL payroll, EntradaNominaSIAL entry) {
 
       var dto = new BudgetingEntryDto {
         Year = payroll.Fecha.Year,
