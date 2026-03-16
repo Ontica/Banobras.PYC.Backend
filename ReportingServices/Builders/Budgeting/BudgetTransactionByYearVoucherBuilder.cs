@@ -65,10 +65,12 @@ namespace Empiria.Budgeting.Reporting {
 
       foreach (var entry in txn.GetEntries()) {
         var entryHtml = new StringBuilder(TEMPLATE.Replace("{{BUDGET_ACCOUNT.CODE}}",
-                                          entry.BudgetAccount.StandardAccount.StdAcctNo));
+                                          entry.BudgetAccount.AccountNo));
 
         entryHtml.Replace("{{BUDGET_ACCOUNT.NAME}}", entry.BudgetAccount.StandardAccount.Name);
-        entryHtml.Replace("{{BUDGET_ACCOUNT.PARTY}}", entry.BudgetAccount.OrganizationalUnit.Code);
+        entryHtml.Replace("{{BUDGET_ACCOUNT.PARTY.CODE}}", entry.BudgetAccount.OrganizationalUnit.Code);
+        entryHtml.Replace("{{BUDGET_ACCOUNT.PARTY.NAME}}", entry.BudgetAccount.OrganizationalUnit.Name);
+
         entryHtml.Replace("{{BUDGET_PROGRAM.CODE}}", entry.BudgetProgram.Code);
 
         entryHtml.Replace("{{YEAR}}", entry.Year.ToString());
@@ -102,7 +104,7 @@ namespace Empiria.Budgeting.Reporting {
       html.Replace("{{REPORT.TITLE}}",
                     txn.AuthorizedBy.IsEmptyInstance ? NO_VALID : $"{txn.TransactionType.DisplayName} {txn.BaseBudget.Year}");
       html.Replace("{{TRANSACTION_NUMBER}}", txn.TransactionNo);
-      html.Replace("{{TRANSACTION_TYPE.NAME}}", txn.TransactionType.DisplayName);
+      html.Replace("{{TRANSACTION.DESCRIPTION}}", EmpiriaString.FirstWithValue(txn.Description, txn.Justification));
       html.Replace("{{BASE_PARTY.NAME}}", txn.BaseParty.Name);
       html.Replace("{{BUDGET.NAME}}", txn.BaseBudget.Name);
       html.Replace("{{BASE_ENTITY_TYPE.NAME}}", "No aplica");
