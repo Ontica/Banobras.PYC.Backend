@@ -101,6 +101,17 @@ namespace Empiria.Banobras.Budgeting {
 
     #region Methods
 
+    internal BudgetAccount GetBudgetAccount() {
+      var orgUnit = OrganizationalUnit.TryParseWithID(Area);
+
+      var account = BudgetAccount.TryParse(orgUnit, Partida);
+
+      Assertion.Require(account, $"No se encontró la cuenta presupuestal {Partida} para el área {Area}.");
+
+      return account;
+    }
+
+
     private void Load(Spreadsheet excelFile, int row) {
       Row = row;
 

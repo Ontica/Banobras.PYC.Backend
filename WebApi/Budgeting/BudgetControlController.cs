@@ -147,9 +147,9 @@ namespace Empiria.Banobras.Budgeting.WebApi {
 
         CommandResult<BudgetTransaction> result = usecases.ImportFromExcel(command, excelFile);
 
-        //if (!command.DryRun && !result.HasErrors) {
-        //  result.Entity.Save();
-        //}
+        if (!command.DryRun && !result.HasErrors) {
+          result.Entity.Save();
+        }
 
         return new SingleObjectModel(base.Request, result);
       }

@@ -10,6 +10,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using Empiria.Commands;
 using Empiria.Office;
@@ -38,9 +39,6 @@ namespace Empiria.Banobras.Budgeting {
 
     internal CommandResult<BudgetTransaction> Import() {
 
-      //BudgetTransactionFields
-      //BudgetEntryFields
-
       var excelFile = Spreadsheet.Open(_excelFileInfo.FullName);
 
       BudgetTransaction budgetTxn = ReadBudgetTransaction(excelFile);
@@ -49,7 +47,35 @@ namespace Empiria.Banobras.Budgeting {
 
       excelFile.Close();
 
-      return BuildCommandResult(budgetTxn, entries);
+      CommandResult<BudgetTransaction> result = BuildCommandResult(budgetTxn, entries);
+
+      if (!result.HasErrors) {
+        LoadBudgetEntries(budgetTxn, entries);
+      }
+
+      return result;
+    }
+
+
+    private void LoadBudgetEntries(BudgetTransaction budgetTxn,
+                                   FixedList<ExcelBudgetEntry> excelEntries) {
+
+      foreach (var entry in excelEntries.GroupBy(x => new { x.Año, x.Mes, x.Día, Account = x.GetBudgetAccount() })) {
+
+        var entryFields = new BudgetEntryFields {
+          BalanceColumnUID = BalanceColumn.Exercised.UID,
+          Year = entry.Key.Año,
+          Month = entry.Key.Mes,
+          Day = entry.Key.Día,
+          BudgetAccountUID = entry.Key.Account.UID,
+          CurrencyAmount = entry.Sum(x => x.Ampliaciones - x.Reducciones),
+          Amount = entry.Sum(x => x.Ampliaciones - x.Reducciones),
+          Description = entry.First().Descripcion
+        };
+
+        budgetTxn.AddEntry(entryFields);
+      }
+
     }
 
     private BudgetTransaction ReadBudgetTransaction(Spreadsheet excelFile) {
