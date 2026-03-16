@@ -83,7 +83,12 @@ namespace Empiria.Budgeting.Reporting {
           return ExportBudgetPaymentAuthorizationVoucherToPdf(transaction);
 
         case BudgetOperationType.Exercise:
-          return ExportBudgetRequestToPdf(transaction);
+
+          if (transaction.HasEntity) {
+            return ExportBudgetPaymentAuthorizationVoucherToPdf(transaction);
+          } else {
+            return ExportTransactionByYearToPdf(transaction);
+          }
 
         default:
           throw Assertion.EnsureNoReachThisCode($"Unsupported budget operation type: " +
