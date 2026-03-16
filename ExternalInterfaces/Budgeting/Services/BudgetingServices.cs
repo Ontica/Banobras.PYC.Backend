@@ -8,9 +8,14 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System.IO;
+
+using Empiria.Commands;
 using Empiria.Office;
 using Empiria.Services;
 using Empiria.Storage;
+
+using Empiria.Budgeting.Transactions;
 
 using Empiria.Banobras.Budgeting.Adapters;
 using Empiria.Banobras.Budgeting.Exporters;
@@ -44,6 +49,22 @@ namespace Empiria.Banobras.Budgeting.Services {
       ExcelFile excelFile = exporter.CreateExcelFile(budgetingTxn);
 
       return excelFile.ToFileDto();
+    }
+
+
+    public CommandResult<BudgetTransaction> ImportFromExcel(ImportBudgetTransactionCommand command,
+                                                            InputFile excelFile) {
+
+      Assertion.Require(command, nameof(command));
+      Assertion.Require(excelFile, nameof(excelFile));
+
+      FileInfo fileInfo = FileUtilities.SaveFile(excelFile);
+
+      var importer = new BudgetTransactionImporter(command, fileInfo);
+
+      CommandResult<BudgetTransaction> budgetTxnResult = importer.Import();
+
+      return budgetTxnResult;
     }
 
   }  // class BudgetingServices

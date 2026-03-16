@@ -10,14 +10,19 @@
 
 using System.Web.Http;
 
+using Empiria.Commands;
+using Empiria.Storage;
 using Empiria.WebApi;
 
 using Empiria.Budgeting;
 using Empiria.Budgeting.Explorer;
 using Empiria.Budgeting.Explorer.UseCases;
 
+using Empiria.Budgeting.Transactions;
 using Empiria.Budgeting.Transactions.Adapters;
 using Empiria.Budgeting.Transactions.UseCases;
+
+using Empiria.Banobras.Budgeting.Services;
 
 namespace Empiria.Banobras.Budgeting.WebApi {
 
@@ -124,6 +129,27 @@ namespace Empiria.Banobras.Budgeting.WebApi {
         var result = new {
           Message = $"Se generaron {generated.Count} transacciones presupuestales para el presupuesto {budget.Name}."
         };
+
+        return new SingleObjectModel(base.Request, result);
+      }
+    }
+
+
+    [HttpPost]
+    [Route("v2/budgeting/transactions/import-excel")]
+    public SingleObjectModel ImportBudgetTransactionsFromExcelFile() {
+
+      InputFile excelFile = base.GetInputFileFromHttpRequest("BudgetTransactionExcelFile");
+
+      var command = base.GetFormDataFromHttpRequest<ImportBudgetTransactionCommand>("command");
+
+      using (var usecases = BudgetingServices.ServiceInteractor()) {
+
+        CommandResult<BudgetTransaction> result = usecases.ImportFromExcel(command, excelFile);
+
+        //if (!command.DryRun && !result.HasErrors) {
+        //  result.Entity.Save();
+        //}
 
         return new SingleObjectModel(base.Request, result);
       }
