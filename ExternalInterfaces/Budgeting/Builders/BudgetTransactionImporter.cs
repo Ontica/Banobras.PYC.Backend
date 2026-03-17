@@ -8,6 +8,7 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,9 +26,12 @@ namespace Empiria.Banobras.Budgeting {
   internal class BudgetTransactionImporter {
 
     private readonly ImportBudgetTransactionCommand _command;
+
     private readonly FileInfo _excelFileInfo;
 
-    internal BudgetTransactionImporter(ImportBudgetTransactionCommand command, FileInfo excelFileInfo) {
+    internal BudgetTransactionImporter(ImportBudgetTransactionCommand command,
+                                       FileInfo excelFileInfo) {
+
       Assertion.Require(command, nameof(command));
       Assertion.Require(excelFileInfo, nameof(excelFileInfo));
 
@@ -62,14 +66,16 @@ namespace Empiria.Banobras.Budgeting {
 
       foreach (var entry in excelEntries.GroupBy(x => new { x.Año, x.Mes, x.Día, Account = x.GetBudgetAccount() })) {
 
+        var amount = Math.Round(entry.Sum(x => x.Ampliaciones - x.Reducciones), 2);
+
         var entryFields = new BudgetEntryFields {
           BalanceColumnUID = BalanceColumn.Exercised.UID,
           Year = entry.Key.Año,
           Month = entry.Key.Mes,
           Day = entry.Key.Día,
           BudgetAccountUID = entry.Key.Account.UID,
-          CurrencyAmount = entry.Sum(x => x.Ampliaciones - x.Reducciones),
-          Amount = entry.Sum(x => x.Ampliaciones - x.Reducciones),
+          CurrencyAmount = amount,
+          Amount = amount,
           Description = entry.First().Descripcion
         };
 

@@ -8,6 +8,8 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System;
+
 using Empiria.Parties;
 
 using Empiria.Financial;
@@ -52,7 +54,7 @@ namespace Empiria.BanobrasIntegration.Sial {
         Day = payroll.Fecha.Day,
         OrgUnitCode = entry.Area,
         OperationNo = entry.NoOperacion,
-        Amount = entry.Importe,
+        Amount = Math.Round(entry.Importe, 2),
         AccountingAcctNo = entry.CuentaContable,
         AccountingAcctName = string.Empty
       };
