@@ -143,12 +143,18 @@ namespace Empiria.Banobras.Budgeting.WebApi {
 
       var command = base.GetFormDataFromHttpRequest<ImportBudgetTransactionCommand>("command");
 
-      using (var usecases = BudgetingServices.ServiceInteractor()) {
+      using (var externalServices = BudgetingServices.ServiceInteractor()) {
 
-        CommandResult<BudgetTransaction> result = usecases.ImportFromExcel(command, excelFile);
+        CommandResult<BudgetTransaction> result = externalServices.ImportFromExcel(command, excelFile);
 
-        if (!command.DryRun && !result.HasErrors) {
-          result.Entity.Save();
+        using (var editionUseCases = BudgetTransactionEditionUseCases.UseCaseInteractor()) {
+
+          if (!command.DryRun && !result.HasErrors) {
+
+            editionUseCases.CompleteBalanceEntries(result.Entity);
+
+            result.Entity.Save();
+          }
         }
 
         return new SingleObjectModel(base.Request, result);
