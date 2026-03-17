@@ -37,7 +37,7 @@ namespace Empiria.BanobrasIntegration.Sial {
       NominaSIAL payroll = SialDataService.GetPayroll(_payrollID);
 
       return new BudgetingTransactionDto {
-        Description = $"{payroll.NumeroNomina} - {payroll.Descripcion}",
+        Description = $"{payroll.Descripcion} ({payroll.NumeroNomina})",
         Entries = payroll.Entradas().Select(x => Convert(payroll, x)).ToFixedList()
       };
     }
@@ -139,6 +139,7 @@ namespace Empiria.BanobrasIntegration.Sial {
 
 
     static private OrganizationalUnit GetFirstRegisteredOrgUnit(string claveArea) {
+
       if (string.IsNullOrWhiteSpace(claveArea)) {
         return OrganizationalUnit.Empty;
       }

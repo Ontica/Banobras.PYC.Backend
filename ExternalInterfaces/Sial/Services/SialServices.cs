@@ -8,8 +8,10 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using Empiria.Office;
 using Empiria.Services;
 using Empiria.StateEnums;
+using Empiria.Storage;
 
 using Empiria.Financial.Adapters;
 
@@ -42,8 +44,23 @@ namespace Empiria.BanobrasIntegration.Sial.Services {
       var converter = new SialPayrollToBudgetTxnConverter(payrollUID);
 
       return converter.Convert();
-
     }
+
+
+    public FileDto ExportPayrollToExcel(BudgetingTransactionDto transaction) {
+      Assertion.Require(transaction, nameof(transaction));
+
+      var templateUID = $"{this.GetType().Name}.ExportBudgetingTransactionDto";
+
+      var templateConfig = FileTemplateConfig.Parse(templateUID);
+
+      var exporter = new SialPayrollToExcelBuilder(templateConfig);
+
+      ExcelFile excelFile = exporter.CreateExcelFile(transaction);
+
+      return excelFile.ToFileDto();
+    }
+
 
     public FixedList<SialPayrollDto> SearchPayrolls(SialPayrollsQuery query) {
       Assertion.Require(query, nameof(query));

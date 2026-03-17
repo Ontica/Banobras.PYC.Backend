@@ -1,10 +1,10 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras Budgeting External Interfaces       Component : Exporters                             *
-*  Assembly : Banobras.PYC.WebApi.dll                      Pattern   : Excel Builder                         *
-*  Type     : BudgetingTransactionExcelExporter            License   : Please read LICENSE.txt file          *
+*  Module   : Banobras SIAL Services                     Component : Services Layer                          *
+*  Assembly : Banobras.PYC.ExternalInterfaces.dll        Pattern   : Excel file builder                      *
+*  Type     : SialPayrollToExcelBuilder                  License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : Exports budgeting transaction data to an Excel file.                                           *
+*  Summary  : Exports a SIAL payroll to an Excel file according to Banobras budget transaction layout.       *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
@@ -16,20 +16,21 @@ using Empiria.Storage;
 
 using Empiria.Banobras.Budgeting.Adapters;
 
-namespace Empiria.Banobras.Budgeting.Exporters {
+namespace Empiria.BanobrasIntegration.Sial {
 
-  /// <summary>Exports budgeting transaction data to an Excel file.</summary>
-  internal class BudgetingTransactionExcelBuilder {
+  /// <summary>Exports a SIAL payroll to an Excel file according to Banobras budget transaction layout.</summary>
+  internal class SialPayrollToExcelBuilder {
 
     private readonly FileTemplateConfig _templateConfig;
 
     private ExcelFile _excelFile;
 
-    internal BudgetingTransactionExcelBuilder(FileTemplateConfig templateConfig) {
+    internal SialPayrollToExcelBuilder(FileTemplateConfig templateConfig) {
       Assertion.Require(templateConfig, nameof(templateConfig));
 
       _templateConfig = templateConfig;
     }
+
 
     internal ExcelFile CreateExcelFile(BudgetingTransactionDto budgetingTxn) {
       Assertion.Require(budgetingTxn, nameof(budgetingTxn));
@@ -49,13 +50,18 @@ namespace Empiria.Banobras.Budgeting.Exporters {
       return _excelFile;
     }
 
+
     private void SetHeader(BudgetingTransactionDto txn) {
-      _excelFile.SetCell(_templateConfig.TitleCell, txn.Description);
-      _excelFile.SetCell(_templateConfig.CurrentTimeCell, DateTime.Now.ToString("dd/MMM/yyyy HH:mm:ss"));
+      _excelFile.SetCell("A2", "191000");
+      _excelFile.SetCell("B2", "DIRECCIÓN DE RECURSOS HUMANOS");
+
+      _excelFile.SetCell("A3", txn.Description);
+      _excelFile.SetCell("G3", DateTime.Now.ToString("dd/MMM/yyyy HH:mm:ss"));
     }
 
+
     private void FillOut(BudgetingTransactionDto txn) {
-      int i = _templateConfig.FirstRowIndex;
+      int i = 6;
 
       var entries = txn.Entries.OrderBy(x => x.BudgetAccount.OrganizationalUnit.Code)
                                .ThenBy(x => x.BudgetAccount.Code)
@@ -104,6 +110,6 @@ namespace Empiria.Banobras.Budgeting.Exporters {
       }
     }
 
-  }  // class BudgetingTransactionExcelExporter
+  }  // class SialPayrollToExcelBuilder
 
-}  // namespace Empiria.Banobras.Budgeting.Exporters
+}  // namespace Empiria.BanobrasIntegration.Sial

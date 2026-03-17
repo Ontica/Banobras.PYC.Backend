@@ -15,7 +15,6 @@ using Empiria.Storage;
 using Empiria.WebApi;
 
 using Empiria.Banobras.Budgeting.Adapters;
-using Empiria.Banobras.Budgeting.Services;
 
 using Empiria.BanobrasIntegration.Sial.Adapters;
 using Empiria.BanobrasIntegration.Sial.Services;
@@ -31,18 +30,14 @@ namespace Empiria.BanobrasIntegration.Sial.WebApi {
     [Route("v2/pyc/integration/sial/payrolls/{payrollUID:int}/export")]
     public SingleObjectModel ExportPayrollToExcelBudgetingInterface([FromUri] int payrollUID) {
 
-
-      using (var payrollServices = SialServices.ServiceInteractor()) {
+      using (var sialServices = SialServices.ServiceInteractor()) {
         BudgetingTransactionDto payrollTxn =
-                         payrollServices.ConvertPayrollToBudgetTransaction(payrollUID);
+                            sialServices.ConvertPayrollToBudgetTransaction(payrollUID);
 
-        using (var budgetingServices = BudgetingServices.ServiceInteractor()) {
-          FileDto excelFile = budgetingServices.ExportToExcel(payrollTxn);
+        FileDto excelFile = sialServices.ExportPayrollToExcel(payrollTxn);
 
-          return new SingleObjectModel(base.Request, excelFile);
-        }
-
-      }  // payrollServices
+        return new SingleObjectModel(base.Request, excelFile);
+      }
     }
 
 
@@ -73,26 +68,28 @@ namespace Empiria.BanobrasIntegration.Sial.WebApi {
 
 
     [HttpGet]
-    [Route("v2/pyc/integration/sial/employees/{employeeNo}/export")]
-    public SingleObjectModel EmployeePayrollNo([FromUri] string employeeNo) {
+    [Route("v2/pyc/integration/sial/employees/{employeeNo}")]
+    public SingleObjectModel GetEmployeeByNo([FromUri] string employeeNo) {
 
-      var services = SialServices.ServiceInteractor();
+      using (var services = SialServices.ServiceInteractor()) {
 
-      SialOrganizationUnitEmployeeEntryDto payrollNo = services.TryGetEmployeeNo(employeeNo);
+        SialOrganizationUnitEmployeeEntryDto payrollNo = services.TryGetEmployeeNo(employeeNo);
 
-      return new SingleObjectModel(base.Request, payrollNo);
+        return new SingleObjectModel(base.Request, payrollNo);
+      }
     }
 
 
     [HttpGet]
-    [Route("v2/pyc/integration/sial/employeesrfc/{employeeRfc}/export")]
-    public SingleObjectModel EmployeePayrollRfc([FromUri] string employeeRfc) {
+    [Route("v2/pyc/integration/sial/employees/{employeeTaxCode}/byTaxCode")]
+    public SingleObjectModel GetEmployeeByTaxCode([FromUri] string employeeTaxCode) {
 
-      var services = SialServices.ServiceInteractor();
+      using (var services = SialServices.ServiceInteractor()) {
 
-      SialOrganizationUnitEmployeeEntryDto payrollNo = services.TryGetEmployeeRfc(employeeRfc);
+        SialOrganizationUnitEmployeeEntryDto payrollNo = services.TryGetEmployeeRfc(employeeTaxCode);
 
-      return new SingleObjectModel(base.Request, payrollNo);
+        return new SingleObjectModel(base.Request, payrollNo);
+      }
     }
 
     #endregion Web Apis

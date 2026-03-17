@@ -11,14 +11,10 @@
 using System.IO;
 
 using Empiria.Commands;
-using Empiria.Office;
 using Empiria.Services;
 using Empiria.Storage;
 
 using Empiria.Budgeting.Transactions;
-
-using Empiria.Banobras.Budgeting.Adapters;
-using Empiria.Banobras.Budgeting.Exporters;
 
 namespace Empiria.Banobras.Budgeting.Services {
 
@@ -36,21 +32,6 @@ namespace Empiria.Banobras.Budgeting.Services {
     }
 
     #endregion Constructors and parsers
-
-    public FileDto ExportToExcel(BudgetingTransactionDto budgetingTxn) {
-      Assertion.Require(budgetingTxn, nameof(budgetingTxn));
-
-      var templateUID = $"{this.GetType().Name}.ExportBudgetingTransactionDto";
-
-      var templateConfig = FileTemplateConfig.Parse(templateUID);
-
-      var exporter = new BudgetingTransactionExcelBuilder(templateConfig);
-
-      ExcelFile excelFile = exporter.CreateExcelFile(budgetingTxn);
-
-      return excelFile.ToFileDto();
-    }
-
 
     public CommandResult<BudgetTransaction> ImportFromExcel(ImportBudgetTransactionCommand command,
                                                             InputFile excelFile) {

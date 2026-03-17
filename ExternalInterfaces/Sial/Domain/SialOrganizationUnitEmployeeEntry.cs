@@ -1,8 +1,8 @@
 ﻿/* Empiria Financial *****************************************************************************************
 *                                                                                                            *
-*  Module   : Banobras SIAL Services                     Component : Domain Layer                            *
+*  Module   : Banobras SIAL Services                      Component : Domain Layer                           *
 *  Assembly : Sial.Connector.dll                          Pattern  : Information Holder                      *
-*  Type     : SialOrganizationUnitEmployeeEntry          License   : Please read LICENSE.txt file            *
+*  Type     : SialOrganizationUnitEmployeeEntry           License   : Please read LICENSE.txt file           *
 *                                                                                                            *
 *  Summary  : Holds information about a Banobras Sial organization unit employee entry.                      *
 *                                                                                                            *
@@ -13,7 +13,7 @@ namespace Empiria.BanobrasIntegration.Sial {
   /// <summary>Holds information about a Banobras Sial organization unit employee entry.</summary>
   public class SialOrganizationUnitEmployeeEntry {
 
-    
+
     [DataField("ID_USUARIO", ConvertFrom = typeof(string))]
     public string NoEmpleado {
       get; private set;
@@ -61,7 +61,7 @@ namespace Empiria.BanobrasIntegration.Sial {
       get; private set;
     }
 
-        
+
   } // class SialOrganizationUnitEmployeeEntry
 
 } // namespace Empiria.BanobrasIntegration.Sial
