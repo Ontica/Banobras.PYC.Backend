@@ -17,6 +17,17 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
   /// <summary>Provides data access for SIAL payroll data.</summary>
   static internal class SialDataService {
 
+    static internal AreaSIAL GetAreaSIAL(string claveArea) {
+
+      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
+                $"WHERE CLAVE_AREA ='{claveArea}'";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObject<AreaSIAL>(op, null);
+    }
+
+
     static internal FixedList<AreaSIAL> GetAreasSIAL() {
 
       var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
@@ -83,33 +94,33 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
     }
 
 
-    static internal SialOrganizationUnitEmployeeEntry TryGetEmployeeNo(string employeeNo) {
+    static internal EmpleadoSIAL TryGetEmployeeNo(string employeeNo) {
 
       var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_PYC@INTRAN " +
                 $"WHERE ID_USUARIO = {employeeNo}";
 
       var op = DataOperation.Parse(sql);
 
-      return DataReader.GetPlainObject<SialOrganizationUnitEmployeeEntry>(op, null);
+      return DataReader.GetPlainObject<EmpleadoSIAL>(op, null);
     }
 
-    static internal SialOrganizationUnitEmployeeEntry TryGetEmployeeRfc(string employeeRfc) {
+    static internal EmpleadoSIAL TryGetEmployeeRfc(string employeeRfc) {
 
       var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_PYC@INTRAN " +
                 $"WHERE RFC = '{employeeRfc}'";
 
       var op = DataOperation.Parse(sql);
 
-      return DataReader.GetPlainObject<SialOrganizationUnitEmployeeEntry>(op, null);
+      return DataReader.GetPlainObject<EmpleadoSIAL>(op, null);
     }
 
-    internal static FixedList<SialOrganizationUnitEmployeeEntry> GetOrganizationUnitEmployeesEntries() {
+    internal static FixedList<EmpleadoSIAL> GetEmployees() {
 
       var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_PYC@INTRAN";
 
       var op = DataOperation.Parse(sql);
 
-      return DataReader.GetPlainObjectFixedList<SialOrganizationUnitEmployeeEntry>(op);
+      return DataReader.GetPlainObjectFixedList<EmpleadoSIAL>(op);
     }
 
 

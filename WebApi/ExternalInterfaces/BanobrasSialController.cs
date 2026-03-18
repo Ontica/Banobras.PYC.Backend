@@ -73,7 +73,7 @@ namespace Empiria.BanobrasIntegration.Sial.WebApi {
 
       using (var services = SialServices.ServiceInteractor()) {
 
-        SialOrganizationUnitEmployeeEntryDto payrollNo = services.TryGetEmployeeNo(employeeNo);
+        SialEmployeeDto payrollNo = services.TryGetEmployeeNo(employeeNo);
 
         return new SingleObjectModel(base.Request, payrollNo);
       }
@@ -86,7 +86,7 @@ namespace Empiria.BanobrasIntegration.Sial.WebApi {
 
       using (var services = SialServices.ServiceInteractor()) {
 
-        SialOrganizationUnitEmployeeEntryDto payrollNo = services.TryGetEmployeeRfc(employeeTaxCode);
+        SialEmployeeDto payrollNo = services.TryGetEmployeeRfc(employeeTaxCode);
 
         return new SingleObjectModel(base.Request, payrollNo);
       }

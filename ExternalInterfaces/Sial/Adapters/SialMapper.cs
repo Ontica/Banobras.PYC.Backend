@@ -55,29 +55,25 @@ namespace Empiria.BanobrasIntegration.Sial.Adapters {
     }
 
 
-    static internal SialOrganizationUnitEmployeeEntryDto MapToOrganizationUnitEmployeeEntries(SialOrganizationUnitEmployeeEntry employee) {
-      return new SialOrganizationUnitEmployeeEntryDto {
-        EmployeeNo = employee.NoEmpleado.ToString(),
-        FedTaxpayersReg = employee.RfcEmpleado,
-        Name = EmpiriaString.Clean(employee.Nombre),
-        LastName = EmpiriaString.Clean(employee.ApellidoNombre),
-        OrganizationUnitNo = employee.NoArea,
-        JobNo = employee.NoPuesto,
-        JobTitle = EmpiriaString.Clean(employee.Puesto),
-        JobCategoryNo = employee.NoTabulador,
+    static internal SialEmployeeDto MapToEmployeeDto(EmpleadoSIAL empleado) {
+      return new SialEmployeeDto {
+        Code = empleado.NoEmpleado.ToString(),
+        RFC = empleado.RfcEmpleado,
+        Name = EmpiriaString.Clean(empleado.Nombre),
+        OrganizationUnitCode = empleado.NoArea,
+        OrganizationUnit = empleado.Area,
+        PositionCode = empleado.NoPuesto,
+        Position = EmpiriaString.Clean(empleado.Puesto),
+        Category = empleado.NoTabulador,
+        CpnCode = empleado.IdCpn,
+        Cpn = empleado.Cpn,
+        SubLeadgerAccount = empleado.Auxilar
       };
     }
 
-    internal static FixedList<SialOrganizationUnitEmployeeEntryDto> MapToOrganizationUnitEmployeesEntries(FixedList<SialOrganizationUnitEmployeeEntry> entries) {
-      return entries.Select(x => new SialOrganizationUnitEmployeeEntryDto {
-        EmployeeNo = x.NoEmpleado.ToString(),
-        Name = EmpiriaString.Clean(x.Nombre),
-        LastName = EmpiriaString.Clean(x.ApellidoNombre),
-        OrganizationUnitNo = x.NoArea,
-        JobNo = x.NoPuesto,
-        JobTitle = EmpiriaString.Clean(x.Puesto),
-        JobCategoryNo = x.NoTabulador,
-      }).ToFixedList();
+
+    internal static FixedList<SialEmployeeDto> MapEmployeesDto(FixedList<EmpleadoSIAL> entries) {
+      return entries.Select(x => MapToEmployeeDto(x)).ToFixedList();
     }
 
     #endregion Mappers

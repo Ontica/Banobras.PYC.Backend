@@ -2,50 +2,71 @@
 *                                                                                                            *
 *  Module   : Banobras SIAL Integration                  Component : Adapters Layer                          *
 *  Assembly : Banobras.PYC.ExternalInterfaces            Pattern   : Output DTO                              *
-*  Type     : SialOrganizationUnitEmployeeEntryDto       License   : Please read LICENSE.txt file            *
+*  Type     : SialEmployeeDto                            License   : Please read LICENSE.txt file            *
 *                                                                                                            *
-*  Summary  : Output DTO used to return a SIAL organization unit employee.                                   *
+*  Summary  : Output DTO used to return a SIAL employee.                                                     *
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 namespace Empiria.BanobrasIntegration.Sial.Adapters {
 
-  /// <summary>Output DTO used to return a SIAL organization unit employee.</summary>
-  public class SialOrganizationUnitEmployeeEntryDto {
+  /// <summary>Output DTO used to return a SIAL employee.</summary>
+  public class SialEmployeeDto {
 
-    public string EmployeeNo {
+    public string Code {
       get; internal set;
     }
 
-    public string FedTaxpayersReg {
+
+    public string RFC {
       get; internal set;
     }
+
 
     public string Name {
       get; internal set;
     }
 
-    public string LastName {
-      get; internal set;
-    }
 
-    public string OrganizationUnitNo {
-      get; internal set;
-    }
-
-    public string JobNo {
-      get; internal set;
-    }
-
-    public string JobTitle {
-      get; internal set;
-    }
-
-    public string JobCategoryNo {
+    public string OrganizationUnitCode {
       get; internal set;
     }
 
 
-  }  // class SialOrganizationUnitEmployeeEntryDto
+    public string OrganizationUnit {
+      get; internal set;
+    }
+
+
+    public string PositionCode {
+      get; internal set;
+    }
+
+
+    public string Position {
+      get; internal set;
+    }
+
+
+    public string Category {
+      get; internal set;
+    }
+
+
+    public int CpnCode {
+      get; internal set;
+    }
+
+
+    public string Cpn {
+      get; internal set;
+    }
+
+
+    public string SubLeadgerAccount {
+      get; internal set;
+    }
+
+  }  // class SialEmployeeDto
 
 } // namespace Empiria.BanobrasIntegration.Sial.Adapters
