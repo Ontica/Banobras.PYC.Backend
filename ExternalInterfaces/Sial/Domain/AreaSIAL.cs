@@ -78,7 +78,33 @@ namespace Empiria.BanobrasIntegration.Sial {
       get; private set;
     }
 
+
+    public EmpleadoSIAL Responsable {
+      get {
+        return GetResponsable();
+      }
+    }
+
+
     #endregion Properties
+
+    #region Helpers
+
+    private EmpleadoSIAL GetResponsable() {
+      string areaSIAL = this.Clave;
+
+      while (true) {
+        var responsible = SialDataService.GetResponsableArea(areaSIAL);
+
+        if (responsible != null) {
+          return responsible;
+        }
+
+        areaSIAL = AreaSIAL.TryGetAreaSuperiorSIAL(areaSIAL).Clave;
+      }
+    }
+
+    #endregion Helpers
 
   } // class AreaSIAL
 

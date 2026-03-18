@@ -114,6 +114,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
       return DataReader.GetPlainObject<EmpleadoSIAL>(op, null);
     }
 
+
     internal static FixedList<EmpleadoSIAL> GetEmployees() {
 
       var sql = "SELECT * FROM INTRAN.INT_V_USUARIOS_PYC@INTRAN";
@@ -122,6 +123,22 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
       return DataReader.GetPlainObjectFixedList<EmpleadoSIAL>(op);
     }
+
+
+    internal static EmpleadoSIAL GetResponsableArea(string areaSIAL) {
+      const string inicialesResponsable = "00";
+
+      var sql = "SELECT * FROM " +
+                "(SELECT * FROM INTRAN.INT_V_USUARIOS_PYC@INTRAN " +
+                $"WHERE CLAVE_AREA = '{areaSIAL}' " +
+                $"AND SUBSTR(CLAVE_PUESTO, 1, 2) = '{inicialesResponsable}') " +
+                "WHERE ROWNUM = 1 ";
+
+      var op = DataOperation.Parse(sql);
+
+      return DataReader.GetPlainObject<EmpleadoSIAL>(op, null);
+    }
+
 
 
     static private void EnsurePayrollsStatusNotNull() {

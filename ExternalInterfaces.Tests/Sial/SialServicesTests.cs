@@ -91,7 +91,7 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
 
 
     [Fact]
-    public void Should_Get_OrganizationUnitData_By_EmployeeNo() {
+    public void Should_Get_Employee_By_No() {
       var services = SialServices.ServiceInteractor();
 
       SialEmployeeDto sut = services.TryGetEmployeeNo("111295");
@@ -101,10 +101,19 @@ namespace Empiria.Tests.BanobrasIntegration.Sial {
 
 
     [Fact]
-    public void Should_Get_OrganizationUnitData_By_EmployeeRfc() {
+    public void Should_Get_Employee_By_Rfc() {
       var services = SialServices.ServiceInteractor();
 
       SialEmployeeDto sut = services.TryGetEmployeeRfc("LOTR810504GT2");
+
+      Assert.NotNull(sut);
+    }
+
+    [Fact]
+    public void Should_Get_OrganizationUnitResponsible() {
+      string area = "100000";
+
+      var sut = AreaSIAL.TryGetArea(area).Responsable;
 
       Assert.NotNull(sut);
     }
