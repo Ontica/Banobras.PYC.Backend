@@ -40,7 +40,8 @@ namespace Empiria.Banobras.Procurement {
 
       var orderItems = _order.GetItems<OrderItem>()
                              .FindAll(x => (x.BudgetEntry.IsEmptyInstance ||
-                                           x.BudgetEntry.Status == TransactionStatus.Rejected) &&
+                                           x.BudgetEntry.Status == TransactionStatus.Rejected ||
+                                           x.BudgetEntry.Status == TransactionStatus.Canceled) &&
                                            x.Budget.Equals(_order.BaseBudget));
 
       Assertion.Require(orderItems.Count != 0,
