@@ -64,23 +64,34 @@ namespace Empiria.Budgeting.Reporting {
       foreach (var entry in explorerResult.Entries) {
 
         if (explorerResult.Query.GroupByColumn == Explorer.BudgetExplorerGroupBy.AREA_PARTIDA) {
-          _excelFile.SetCell($"A{i}", entry.OrganizationalUnitName);
+          _excelFile.SetCell($"A{i}", entry.BudgetAccount.OrganizationalUnit.Code);
+          _excelFile.SetCell($"B{i}", entry.BudgetAccount.OrganizationalUnit.Name);
         } else {
           _excelFile.SetCell($"A{i}", "BANOBRAS");
+          _excelFile.SetCell($"B{i}", "Todas las áreas");
         }
-        _excelFile.SetCell($"B{i}", entry.BudgetAccountName);
-        _excelFile.SetCell($"C{i}", entry.MonthName);
-        _excelFile.SetCell($"D{i}", entry.Planned);
-        _excelFile.SetCell($"E{i}", entry.Authorized);
-        _excelFile.SetCell($"F{i}", entry.Expanded);
-        _excelFile.SetCell($"G{i}", entry.Reduced);
-        _excelFile.SetCell($"H{i}", entry.Modified);
-        _excelFile.SetCell($"I{i}", entry.Requested);
-        _excelFile.SetCell($"J{i}", entry.Commited);
-        _excelFile.SetCell($"K{i}", entry.ToPay);
-        _excelFile.SetCell($"L{i}", entry.Exercised);
-        _excelFile.SetCell($"M{i}", entry.ToExercise);
-        _excelFile.SetCell($"N{i}", entry.Available);
+
+        _excelFile.SetCell($"C{i}", entry.BudgetAccount.Code);
+        _excelFile.SetCell($"D{i}", entry.BudgetAccount.StandardAccount.Description);
+
+        _excelFile.SetCell($"E{i}", entry.BudgetAccount.StandardAccount.IsBaseAccount ? string.Empty :
+                                      entry.BudgetAccount.StandardAccount.BaseAccount.StdAcctNo);
+
+        _excelFile.SetCell($"F{i}", entry.BudgetAccount.BudgetProgram.Code);
+
+        _excelFile.SetCell($"G{i}", entry.Month);
+        _excelFile.SetCell($"H{i}", entry.MonthName);
+        _excelFile.SetCell($"I{i}", entry.Planned);
+        _excelFile.SetCell($"J{i}", entry.Authorized);
+        _excelFile.SetCell($"K{i}", entry.Expanded);
+        _excelFile.SetCell($"L{i}", entry.Reduced);
+        _excelFile.SetCell($"M{i}", entry.Modified);
+        _excelFile.SetCell($"N{i}", entry.Requested);
+        _excelFile.SetCell($"O{i}", entry.Commited);
+        _excelFile.SetCell($"P{i}", entry.ToPay);
+        _excelFile.SetCell($"Q{i}", entry.Exercised);
+        _excelFile.SetCell($"R{i}", entry.ToExercise);
+        _excelFile.SetCell($"S{i}", entry.Available);
 
         i++;
 
