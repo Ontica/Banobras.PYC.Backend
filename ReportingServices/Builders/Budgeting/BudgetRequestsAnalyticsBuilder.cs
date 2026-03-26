@@ -244,11 +244,11 @@ namespace Empiria.Budgeting.Reporting {
 
         } else if (columnGroup.Key.Id == BalanceColumn.ToPay.Id) {
 
-          journalEntry.ToPay = groupEntries.Sum(x => x.Deposit > 0 ? x.Deposit : -1 * x.Withdrawal);
+          journalEntry.ToPay = 0;
 
         } else if (columnGroup.Key.Id == BalanceColumn.Exercised.Id) {
 
-          journalEntry.Exercised = groupEntries.Sum(x => x.Deposit > 0 ? x.Deposit : -1 * x.Withdrawal);
+          journalEntry.Exercised = 0;
 
         }
       }
@@ -260,7 +260,6 @@ namespace Empiria.Budgeting.Reporting {
     static private BudgetRequestsAnalyticsEntry TryBuildExerciseEntry(BudgetTransaction requestTxn,
                                                                       FixedList<BudgetTransaction> relatedTxns,
                                                                       FixedList<BudgetEntry> entries) {
-
 
       var approvePaymentEntry = entries.FindLast(x => x.Transaction.OperationType == BudgetOperationType.ApprovePayment);
 
