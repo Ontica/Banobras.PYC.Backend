@@ -10,9 +10,10 @@
 
 using System.Text;
 
+using Empiria.Financial;
 using Empiria.Office;
-using Empiria.Storage;
 using Empiria.StateEnums;
+using Empiria.Storage;
 
 using Empiria.Billing;
 
@@ -22,7 +23,6 @@ using Empiria.Orders.Contracts;
 using Empiria.Payments;
 
 using Empiria.Budgeting.Transactions;
-using Empiria.Financial;
 
 namespace Empiria.Budgeting.Reporting {
 
@@ -61,9 +61,11 @@ namespace Empiria.Budgeting.Reporting {
       BuildBillsTotals();
       BuildFooter();
       HideUnneededParts();
+      PatchText();
 
       SignIf(_budgetTxn.IsClosed);
     }
+
 
     private void BuildBills() {
       string TEMPLATE = GetSection("BILLS.TEMPLATE");
@@ -154,7 +156,7 @@ namespace Empiria.Budgeting.Reporting {
 
     private void BuildHeader() {
 
-      string title = $"Relación de pagos";
+      string title = _budgetTxn.OperationType == BudgetOperationType.Exercise ? "Ejercicio presupuestal" : "Relación de pagos";
 
       if (!_budgetTxn.IsClosed) {
         title = $"{title}{Space(2)}({_budgetTxn.Status.GetName()})";
@@ -177,17 +179,20 @@ namespace Empiria.Budgeting.Reporting {
 
       Set("{{PAYMENT_ORDER.NO}}", _paymentOrder.PaymentOrderNo);
       Set("{{PAYMENT_ORDER.TOTAL}}", _paymentOrder.Total);
+
       Set("{{PAYMENT_ORDER.PAYMENT_TYPE}}", _paymentOrder.PaymentType.Name);
+
       Set("{{PAYMENT_ORDER.REQUEST_TIME}}", _paymentOrder.PostingTime.ToString("dd/MMM/yyyy HH:mm"));
       Set("{{PAYMENT_ORDER.REQUESTED_BY}}", $"{_paymentOrder.RequestedBy.Name} ({_paymentOrder.RequestedBy.Code}) ");
 
 
       var payTo = (Payee) _paymentOrder.PayTo;
 
-      Set("{{PAYMENT.PAY_TO}}", payTo.Name);
+      Set("{{PAYMENT.PAY_TO}}", $"{payTo.Name}{Space(2)}( {payTo.SubledgerAccount} )");
 
-      if (_paymentOrder.Payed) {
-        Set("{{PAYMENT.PAYMENT_METHOD}}", _paymentOrder.PaymentMethod.Name);
+      if (_budgetTxn.OperationType == BudgetOperationType.Exercise && _paymentOrder.Payed) {
+        Set("{{PAYMENT.PAYMENT_METHOD}}", $"{_paymentOrder.PaymentMethod.Name}{Space(2)}" +
+                                          $"{_paymentOrder.LastPaymentInstruction.LastUpdateTime.ToString("dd/MMM/yyyy HH:mm")}");
       } else {
         Set("{{PAYMENT.PAYMENT_METHOD}}", $"{_paymentOrder.PaymentMethod.Name}");
       }
@@ -366,6 +371,20 @@ namespace Empiria.Budgeting.Reporting {
       if (!_budgetTxn.InProcess && !_budgetTxn.IsClosed) {
         Hide("{{HIDE_ALL_SIGNS}}");
       }
+
+      if (_budgetTxn.OperationType == BudgetOperationType.Exercise) {
+        Hide("{{HIDE_ALL_SIGNS}}");
+      }
+    }
+
+
+    private void PatchText() {
+      if (_budgetTxn.OperationType != BudgetOperationType.Exercise) {
+        return;
+      }
+
+      Set("Pagar a:", "Pagado a:");
+      Set("TOTAL A PAGAR", "TOTAL PAGADO");
     }
 
     #endregion Helpers
