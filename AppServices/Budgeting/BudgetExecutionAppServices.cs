@@ -80,6 +80,9 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         applicationDate = applicationDate ?? DateTime.Today.Date;
       }
 
+      Assertion.Require(applicationDate.Value.Date <= DateTime.Today.Date.AddDays(1),
+                        $"La fecha de pago no puede ser posterior al día de mañana.");
+
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_PAGOS,
                                                  applicationDate.Value, paymentOrder.ExchangeRate);
 
