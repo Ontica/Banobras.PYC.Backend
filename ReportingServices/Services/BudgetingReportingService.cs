@@ -10,13 +10,14 @@
 
 using System;
 using System.Linq;
-
+using System.Threading.Tasks;
+using Empiria.Budgeting.Transactions;
+using Empiria.CashFlow.CashLedger.Adapters;
 using Empiria.DynamicData;
+using Empiria.FinancialAccounting.ClientServices;
 using Empiria.Office;
 using Empiria.Services;
 using Empiria.Storage;
-
-using Empiria.Budgeting.Transactions;
 
 namespace Empiria.Budgeting.Reporting {
 
@@ -206,8 +207,113 @@ namespace Empiria.Budgeting.Reporting {
                               .ToFixedList();
     }
 
+
+    public async Task<DynamicDto<ExerciseReconciliationDto>> ExerciseAccountingReconciliation(DateTime fromDate, DateTime toDate) {
+
+      var financialAccountingServices = new CashTransactionServices();
+
+      var query = new BaseCashLedgerQuery {
+        FromAccountingDate = fromDate,
+        ToAccountingDate = toDate,
+        // VoucherAccounts = new[] { "6.05" },
+        VoucherAccounts = new[] { "6.05", "2.07.04.07", "2.07.04.08" },
+        // new[] {  },
+
+      };
+
+      FixedList<CashEntryExtendedDto> entries = await financialAccountingServices.SearchEntries(query);
+
+      var grouped = entries.GroupBy(x => new { x.AccountNumber, x.AccountName, x.VerificationNumber });
+
+      var dtos = grouped.Select(x => Map(x.Key.AccountNumber, x.Key.AccountName, x.Key.VerificationNumber, x.ToFixedList()))
+                        .OrderBy(x => x.AccountNumber)
+                        .ThenBy(x => x.VerificationNumber)
+                        .ToFixedList();
+
+
+      var columns = new DataTableColumn[] {
+        new DataTableColumn("transaccionNo", "Transaccion", "text-nowrap"),
+        new DataTableColumn("budgetAccount", "Partida", "text-nowrap"),
+        new DataTableColumn("budgetAccountName", "Nombre de la partida", "text-nowrap"),
+        new DataTableColumn("budgetControlNumber", "Num verif", "text-nowrap"),
+        new DataTableColumn("budgetExercise", "Ejercido", "decimal"),
+        new DataTableColumn("accountNumber", "Cuenta contable", "text-nowrap"),
+        new DataTableColumn("accountName", "Nombre de la cuenta contable", "text") { Size = "lg" },
+        new DataTableColumn("verificationNumber", "Num verif (contable)", "text") { Size = "sm"} ,
+        new DataTableColumn("debit", "Cargos", "decimal"),
+        new DataTableColumn("credit", "Abonos", "decimal"),
+      }.ToFixedList();
+
+
+      var dyn = new DynamicDto<ExerciseReconciliationDto>(columns, dtos);
+
+      return dyn;
+    }
+
+    private ExerciseReconciliationDto Map(string accountNumber, string accountName,
+                                          string verificationNumber,
+                                          FixedList<CashEntryExtendedDto> list) {
+      return new ExerciseReconciliationDto {
+        TransaccionNo = "2026-EJR-CF-00110",
+        BudgetAccount = "90103",
+        BudgetAccountName = string.Empty,
+        BudgetControlNumber = string.Empty,
+        BudgetExercise = 0,
+        AccountNumber = accountNumber,
+        AccountName = accountName,
+        VerificationNumber = verificationNumber,
+        Debit = list.Sum(x => x.Debit),
+        Credit = list.Sum(x => x.Credit)
+      };
+    }
+
     #endregion Helpers
 
   } // class BudgetingReportingService
+
+
+  public class ExerciseReconciliationDto {
+
+    public string TransaccionNo {
+      get; internal set;
+    }
+
+    public string BudgetAccount {
+      get; internal set;
+    }
+
+    public string BudgetAccountName {
+      get; internal set;
+    }
+
+    public string BudgetControlNumber {
+      get; internal set;
+    }
+
+    public decimal BudgetExercise {
+      get; internal set;
+    }
+
+    public string AccountNumber {
+      get; internal set;
+    }
+
+    public string AccountName {
+      get; internal set;
+    }
+
+    public string VerificationNumber {
+      get; internal set;
+    }
+
+    public decimal Debit {
+      get; internal set;
+    }
+
+    public decimal Credit {
+      get; internal set;
+    }
+
+  }  // class ExerciseReconciliationDto
 
 } // namespace Empiria.Budgeting.Reporting

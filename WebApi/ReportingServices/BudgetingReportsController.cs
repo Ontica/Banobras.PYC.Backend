@@ -8,6 +8,7 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System.Threading.Tasks;
 using System.Web.Http;
 
 using Empiria.DynamicData;
@@ -58,6 +59,19 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
         DynamicDto<BudgetExerciseJournalEntry> journal =
                                   service.ExerciseJournalDynamicTable(fields.FromDate, fields.ToDate);
+
+        return new SingleObjectModel(base.Request, journal);
+      }
+    }
+
+
+    [HttpPost]
+    [Route("v2/financial-management/reports/budget-exercise-accounting-reconciliation")]
+    public async Task<SingleObjectModel> ExerciseAccountingReconciliation([FromBody] ReportFields fields) {
+
+      using (var service = BudgetingReportingService.ServiceInteractor()) {
+
+        var journal = await service.ExerciseAccountingReconciliation(fields.FromDate, fields.ToDate);
 
         return new SingleObjectModel(base.Request, journal);
       }
