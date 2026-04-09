@@ -217,16 +217,18 @@ namespace Empiria.Budgeting.Reporting {
       FixedList<ExerciseReconciliationDto> reconciliation = await reconciliator.Build();
 
       var columns = new DataTableColumn[] {
-        new DataTableColumn("transaccionNo", "Transaccion", "text-nowrap"),
+        new DataTableColumn("budgetTransactionNo", "Transaccion", "text-nowrap"),
         new DataTableColumn("budgetAccount", "Partida", "text-nowrap"),
         new DataTableColumn("budgetAccountName", "Nombre de la partida", "text-nowrap"),
         new DataTableColumn("budgetControlNumber", "Num verif", "text-nowrap"),
         new DataTableColumn("budgetExercise", "Ejercido", "decimal"),
+        new DataTableColumn("accountingVoucherNo", "Póliza contable", "text-nowrap"),
         new DataTableColumn("accountNumber", "Cuenta contable", "text-nowrap"),
         new DataTableColumn("accountName", "Nombre de la cuenta contable", "text") { Size = "lg" },
         new DataTableColumn("verificationNumber", "Num verif (contable)", "text") { Size = "sm"} ,
         new DataTableColumn("debit", "Cargos", "decimal"),
         new DataTableColumn("credit", "Abonos", "decimal"),
+
       }.ToFixedList();
 
 

@@ -9,6 +9,7 @@
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,11 +17,13 @@ using Empiria.CashFlow.CashLedger.Adapters;
 
 using Empiria.FinancialAccounting.ClientServices;
 
+using Empiria.Budgeting.Transactions;
+
 namespace Empiria.Banobras.Reporting.Builders.Budgeting {
 
   public class ExerciseReconciliationDto {
 
-    public string TransaccionNo {
+    public string BudgetTransactionNo {
       get; internal set;
     }
 
@@ -60,12 +63,32 @@ namespace Empiria.Banobras.Reporting.Builders.Budgeting {
       get; internal set;
     }
 
+    public string AccountingVoucherNo {
+      get; internal set;
+    }
+
   }  // class ExerciseReconciliationDto
 
 
 
   /// <summary>Reconciliates accounting records with budget exercise transactions.</summary>
   internal class BudgetExerciseAccountingReconciliator {
+
+    private class Reconcilation {
+
+      internal Reconcilation(BudgetEntry exerciseTxnEntry, CashEntryExtendedDto accountingEntry) {
+        BudgetEntry = exerciseTxnEntry;
+        AccountingEntry = accountingEntry;
+      }
+
+      internal BudgetEntry BudgetEntry {
+        get; set;
+      }
+
+      internal CashEntryExtendedDto AccountingEntry {
+        get; set;
+      }
+    }
 
     private DateTime _fromDate;
     private DateTime _toDate;
@@ -78,6 +101,78 @@ namespace Empiria.Banobras.Reporting.Builders.Budgeting {
 
     internal async Task<FixedList<ExerciseReconciliationDto>> Build() {
 
+      FixedList<BudgetTransaction> exerciseTxns = GetBudgetExerciseTransactions();
+
+      FixedList<CashEntryExtendedDto> accountingEntries = await GetAccountingEntries();
+
+      var reconciliationList = new List<Reconcilation>(exerciseTxns.Count);
+
+      foreach (var txn in exerciseTxns) {
+        var reconcilationEntries = Reconciliate(txn, accountingEntries);
+
+        reconciliationList.AddRange(reconcilationEntries);
+      }
+
+      return reconciliationList.Select(x => Map(x))
+                               .ToFixedList();
+    }
+
+
+    private ExerciseReconciliationDto Map(Reconcilation reconcilation) {
+
+      return new ExerciseReconciliationDto {
+        BudgetTransactionNo = reconcilation.BudgetEntry.Transaction.TransactionNo,
+        BudgetControlNumber = reconcilation.BudgetEntry.ControlNo,
+        BudgetAccount = reconcilation.BudgetEntry.BudgetAccount.AccountNo,
+        BudgetAccountName = reconcilation.BudgetEntry.BudgetAccount.Name,
+        BudgetExercise = reconcilation.BudgetEntry.Amount,
+        AccountName = reconcilation.AccountingEntry.AccountName,
+        AccountNumber = reconcilation.AccountingEntry.AccountNumber,
+        VerificationNumber = reconcilation.AccountingEntry.VerificationNumber,
+        Credit = reconcilation.AccountingEntry.Credit,
+        Debit = reconcilation.AccountingEntry.Debit,
+        AccountingVoucherNo = reconcilation.AccountingEntry.TransactionNumber
+      };
+    }
+
+
+    private FixedList<Reconcilation> Reconciliate(BudgetTransaction txn,
+                                                  FixedList<CashEntryExtendedDto> accountingEntries) {
+
+      var budgetExerciseEntries = txn.Entries.FindAll(x => x.BalanceColumn == BalanceColumn.Exercised &&
+                                                           x.NotAdjustment);
+
+      var reconciliationList = new List<Reconcilation>(budgetExerciseEntries.Count);
+
+      foreach (var txnEntry in budgetExerciseEntries) {
+
+        var reconcilationEntry = Reconcilate(txnEntry, accountingEntries);
+
+        if (reconcilationEntry != null) {
+          reconciliationList.Add(reconcilationEntry);
+        }
+      }
+
+      return reconciliationList.ToFixedList();
+    }
+
+
+    private Reconcilation Reconcilate(BudgetEntry exerciseTxnEntry,
+                                      FixedList<CashEntryExtendedDto> accountingEntries) {
+
+      var accountingEntry = accountingEntries.Find(x => x.Debit == exerciseTxnEntry.Amount &&
+                                                        exerciseTxnEntry.ControlNo.Contains(x.VerificationNumber));
+
+      if (accountingEntry != null) {
+        return new Reconcilation(exerciseTxnEntry, accountingEntry);
+      } else {
+        return null;
+      }
+    }
+
+    #region Helpers
+
+    private async Task<FixedList<CashEntryExtendedDto>> GetAccountingEntries() {
       var financialAccountingServices = new CashTransactionServices();
 
       var query = new BaseCashLedgerQuery {
@@ -86,36 +181,14 @@ namespace Empiria.Banobras.Reporting.Builders.Budgeting {
         VoucherAccounts = new[] { "2.07.04.07", "2.07.04.08" }
       };
 
-      FixedList<CashEntryExtendedDto> entries = await financialAccountingServices.SearchEntries(query);
-
-      var grouped = entries.GroupBy(x => new { x.AccountNumber, x.AccountName, x.VerificationNumber });
-
-      var dtos = grouped.Select(x => Map(x.Key.AccountNumber, x.Key.AccountName, x.Key.VerificationNumber, x.ToFixedList()))
-                        .OrderBy(x => x.AccountNumber)
-                        .ThenBy(x => x.VerificationNumber)
-                        .ToFixedList();
-
-      return dtos;
+      return await financialAccountingServices.SearchEntries(query);
     }
 
-    #region Helpers
 
-    private ExerciseReconciliationDto Map(string accountNumber, string accountName,
-                                          string verificationNumber,
-                                          FixedList<CashEntryExtendedDto> list) {
-
-      return new ExerciseReconciliationDto {
-        TransaccionNo = "2026-EJR-CF-00110",
-        BudgetAccount = "90103",
-        BudgetAccountName = string.Empty,
-        BudgetControlNumber = string.Empty,
-        BudgetExercise = 0,
-        AccountNumber = accountNumber,
-        AccountName = accountName,
-        VerificationNumber = verificationNumber,
-        Debit = list.Sum(x => x.Debit),
-        Credit = list.Sum(x => x.Credit)
-      };
+    private FixedList<BudgetTransaction> GetBudgetExerciseTransactions() {
+      return BaseObject.GetFullList<BudgetTransaction>()
+                       .FindAll(x => x.OperationType == BudgetOperationType.Exercise &&
+                                     _fromDate <= x.ApplicationDate && x.ApplicationDate <= _toDate);
     }
 
     #endregion Helpers
