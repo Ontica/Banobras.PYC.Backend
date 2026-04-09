@@ -17,6 +17,8 @@ using Empiria.WebApi;
 
 using Empiria.Budgeting.Reporting;
 
+using Empiria.Banobras.Reporting.Builders.Budgeting;
+
 namespace Empiria.Banobras.Reporting.WebApi {
 
   /// <summary>Web API used to build budgeting journals and other budgeting reports.</summary>
@@ -71,9 +73,10 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
-        var journal = await service.ExerciseAccountingReconciliation(fields.FromDate, fields.ToDate);
+        DynamicDto<ExerciseReconciliationDto> reconciliation =
+                    await service.GetBudgetExerciseAccountingReconciliation(fields.FromDate, fields.ToDate);
 
-        return new SingleObjectModel(base.Request, journal);
+        return new SingleObjectModel(base.Request, reconciliation);
       }
     }
 
