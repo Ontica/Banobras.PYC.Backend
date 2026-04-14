@@ -79,7 +79,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
     }
 
 
-    public string CreditStage {
+    public string CreditStageId {
       get; internal set;
     }
 
@@ -104,7 +104,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
     }
 
 
-    public int LineCreditNo {
+    public string CreditLineNo {
       get; internal set;
     }
 
@@ -143,7 +143,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
       get; internal set;
     }
 
-    
+
     public DateTime DisbursementDate {
       get; internal set;
     }
@@ -177,6 +177,11 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
 
     public decimal InterestRateCeiling {
       get; internal set;
+    }
+
+    public CreditProjectType CreditProjectType {
+      get;
+      internal set;
     }
 
   }  // class SicCreditDto

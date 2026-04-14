@@ -123,7 +123,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
     }
 
 
-    public string ConstructionBuilding {
+    public string CreditProjectType {
       get; internal set;
     }
 

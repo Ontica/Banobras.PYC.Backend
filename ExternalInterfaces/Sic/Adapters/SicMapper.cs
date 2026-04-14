@@ -49,14 +49,15 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
         CustomerType = credit.TipoCliente,
         CustomerName = credit.NombreCliente,
         CreditType = credit.ClasifCreditoDes,
-        CreditStage = credit.EtapaCreditoDes,
+        CreditStageId = credit.EtapaCredito.ToString(),
+
         StandardAccount = credit.CtaRegistro,
-        ExternalCreditNo = credit.CreditoPasivoNo,
+        ExternalCreditNo = credit.CreditoNo,
         MaxAvailabilityDate = credit.FecMaxDisposicion,
         MaxRefinancingDate = credit.FechaMaxRefinanciamiento,
-        LineCreditNo = credit.LineaCreditoNo,
+        CreditLineNo = credit.LineaCreditoNo.ToString(),
         NetFinancedAmount = credit.MontoNetoFinanciar,
-        ConstructionBuilding = credit.TipoObraDescripcion,
+        CreditProjectType = CreditProjectType.TryParseWithID(credit.TipoObra.ToString()),
         ConstructionBuildingCost = credit.MontoObra,
         LoanAmount = credit.MontoCredito,
         CurrentBalance = credit.Saldo,
@@ -77,6 +78,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
     static internal SicCreditDto MapToCreditSic(SicCredit credit) {
       OrganizationalUnit orgUnit = MapArea(credit.AreaPromocion);
       Currency currency = MapCurrency(credit.Moneda);
+
       return new SicCreditDto {
         CreditNo = credit.CreditoNo,
         SubledgerAccountNo = EmpiriaString.Clean(credit.Auxiliar),
@@ -99,7 +101,7 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
         MaxRefinancingDate = credit.FechaMaxRefinanciamiento,
         LineCreditNo = credit.LineaCreditoNo,
         NetFinancedAmount = credit.MontoNetoFinanciar,
-        ConstructionBuilding = credit.TipoObraDescripcion,
+        CreditProjectType = credit.TipoObra.ToString(),
         ConstructionBuildingCost = credit.MontoObra,
         LoanAmount = credit.MontoCredito,
         CurrentBalance = credit.Saldo,
@@ -121,6 +123,18 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
 
     #region Helpers
 
+    static private OrganizationalUnit MapArea(string area) {
+      var units = OrganizationalUnit.GetList<OrganizationalUnit>();
+      var unit = units.Find(x => x.Code == area);
+
+      if (unit == null) {
+        return OrganizationalUnit.Empty;
+      }
+
+      return unit;
+    }
+
+
     static private Currency MapCurrency(int moneda) {
       var currencies = Currency.GetList();
       string currencyCode = moneda.ToString("D2");
@@ -131,17 +145,6 @@ namespace Empiria.BanobrasIntegration.Sic.Adapters {
       }
 
       return currency;
-    }
-
-    static private OrganizationalUnit MapArea(string area) {
-      var units = OrganizationalUnit.GetList<OrganizationalUnit>();
-      var unit = units.Find(x => x.Code == area);
-
-      if (unit == null) {
-        return OrganizationalUnit.Empty;
-      }
-
-      return unit;
     }
 
     #endregion Helpers
