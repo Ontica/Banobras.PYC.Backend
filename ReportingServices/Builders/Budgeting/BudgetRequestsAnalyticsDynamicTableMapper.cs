@@ -49,6 +49,10 @@ namespace Empiria.Budgeting.Reporting {
       get; internal set;
     }
 
+    public DateTime RequestTxnAppDate {
+      get; internal set;
+    }
+
     public string CommitTxnUID {
       get; internal set;
     }
@@ -62,6 +66,10 @@ namespace Empiria.Budgeting.Reporting {
     }
 
     public string ApprovePaymentTxnNo {
+      get; internal set;
+    }
+
+    public DateTime? ApprovePaymentTxnDate {
       get; internal set;
     }
 
@@ -97,10 +105,6 @@ namespace Empiria.Budgeting.Reporting {
       get {
         return Requested + Committed + ToPay;
       }
-    }
-
-    public string Month {
-      get; internal set;
     }
 
     public string Description {
@@ -179,6 +183,7 @@ namespace Empiria.Budgeting.Reporting {
         new DataTableColumn("requestTxnNo", "Suficiencia", "text-link",
                             linkField: "requestTxnUID", action: "ViewBudgetTransaction"),
         new DataTableColumn("controlNo", "Núm Verif", "text-nowrap"),
+        new DataTableColumn("requestTxnAppDate", "Fecha suf", "date"),
         new DataTableColumn("amount", "Importe", "decimal"),
         new DataTableColumn("requested", "Apartado", "decimal"),
         new DataTableColumn("committed", "Comprometido", "decimal"),
@@ -189,9 +194,9 @@ namespace Empiria.Budgeting.Reporting {
                             linkField: "commitTxnUID", action: "ViewBudgetTransaction"),
         new DataTableColumn("approvePaymentTxnNo", "Aut de pago", "text-link",
                             linkField: "approvePaymentTxnUID", action: "ViewBudgetTransaction"),
+        new DataTableColumn("approvePaymentTxnDate", "Fecha aut pago", "date"),
         new DataTableColumn("exerciseTxnNo", "Ejercicio", "text-link",
                             linkField: "exerciseTxnUID", action: "ViewBudgetTransaction"),
-        new DataTableColumn("month", "Mes", "text"),
         new DataTableColumn("description", "Descripción", "text"),
         new DataTableColumn("requisitionNo", "Requisición", "text-nowrap"),
         new DataTableColumn("contractNo", "Contrato", "text"),
@@ -232,7 +237,8 @@ namespace Empiria.Budgeting.Reporting {
         ExerciseTxnUID = entry.ExerciseTxn.IsEmptyInstance ? string.Empty : entry.ExerciseTxn.UID,
         ExerciseTxnNo = entry.ExerciseTxn.IsEmptyInstance ? string.Empty : entry.ExerciseTxn.TransactionNo,
         ControlNo = entry.ControlNo,
-        Month = EmpiriaString.MonthName(entry.Month),
+        RequestTxnAppDate = entry.RequestTxn.ApplicationDate,
+        ApprovePaymentTxnDate = entry.ApprovePaymentTxn.ApplicationDate,
         RequisitionNo = entry.RequestTxn.GetEntity().Data.BudgetableNo,
         ContractNo = entry.Contract.IsEmptyInstance ? string.Empty : entry.Contract.ContractNo,
         OrderNo = entry.PayableOrder.OrderNo,
@@ -263,13 +269,13 @@ namespace Empiria.Budgeting.Reporting {
         ControlNo = entry.ControlNo,
         RequestTxnUID = entry.RequestTxn.UID,
         RequestTxnNo = entry.RequestTxn.TransactionNo,
+        RequestTxnAppDate = entry.RequestTxn.ApplicationDate,
         CommitTxnUID = entry.CommitTxn.IsEmptyInstance ? string.Empty : entry.CommitTxn.UID,
         CommitTxnNo = entry.CommitTxn.IsEmptyInstance ? string.Empty : entry.CommitTxn.TransactionNo,
         ApprovePaymentTxnUID = string.Empty,
         ApprovePaymentTxnNo = string.Empty,
         ExerciseTxnUID = string.Empty,
         ExerciseTxnNo = string.Empty,
-        Month = EmpiriaString.MonthName(entry.Month),
         RequisitionNo = entry.Requisition.OrderNo,
         ContractNo = entry.Contract.IsEmptyInstance ? string.Empty : entry.Contract.ContractNo,
         OrderNo = string.Empty,
