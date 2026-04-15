@@ -36,6 +36,20 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
 
     [HttpPost]
+    [Route("v2/financial-management/reports/payments-bills/export")]
+    public SingleObjectModel BuildPaymentsBillsExcelReport([FromBody] ReportFields fields) {
+
+      using (var service = PaymentsReportingService.ServiceInteractor()) {
+
+        var excelFileDto = service.ExportPaymentsBillsReportToExcel(fields.FromDate, fields.ToDate);
+
+        return new SingleObjectModel(base.Request, excelFileDto);
+      }
+    }
+
+
+
+    [HttpPost]
     [Route("v2/financial-management/reports/payments-concepts")]
     public SingleObjectModel BuildPaymentsConceptsReport([FromBody] ReportFields fields) {
 

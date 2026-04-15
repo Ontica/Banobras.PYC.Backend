@@ -54,30 +54,39 @@ namespace Empiria.Payments.Reporting {
     public string OrgUnitName {
       get; internal set;
     }
+
     public string BillType {
-      get;
-      internal set;
+      get; internal set;
     }
-    public object BillNo {
-      get;
-      internal set;
+
+    public string BillNo {
+      get; internal set;
     }
+
+    public string BillName {
+      get; internal set;
+    }
+
     public object BillSubtotal {
-      get;
-      internal set;
+      get; internal set;
     }
-    public object BillIVA {
-      get;
-      internal set;
+
+    public decimal BillDiscount {
+      get; internal set;
     }
-    public object BillISR {
-      get;
-      internal set;
+
+    public decimal BillTaxes {
+      get; internal set;
     }
+
     public decimal BillTotal {
-      get;
-      internal set;
+      get; internal set;
     }
+
+    public string PaymentOrderStatus {
+      get; internal set;
+    }
+
   }  // class PaymentBillDto
 
 
@@ -100,15 +109,17 @@ namespace Empiria.Payments.Reporting {
         new DataTableColumn("payToCode", "RFC", "text"),
         new DataTableColumn("paymentDate", "Fecha de pago", "date"),
         new DataTableColumn("paymentMethod", "Forma de pago", "text"),
+        new DataTableColumn("paymentOrderStatus", "Estado", "text-nowrap"),
         new DataTableColumn("total", "Total pagado", "decimal"),
         new DataTableColumn("orgUnitCode", "Area", "text"),
         new DataTableColumn("orgUnitName", "Nombre área", "text"),
         new DataTableColumn("billType", "Comprobante", "text"),
-        new DataTableColumn("billNo", "Número", "text-nowrap"),
+        new DataTableColumn("billNo", "Número comprobante", "text-nowrap"),
+        new DataTableColumn("billName", "Descripción", "text") { Size = "lg" },
         new DataTableColumn("billSubtotal", "Subtotal", "decimal"),
-        new DataTableColumn("billIVA", "IVA", "decimal"),
-        new DataTableColumn("billISR", "ISR", "decimal"),
-        new DataTableColumn("billTotal", "Total", "decimal"),
+        new DataTableColumn("billDiscount", "Descuento", "decimal"),
+        new DataTableColumn("billTaxes", "Impuestos", "decimal"),
+        new DataTableColumn("billTotal", "Total comprobante", "decimal")
       }.ToFixedList();
     }
 
@@ -116,24 +127,22 @@ namespace Empiria.Payments.Reporting {
     internal FixedList<PaymentBillDto> BuildEntries() {
       FixedList<PaymentOrder> paymentOrders = GetPaymentOrders();
 
-      return paymentOrders.SelectFlat(x => CreatePaymentConceptsDto(x));
+      return paymentOrders.SelectFlat(x => CreatePaymentBillsDto(x));
     }
 
 
     #region Helpers
 
-    private FixedList<PaymentBillDto> CreatePaymentConceptsDto(PaymentOrder paymentOrder) {
+    private FixedList<PaymentBillDto> CreatePaymentBillsDto(PaymentOrder paymentOrder) {
 
       var bills = Bill.GetListFor(paymentOrder.PayableEntity);
 
-      return bills.Select(bill => CreatePaymentConceptDto(paymentOrder, bill))
+      return bills.Select(bill => CreatePaymentBillDto(paymentOrder, bill))
                   .ToFixedList();
     }
 
 
-    private PaymentBillDto CreatePaymentConceptDto(PaymentOrder paymentOrder, Bill bill) {
-
-      decimal iva = bill.Taxes;
+    private PaymentBillDto CreatePaymentBillDto(PaymentOrder paymentOrder, Bill bill) {
 
       return new PaymentBillDto {
         UID = paymentOrder.UID,
@@ -142,14 +151,16 @@ namespace Empiria.Payments.Reporting {
         PayToCode = paymentOrder.PayTo.Code,
         PaymentDate = paymentOrder.PostingTime,
         PaymentMethod = paymentOrder.PaymentMethod.Name,
+        PaymentOrderStatus = paymentOrder.Status.GetName(),
         Total = paymentOrder.Total,
         OrgUnitCode = paymentOrder.RequestedBy.Code,
         OrgUnitName = paymentOrder.RequestedBy.Name,
         BillType = bill.BillCategory.Name,
         BillNo = bill.BillNo,
+        BillName = bill.Name,
         BillSubtotal = bill.Subtotal,
-        BillIVA = iva,
-        BillISR = 0m,
+        BillDiscount = bill.Discount,
+        BillTaxes = bill.Taxes,
         BillTotal = bill.Total,
       };
     }
@@ -157,12 +168,11 @@ namespace Empiria.Payments.Reporting {
 
     private FixedList<PaymentOrder> GetPaymentOrders() {
       return PaymentOrder.GetList<PaymentOrder>()
-                         .FindAll(x => x.Status == PaymentOrderStatus.Payed &&
-                                                   _fromDate <= x.PostingTime && x.PostingTime < _toDate.AddDays(1))
+                         .FindAll(x => (x.Payed || x.InProgress) &&
+                                       _fromDate <= x.PostingTime && x.PostingTime < _toDate.AddDays(1))
                          .ToFixedList()
                          .Sort((x, y) => x.PostingTime.CompareTo(y.PostingTime));
     }
-
 
     #endregion Helpers
 

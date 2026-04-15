@@ -34,9 +34,9 @@ namespace Empiria.Payments.Reporting {
 
     #region Services
 
-    public DynamicDto<PaymentBillDto> BuildPaymentsBillsReport(DateTime fromDate, DateTime toEndDate) {
+    public DynamicDto<PaymentBillDto> BuildPaymentsBillsReport(DateTime fromDate, DateTime toDate) {
 
-      var builder = new PaymentsBillsReportBuilder(fromDate, toEndDate);
+      var builder = new PaymentsBillsReportBuilder(fromDate, toDate);
 
       var columns = builder.BuildColumns();
       var entries = builder.BuildEntries();
@@ -56,6 +56,20 @@ namespace Empiria.Payments.Reporting {
     }
 
 
+    public FileDto ExportPaymentsBillsReportToExcel(DateTime fromDate, DateTime toDate) {
+
+      var templateUID = $"{GetType().Name}.ExportPaymentsBillsReportToExcel";
+
+      var templateConfig = FileTemplateConfig.Parse(templateUID);
+
+      var exporter = new PaymentsBillsToExcelBuilder(templateConfig);
+
+      ExcelFile excelFile = exporter.CreateExcelFile(fromDate, toDate);
+
+      return excelFile.ToFileDto();
+    }
+
+
     public FileDto ExportPaymentConceptsToExcel(DateTime fromDate, DateTime toDate) {
 
       var templateUID = $"{GetType().Name}.ExportPaymentConceptsToExcel";
@@ -68,6 +82,7 @@ namespace Empiria.Payments.Reporting {
 
       return excelFile.ToFileDto();
     }
+
 
     public FileDto ExportPaymentOrderToPdf(PaymentOrder paymentOrder) {
       Assertion.Require(paymentOrder, nameof(paymentOrder));
