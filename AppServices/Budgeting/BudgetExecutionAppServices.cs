@@ -18,6 +18,7 @@ using Empiria.Orders.Contracts;
 
 using Empiria.Payments;
 
+using Empiria.Budgeting;
 using Empiria.Budgeting.Transactions;
 
 using Empiria.Banobras.Procurement;
@@ -80,8 +81,17 @@ namespace Empiria.Banobras.Budgeting.AppServices {
         applicationDate = applicationDate ?? DateTime.Today.Date;
       }
 
-      Assertion.Require(applicationDate.Value.Date <= DateTime.Today.Date.AddDays(1),
-                        $"La fecha de pago no puede ser posterior al día de mañana.");
+      Assertion.Require(applicationDate.Value.Date <= new DateTime(DateTime.Today.Year, DateTime.Today.Month,
+                                                                   DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month)),
+                        $"La fecha programada de pago no puede ser posterior al último día de este mes.");
+
+
+      Budget budget = (Budget) paymentOrder.PayableEntity.Budget;
+
+      Assertion.Require(budget.IsMonthOpened(applicationDate.Value.Month),
+                       $"El control de períodos presupuestales indica que " +
+                       $"ya está cerrado el mes de {EmpiriaString.MonthName(applicationDate.Value.Month)} " +
+                       $"para el presupuesto {budget.Name}.");
 
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_PAGOS,
                                                  applicationDate.Value, paymentOrder.ExchangeRate);
@@ -127,6 +137,13 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       }
 
       IBudgetable budgetable = order;
+
+      Budget budget = (Budget) budgetable.Data.BaseBudget;
+
+      Assertion.Require(budget.IsMonthOpened(applicationDate.Value.Month),
+                 $"El control de períodos presupuestales indica que " +
+                 $"ya está cerrado el mes de {EmpiriaString.MonthName(applicationDate.Value.Month)} " +
+                 $"para el presupuesto {budget.Name}.");
 
       var builder = new BudgetTransactionBuilder(budgetable, CommonData.SISTEMA_DE_ADQUISICIONES,
                                                  applicationDate.Value);
@@ -183,6 +200,13 @@ namespace Empiria.Banobras.Budgeting.AppServices {
       var validator = new OrderBudgetTransactionValidator(order);
 
       validator.EnsureOrderHasAvailableBudget();
+
+      Budget budget = order.BaseBudget;
+
+      Assertion.Require(budget.IsMonthOpened(order.StartDate.Month),
+                 $"El control de períodos presupuestales indica que " +
+                 $"ya está cerrado el mes de {EmpiriaString.MonthName(order.StartDate.Month)} " +
+                 $"para el presupuesto {budget.Name}.");
 
       var builder = new BudgetTransactionBuilder(order, CommonData.SISTEMA_DE_ADQUISICIONES, DateTime.Today);
 
