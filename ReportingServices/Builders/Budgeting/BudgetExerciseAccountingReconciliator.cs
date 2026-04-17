@@ -27,6 +27,10 @@ namespace Empiria.Banobras.Reporting.Builders.Budgeting {
       get; internal set;
     }
 
+    public string BudgetTransactionOrgUnit {
+      get; internal set;
+    }
+
     public string BudgetAccount {
       get; internal set;
     }
@@ -114,6 +118,8 @@ namespace Empiria.Banobras.Reporting.Builders.Budgeting {
       }
 
       return reconciliationList.Select(x => Map(x))
+                               .OrderBy(x => x.BudgetTransactionNo)
+                               .ThenBy(x => x.BudgetControlNumber)
                                .ToFixedList();
     }
 
@@ -122,6 +128,7 @@ namespace Empiria.Banobras.Reporting.Builders.Budgeting {
 
       return new ExerciseReconciliationDto {
         BudgetTransactionNo = reconcilation.BudgetEntry.Transaction.TransactionNo,
+        BudgetTransactionOrgUnit = reconcilation.BudgetEntry.BudgetAccount.OrganizationalUnit.Code,
         BudgetControlNumber = reconcilation.BudgetEntry.ControlNo,
         BudgetAccount = reconcilation.BudgetEntry.BudgetAccount.AccountNo,
         BudgetAccountName = reconcilation.BudgetEntry.BudgetAccount.Name,
@@ -148,9 +155,17 @@ namespace Empiria.Banobras.Reporting.Builders.Budgeting {
 
         var reconcilationEntry = Reconcilate(txnEntry, accountingEntries);
 
-        if (reconcilationEntry != null) {
-          reconciliationList.Add(reconcilationEntry);
-        }
+        reconciliationList.Add(reconcilationEntry);
+      }
+
+
+      var remainingEntries = accountingEntries.FindAll(x => x.Debit > 0 &&
+                                                            !reconciliationList.ToFixedList()
+                                                            .Contains(y => y.AccountingEntry.Id == x.Id));
+
+
+      foreach (var acctEntry in remainingEntries) {
+        reconciliationList.Add(new Reconcilation(BudgetEntry.Empty, acctEntry));
       }
 
       return reconciliationList.ToFixedList();
@@ -166,7 +181,7 @@ namespace Empiria.Banobras.Reporting.Builders.Budgeting {
       if (accountingEntry != null) {
         return new Reconcilation(exerciseTxnEntry, accountingEntry);
       } else {
-        return null;
+        return new Reconcilation(exerciseTxnEntry, CashEntryExtendedDto.Empty);
       }
     }
 
