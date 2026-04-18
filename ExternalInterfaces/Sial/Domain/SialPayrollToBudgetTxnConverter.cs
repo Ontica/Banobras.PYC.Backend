@@ -71,6 +71,7 @@ namespace Empiria.BanobrasIntegration.Sial {
         dto.Observations = "Favor de revisar el área origen";
 
         return dto;
+
       } else {
         dto.OrgUnitName = areaSial.Nombre;
       }

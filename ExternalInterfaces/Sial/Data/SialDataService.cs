@@ -19,7 +19,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
     static internal AreaSIAL GetAreaSIAL(string claveArea) {
 
-      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
+      var sql = "SELECT * FROM VW_AREAS_SIAL " +
                 $"WHERE CLAVE_AREA ='{claveArea}'";
 
       var op = DataOperation.Parse(sql);
@@ -30,7 +30,7 @@ namespace Empiria.BanobrasIntegration.Sial.Data {
 
     static internal FixedList<AreaSIAL> GetAreasSIAL() {
 
-      var sql = "SELECT * FROM INTRAN.INT_V_AREAS_UNIDAD@INTRAN " +
+      var sql = "SELECT * FROM VW_AREAS_SIAL " +
                 $"ORDER BY CLAVE_AREA";
 
       var op = DataOperation.Parse(sql);
