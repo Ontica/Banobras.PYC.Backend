@@ -10,7 +10,12 @@
 
 using System.Web.Http;
 
+using Empiria.Storage;
 using Empiria.WebApi;
+
+using Empiria.Payments.Adapters;
+
+using Empiria.Banobras.Expenses.AppServices;
 
 using Empiria.BanobrasIntegration.Sigevi.Adapters;
 using Empiria.BanobrasIntegration.Sigevi.Services;
@@ -20,7 +25,7 @@ namespace Empiria.BanobrasIntegration.Sigevi.WebApi {
   /// <summary>Web services invoked by Banobras' SIGEVI system.</summary>
   public class BanobrasSigeviController : WebApiController {
 
-    #region Web Apis
+    #region Query web apis
 
     [HttpPost]
     [Route("v2/pyc/integration/sigevi/presupuesto-disponible")]
@@ -57,7 +62,33 @@ namespace Empiria.BanobrasIntegration.Sigevi.WebApi {
       }
     }
 
-    #endregion Web Apis
+    #endregion Query web apis
+
+    #region Command web apis
+
+    [HttpPost]
+    [Route("v2/pyc/integration/sigevi/solicitar-dotacion-viaticos")]
+    public SingleObjectModel RequestTravelExpenses([FromBody] SigeviAvailableBudgetQuery query) {
+
+      var fields = GetFormDataFromHttpRequest<SigeviSolicitudDotacionFields>("request");
+
+      InputFile file = base.GetInputFileFromHttpRequest();
+
+      fields.PDfSolicitudDotacion = file;
+
+      using (var usecases = ExpensesAppServices.UseCaseInteractor()) {
+        PaymentOrderDto paymentOrder = usecases.RequestPaymentForTravelExpenses(null);
+
+        var message = new MessageFields() {
+          Message = $"Se solicitó el pago de la comisión {fields.NoComision}. " +
+                    $"El número de solicitud de pago correspondiente es: {paymentOrder.PaymentOrderNo}"
+        };
+
+        return new SingleObjectModel(base.Request, message);
+      }
+    }
+
+    #endregion Command web apis
 
   }  // class BanobrasSigeviController
 
