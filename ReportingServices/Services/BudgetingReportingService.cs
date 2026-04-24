@@ -11,15 +11,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Empiria.Banobras.Reporting;
+using Empiria.Banobras.Reporting.Builders.Budgeting;
+using Empiria.Budgeting.Transactions;
 using Empiria.DynamicData;
 using Empiria.Office;
 using Empiria.Services;
 using Empiria.Storage;
-
-using Empiria.Budgeting.Transactions;
-
-using Empiria.Banobras.Reporting.Builders.Budgeting;
 
 namespace Empiria.Budgeting.Reporting {
 
@@ -41,9 +39,9 @@ namespace Empiria.Budgeting.Reporting {
 
     #region Services
 
-    public DynamicDto<BudgetAllocationJournalEntry> AllocationJournalDynamicTable(DateTime fromDate, DateTime toDate) {
+    public DynamicDto<BudgetAllocationJournalEntry> AllocationJournalDynamicTable(PYCReportFields fields) {
 
-      FixedList<BudgetTransaction> transactions = GetAllocationJournalTransactions(fromDate, toDate);
+      FixedList<BudgetTransaction> transactions = GetAllocationJournalTransactions(fields);
 
       var builder = new BudgetAllocationJournalBuilder(transactions);
 
@@ -54,14 +52,14 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    public FileDto AllocationJournalToExcel(DateTime fromDate, DateTime toDate) {
+    public FileDto AllocationJournalToExcel(PYCReportFields fields) {
       var templateUID = $"{GetType().Name}.BudgetAllocationJournal";
 
       var templateConfig = FileTemplateConfig.Parse(templateUID);
 
       var builder = new BudgetAllocationJournalToExcelBuilder(templateConfig);
 
-      FixedList<BudgetTransaction> transactions = GetAllocationJournalTransactions(fromDate, toDate);
+      FixedList<BudgetTransaction> transactions = GetAllocationJournalTransactions(fields);
 
       ExcelFile excelFile = builder.CreateExcelFile(transactions);
 
@@ -69,9 +67,9 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    public DynamicDto<BudgetExerciseJournalEntry> ExerciseJournalDynamicTable(DateTime fromDate, DateTime toDate) {
+    public DynamicDto<BudgetExerciseJournalEntry> ExerciseJournalDynamicTable(PYCReportFields fields) {
 
-      FixedList<BudgetTransaction> transactions = GetExerciseJournalTransactions(fromDate, toDate);
+      FixedList<BudgetTransaction> transactions = GetExerciseJournalTransactions(fields);
 
       var builder = new BudgetExerciseJournalBuilder(transactions);
 
@@ -82,14 +80,14 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    public FileDto ExerciseJournalToExcel(DateTime fromDate, DateTime toDate) {
+    public FileDto ExerciseJournalToExcel(PYCReportFields fields) {
       var templateUID = $"{GetType().Name}.BudgetExerciseJournal";
 
       var templateConfig = FileTemplateConfig.Parse(templateUID);
 
       var builder = new BudgetExerciseJournalToExcelBuilder(templateConfig);
 
-      FixedList<BudgetTransaction> transactions = GetExerciseJournalTransactions(fromDate, toDate);
+      FixedList<BudgetTransaction> transactions = GetExerciseJournalTransactions(fields);
 
       ExcelFile excelFile = builder.CreateExcelFile(transactions);
 
@@ -97,9 +95,9 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    public DynamicDto<BudgetRequestsAnalyticsEntryDto> RequestsAnalyticsDynamicTable(DateTime toDate) {
+    public DynamicDto<BudgetRequestsAnalyticsEntryDto> RequestsAnalyticsDynamicTable(PYCReportFields fields) {
 
-      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(new DateTime(toDate.Year, 1, 1), toDate);
+      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(fields);
 
       var builder = new BudgetRequestsAnalyticsBuilder(transactions);
 
@@ -115,12 +113,12 @@ namespace Empiria.Budgeting.Reporting {
 
 
 
-    public FileDto RequestsAnalyticsToExcel(DateTime toDate) {
+    public FileDto RequestsAnalyticsToExcel(PYCReportFields fields) {
       var templateUID = $"{GetType().Name}.BudgetRequestsAnalytics";
 
       var templateConfig = FileTemplateConfig.Parse(templateUID);
 
-      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(new DateTime(toDate.Year, 1, 1), toDate);
+      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(fields);
 
       var analyticsBuilder = new BudgetRequestsAnalyticsBuilder(transactions);
 
@@ -134,9 +132,9 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    public DynamicDto<BudgetRequestsJournalEntry> RequestsJournalDynamicTable(DateTime fromDate, DateTime toDate) {
+    public DynamicDto<BudgetRequestsJournalEntry> RequestsJournalDynamicTable(PYCReportFields fields) {
 
-      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(fromDate, toDate);
+      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(fields);
 
       var builder = new BudgetRequestsJournalBuilder(transactions);
 
@@ -147,14 +145,14 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    public FileDto RequestsJournalToExcel(DateTime fromDate, DateTime toDate) {
+    public FileDto RequestsJournalToExcel(PYCReportFields fields) {
       var templateUID = $"{GetType().Name}.BudgetRequestsJournal";
 
       var templateConfig = FileTemplateConfig.Parse(templateUID);
 
       var builder = new BudgetRequestsJournalToExcelBuilder(templateConfig);
 
-      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(fromDate, toDate);
+      FixedList<BudgetTransaction> transactions = GetRequestsJournalTransactions(fields);
 
       ExcelFile excelFile = builder.CreateExcelFile(transactions);
 
@@ -165,13 +163,15 @@ namespace Empiria.Budgeting.Reporting {
 
     #region Helpers
 
-    static private FixedList<BudgetTransaction> GetAllocationJournalTransactions(DateTime fromDate, DateTime toDate) {
+    static private FixedList<BudgetTransaction> GetAllocationJournalTransactions(PYCReportFields fields) {
       return BudgetTransaction.GetFullList<BudgetTransaction>()
-                              .FindAll(x => (x.OperationType == BudgetOperationType.Authorize ||
+                              .FindAll(x => x.BaseBudget.BudgetType.Equals(fields.BudgetType) &&
+                                            (x.OperationType == BudgetOperationType.Authorize ||
                                              x.OperationType == BudgetOperationType.Expand ||
+                                             x.OperationType == BudgetOperationType.Reduce ||
                                              x.OperationType == BudgetOperationType.Modify) &&
                                             (x.InProcess || x.IsClosed) &&
-                                            (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)))
+                                            (fields.FromDate <= x.ApplicationDate && x.ApplicationDate < fields.ToDate.AddDays(1)))
                               .OrderBy(x => x.BaseParty.Code)
                               .ThenBy(x => x.ApplicationDate)
                               .ThenByDescending(x => x.BaseBudget.Name)
@@ -180,12 +180,13 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    static private FixedList<BudgetTransaction> GetExerciseJournalTransactions(DateTime fromDate, DateTime toDate) {
+    static private FixedList<BudgetTransaction> GetExerciseJournalTransactions(PYCReportFields fields) {
       return BudgetTransaction.GetFullList<BudgetTransaction>()
-                              .FindAll(x => (x.OperationType == BudgetOperationType.ApprovePayment ||
+                              .FindAll(x => x.BaseBudget.BudgetType.Equals(fields.BudgetType) &&
+                                           (x.OperationType == BudgetOperationType.ApprovePayment ||
                                              x.OperationType == BudgetOperationType.Exercise) &&
                                             (x.InProcess || x.IsClosed) &&
-                                            (fromDate <= x.ApplicationDate && x.ApplicationDate < toDate.AddDays(1)))
+                                            (fields.FromDate <= x.ApplicationDate && x.ApplicationDate < fields.ToDate.AddDays(1)))
                               .OrderBy(x => x.BaseParty.Code)
                               .ThenBy(x => x.ApplicationDate)
                               .ThenByDescending(x => x.BaseBudget.Name)
@@ -194,9 +195,13 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    static private FixedList<BudgetTransaction> GetRequestsJournalTransactions(DateTime fromDate, DateTime toDate) {
+    static private FixedList<BudgetTransaction> GetRequestsJournalTransactions(PYCReportFields fields) {
+      var fromDate = new DateTime(fields.ToDate.Year, 1, 1);
+      var toDate = fields.ToDate;
+
       return BudgetTransaction.GetFullList<BudgetTransaction>()
-                              .FindAll(x => (x.OperationType == BudgetOperationType.Request ||
+                              .FindAll(x => x.BaseBudget.BudgetType.Equals(fields.BudgetType) &&
+                                           (x.OperationType == BudgetOperationType.Request ||
                                              x.OperationType == BudgetOperationType.Commit ||
                                              x.OperationType == BudgetOperationType.ApprovePayment ||
                                              x.OperationType == BudgetOperationType.Exercise) &&
@@ -210,16 +215,16 @@ namespace Empiria.Budgeting.Reporting {
     }
 
 
-    public async Task<DynamicDto<ExerciseReconciliationDto>> GetBudgetExerciseAccountingReconciliation(DateTime fromDate, DateTime toDate) {
+    public async Task<DynamicDto<ExerciseReconciliationDto>> GetBudgetExerciseAccountingReconciliation(PYCReportFields fields) {
 
-      var reconciliator = new BudgetExerciseAccountingReconciliator(fromDate, toDate);
+      var reconciliator = new BudgetExerciseAccountingReconciliator(fields.FromDate, fields.ToDate);
 
       FixedList<ExerciseReconciliationDto> reconciliation = await reconciliator.Build();
 
       var columns = new DataTableColumn[] {
         new DataTableColumn("budgetTransactionNo", "Transaccion", "text-nowrap"),
-        new DataTableColumn("budgetAccount", "Partida", "text-nowrap"),
-        new DataTableColumn("budgetAccountName", "Nombre de la partida", "text-nowrap"),
+        new DataTableColumn("budgetTransactionOrgUnit", "Área", "text-nowrap"),
+        new DataTableColumn("budgetAccountName", "Partida", "text-nowrap"),
         new DataTableColumn("budgetControlNumber", "Num verif", "text-nowrap"),
         new DataTableColumn("budgetExercise", "Ejercido", "decimal"),
         new DataTableColumn("accountingVoucherNo", "Póliza contable", "text-nowrap"),
@@ -230,7 +235,6 @@ namespace Empiria.Budgeting.Reporting {
         new DataTableColumn("credit", "Abonos", "decimal"),
 
       }.ToFixedList();
-
 
       return new DynamicDto<ExerciseReconciliationDto>(columns, reconciliation);
     }

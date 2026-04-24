@@ -28,12 +28,12 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-allocation-journal")]
-    public SingleObjectModel AllocationJournalDataTable([FromBody] ReportFields fields) {
+    public SingleObjectModel AllocationJournalDataTable([FromBody] PYCReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
         DynamicDto<BudgetAllocationJournalEntry> journal =
-                                    service.AllocationJournalDynamicTable(fields.FromDate, fields.ToDate);
+                                    service.AllocationJournalDynamicTable(fields);
 
         return new SingleObjectModel(base.Request, journal);
       }
@@ -42,11 +42,11 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-allocation-journal/export")]
-    public SingleObjectModel AllocationJournalToExcel([FromBody] ReportFields fields) {
+    public SingleObjectModel AllocationJournalToExcel([FromBody] PYCReportFields fields) {
 
       using (var reportingService = BudgetingReportingService.ServiceInteractor()) {
 
-        FileDto journal = reportingService.AllocationJournalToExcel(fields.FromDate, fields.ToDate);
+        FileDto journal = reportingService.AllocationJournalToExcel(fields);
 
         return new SingleObjectModel(base.Request, journal);
       }
@@ -55,12 +55,12 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-exercise-journal")]
-    public SingleObjectModel ExerciseJournalDataTable([FromBody] ReportFields fields) {
+    public SingleObjectModel ExerciseJournalDataTable([FromBody] PYCReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
         DynamicDto<BudgetExerciseJournalEntry> journal =
-                                  service.ExerciseJournalDynamicTable(fields.FromDate, fields.ToDate);
+                                  service.ExerciseJournalDynamicTable(fields);
 
         return new SingleObjectModel(base.Request, journal);
       }
@@ -69,12 +69,12 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-exercise-accounting-reconciliation")]
-    public async Task<SingleObjectModel> ExerciseAccountingReconciliation([FromBody] ReportFields fields) {
+    public async Task<SingleObjectModel> ExerciseAccountingReconciliation([FromBody] PYCReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
         DynamicDto<ExerciseReconciliationDto> reconciliation =
-                    await service.GetBudgetExerciseAccountingReconciliation(fields.FromDate, fields.ToDate);
+                    await service.GetBudgetExerciseAccountingReconciliation(fields);
 
         return new SingleObjectModel(base.Request, reconciliation);
       }
@@ -82,12 +82,25 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
 
     [HttpPost]
+    [Route("v2/financial-management/reports/budget-exercise-accounting-reconciliation/export")]
+    public async Task<SingleObjectModel> ExerciseAccountingReconciliationToExcel([FromBody] PYCReportFields fields) {
+
+      using (var service = BudgetingReportingService.ServiceInteractor()) {
+
+        DynamicDto<ExerciseReconciliationDto> reconciliation =
+                    await service.GetBudgetExerciseAccountingReconciliation(fields);
+
+        return new SingleObjectModel(base.Request, reconciliation);
+      }
+    }
+
+    [HttpPost]
     [Route("v2/financial-management/reports/budget-exercise-journal/export")]
-    public SingleObjectModel ExerciseJournalToExcel([FromBody] ReportFields fields) {
+    public SingleObjectModel ExerciseJournalToExcel([FromBody] PYCReportFields fields) {
 
       using (var reportingService = BudgetingReportingService.ServiceInteractor()) {
 
-        FileDto journal = reportingService.ExerciseJournalToExcel(fields.FromDate, fields.ToDate);
+        FileDto journal = reportingService.ExerciseJournalToExcel(fields);
 
         return new SingleObjectModel(base.Request, journal);
       }
@@ -96,12 +109,12 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-requests-analytics")]
-    public SingleObjectModel RequestsAnalyticsDataTable([FromBody] ReportFields fields) {
+    public SingleObjectModel RequestsAnalyticsDataTable([FromBody] PYCReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
         DynamicDto<BudgetRequestsAnalyticsEntryDto> entries =
-                                    service.RequestsAnalyticsDynamicTable(fields.ToDate);
+                                    service.RequestsAnalyticsDynamicTable(fields);
 
         return new SingleObjectModel(base.Request, entries);
       }
@@ -111,11 +124,11 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-requests-analytics/export")]
-    public SingleObjectModel RequestsAnalyticsToExcel([FromBody] ReportFields fields) {
+    public SingleObjectModel RequestsAnalyticsToExcel([FromBody] PYCReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
-        FileDto excelFile = service.RequestsAnalyticsToExcel(fields.ToDate);
+        FileDto excelFile = service.RequestsAnalyticsToExcel(fields);
 
         return new SingleObjectModel(base.Request, excelFile);
       }
@@ -124,12 +137,11 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-requests-journal")]
-    public SingleObjectModel RequestsJournalDataTable([FromBody] ReportFields fields) {
+    public SingleObjectModel RequestsJournalDataTable([FromBody] PYCReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
-        DynamicDto<BudgetRequestsJournalEntry> journal =
-                                    service.RequestsJournalDynamicTable(fields.FromDate, fields.ToDate);
+        DynamicDto<BudgetRequestsJournalEntry> journal = service.RequestsJournalDynamicTable(fields);
 
         return new SingleObjectModel(base.Request, journal);
       }
@@ -138,11 +150,11 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/budget-requests-journal/export")]
-    public SingleObjectModel RequestsJournalToExcel([FromBody] ReportFields fields) {
+    public SingleObjectModel RequestsJournalToExcel([FromBody] PYCReportFields fields) {
 
       using (var service = BudgetingReportingService.ServiceInteractor()) {
 
-        FileDto journal = service.RequestsJournalToExcel(fields.FromDate, fields.ToDate);
+        FileDto journal = service.RequestsJournalToExcel(fields);
 
         return new SingleObjectModel(base.Request, journal);
       }
