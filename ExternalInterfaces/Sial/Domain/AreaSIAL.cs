@@ -68,8 +68,15 @@ namespace Empiria.BanobrasIntegration.Sial {
 
 
     [DataField("CLAVE_AREA_SUP")]
+    private string _claveAreaSuperior = string.Empty;
+
     public string ClaveAreaSuperior {
-      get; private set;
+      get {
+        if (_claveAreaSuperior == "162111") {
+          return "162100";
+        }
+        return _claveAreaSuperior;
+      }
     }
 
 
