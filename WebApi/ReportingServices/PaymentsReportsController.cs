@@ -8,7 +8,6 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
-using System;
 using System.Web.Http;
 
 using Empiria.WebApi;
@@ -24,7 +23,7 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/payments-bills")]
-    public SingleObjectModel BuildPaymentsBillsReport([FromBody] ReportFields fields) {
+    public SingleObjectModel BuildPaymentsBillsReport([FromBody] PYCReportFields fields) {
 
       using (var service = PaymentsReportingService.ServiceInteractor()) {
 
@@ -37,7 +36,7 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/payments-bills/export")]
-    public SingleObjectModel BuildPaymentsBillsExcelReport([FromBody] ReportFields fields) {
+    public SingleObjectModel BuildPaymentsBillsExcelReport([FromBody] PYCReportFields fields) {
 
       using (var service = PaymentsReportingService.ServiceInteractor()) {
 
@@ -51,7 +50,7 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/payments-concepts")]
-    public SingleObjectModel BuildPaymentsConceptsReport([FromBody] ReportFields fields) {
+    public SingleObjectModel BuildPaymentsConceptsReport([FromBody] PYCReportFields fields) {
 
       using (var service = PaymentsReportingService.ServiceInteractor()) {
 
@@ -64,7 +63,7 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
     [HttpPost]
     [Route("v2/financial-management/reports/payments-concepts/export")]
-    public SingleObjectModel BuildPaymentsConceptsExcelReport([FromBody] ReportFields fields) {
+    public SingleObjectModel BuildPaymentsConceptsExcelReport([FromBody] PYCReportFields fields) {
 
       using (var service = PaymentsReportingService.ServiceInteractor()) {
 
@@ -77,21 +76,5 @@ namespace Empiria.Banobras.Reporting.WebApi {
     #endregion Web apis
 
   }  // class PaymentsReportsController
-
-
-
-  /// <summary>Base input fields for financial reports.</summary>
-  public class ReportFields {
-
-    public DateTime FromDate {
-      get; set;
-    } = DateTime.Today;
-
-
-    public DateTime ToDate {
-      get; set;
-    } = DateTime.Today;
-
-  }  // class ReportFields
 
 }  // namespace Empiria.Banobras.Reporting.WebApi
