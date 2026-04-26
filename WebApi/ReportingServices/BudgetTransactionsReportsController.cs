@@ -55,8 +55,10 @@ namespace Empiria.Banobras.Reporting.WebApi {
 
       FixedList<BudgetTransaction> transactions =
             command.Items.Select(x => BudgetTransaction.Parse(x))
-                         .ToFixedList()
-                         .Sort((x, y) => x.TransactionNo.CompareTo(y.TransactionNo));
+                         .OrderBy(x => x.ApplicationDate)
+                         .ThenBy(x => x.TransactionNo)
+                         .ToFixedList();
+
 
       using (var reportingService = BudgetTransactionReportingService.ServiceInteractor()) {
 

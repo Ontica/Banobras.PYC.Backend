@@ -11,7 +11,6 @@
 using System;
 
 using Empiria.Office;
-using Empiria.Parties;
 using Empiria.StateEnums;
 using Empiria.Storage;
 
@@ -68,8 +67,8 @@ namespace Empiria.Budgeting.Reporting {
           _excelFile.SetCell($"B{i}", txn.Transaction.TransactionNo);
           _excelFile.SetCell($"C{i}", txn.Transaction.TransactionType.DisplayName);
           _excelFile.SetCell($"D{i}", txn.Transaction.Status.GetName());
-          _excelFile.SetCell($"E{i}", ((OrganizationalUnit) txn.Transaction.BaseParty).Code);
-          _excelFile.SetCell($"F{i}", txn.Transaction.BaseParty.Name);
+          _excelFile.SetCell($"E{i}", entry.BudgetAccount.OrganizationalUnit.Code);
+          _excelFile.SetCell($"F{i}", entry.BudgetAccount.OrganizationalUnit.Name);
           _excelFile.SetCell($"G{i}", entry.BudgetAccount.Code);
           _excelFile.SetCell($"H{i}", entry.BudgetAccount.StandardAccount.Name);
           _excelFile.SetCell($"I{i}", entry.BudgetProgram.Code);
