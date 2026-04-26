@@ -68,7 +68,7 @@ namespace Empiria.BanobrasIntegration.Sigevi.WebApi {
 
     [HttpPost]
     [Route("v2/pyc/integration/sigevi/solicitar-dotacion-viaticos")]
-    public SingleObjectModel RequestTravelExpenses([FromBody] SigeviAvailableBudgetQuery query) {
+    public SingleObjectModel SolicitarDotacionViaticos() {
 
       var fields = GetFormDataFromHttpRequest<SigeviSolicitudDotacionFields>("request");
 

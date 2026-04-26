@@ -62,7 +62,9 @@ namespace Empiria.Budgeting.Reporting {
       int i = _templateConfig.FirstRowIndex;
 
       foreach (var txn in transactions) {
+
         foreach (var entry in txn.Entries) {
+
           _excelFile.SetCell($"A{i}", txn.BaseBudget.Name);
           _excelFile.SetCell($"B{i}", txn.TransactionNo);
           _excelFile.SetCell($"C{i}", txn.TransactionType.DisplayName);
@@ -80,9 +82,13 @@ namespace Empiria.Budgeting.Reporting {
           _excelFile.SetCell($"O{i}", entry.Deposit);
           _excelFile.SetCell($"P{i}", entry.Withdrawal);
           _excelFile.SetCell($"Q{i}", entry.Justification);
+
           i++;
+
         }  //  foreach entry
+
       } // foreach txn
+
     }
 
   } // class BudgetUngroupedEntriesToExcelBuilder
