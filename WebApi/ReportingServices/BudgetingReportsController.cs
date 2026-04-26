@@ -8,6 +8,7 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -15,7 +16,9 @@ using Empiria.DynamicData;
 using Empiria.Storage;
 using Empiria.WebApi;
 
+
 using Empiria.Budgeting.Reporting;
+using Empiria.Budgeting.Transactions;
 
 using Empiria.Banobras.Reporting.Builders.Budgeting;
 
@@ -47,6 +50,50 @@ namespace Empiria.Banobras.Reporting.WebApi {
       using (var reportingService = BudgetingReportingService.ServiceInteractor()) {
 
         FileDto journal = reportingService.AllocationJournalToExcel(fields);
+
+        return new SingleObjectModel(base.Request, journal);
+      }
+    }
+
+
+    [HttpPost]
+    [Route("v2/financial-management/reports/budget-entries-journal")]
+    public SingleObjectModel BudgetEntriesJournal([FromBody] PYCReportFields fields) {
+
+      var transactions = BudgetTransaction.GetList<BudgetTransaction>()
+                                          .FindAll(x => x.BaseBudget.BudgetType.UID == fields.BudgetTypeUID &&
+                                                        (x.Status != StateEnums.TransactionStatus.Deleted) &&
+                                                        (x.Status != StateEnums.TransactionStatus.Pending) &&
+                                                        (fields.FromDate <= x.ApplicationDate && x.ApplicationDate < fields.ToDate.AddDays(1)))
+                                          .OrderBy(x => x.ApplicationDate)
+                                          .ThenBy(x => x.TransactionNo)
+                                          .ToFixedList();
+
+      using (var reportingService = BudgetTransactionReportingService.ServiceInteractor()) {
+
+        DynamicDto<BudgetEntryJournalDto> journal = reportingService.BudgetEntriesDynamicTable(transactions);
+
+        return new SingleObjectModel(base.Request, journal);
+      }
+    }
+
+
+    [HttpPost]
+    [Route("v2/financial-management/reports/budget-entries-journal/export")]
+    public SingleObjectModel BudgetEntriesJournalToExcel([FromBody] PYCReportFields fields) {
+
+      var transactions = BudgetTransaction.GetList<BudgetTransaction>()
+                                          .FindAll(x => x.BaseBudget.BudgetType.UID == fields.BudgetTypeUID &&
+                                                        (x.Status != StateEnums.TransactionStatus.Deleted) &&
+                                                        (x.Status != StateEnums.TransactionStatus.Pending) &&
+                                                        (fields.FromDate <= x.ApplicationDate && x.ApplicationDate < fields.ToDate.AddDays(1)))
+                                          .OrderBy(x => x.ApplicationDate)
+                                          .ThenBy(x => x.TransactionNo)
+                                          .ToFixedList();
+
+      using (var reportingService = BudgetTransactionReportingService.ServiceInteractor()) {
+
+        FileDto journal = reportingService.ExportUngroupedEntriesToExcel(transactions);
 
         return new SingleObjectModel(base.Request, journal);
       }

@@ -8,11 +8,13 @@
 *                                                                                                            *
 ************************* Copyright(c) La Vía Óntica SC, Ontica LLC and contributors. All rights reserved. **/
 
+using Empiria.DynamicData;
 using Empiria.Office;
 using Empiria.Services;
 using Empiria.Storage;
 
 using Empiria.Budgeting.Transactions;
+
 using Empiria.Budgeting.Explorer.Adapters;
 
 namespace Empiria.Budgeting.Reporting {
@@ -33,6 +35,17 @@ namespace Empiria.Budgeting.Reporting {
     #endregion Constructors and parsers
 
     #region Services
+
+    public DynamicDto<BudgetEntryJournalDto> BudgetEntriesDynamicTable(FixedList<BudgetTransaction> transactions) {
+
+      var builder = new BudgetEntriesJournalBuilder(transactions);
+
+      var columns = builder.BuildColumns();
+      var entries = builder.BuildEntries();
+
+      return new DynamicDto<BudgetEntryJournalDto>(columns, entries);
+    }
+
 
     public FileDto ExportGroupedEntriesToExcel(FixedList<BudgetTransactionByYear> transactions) {
       Assertion.Require(transactions, nameof(transactions));
